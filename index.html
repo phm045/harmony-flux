@@ -800,7 +800,7 @@ footer {
       <p class="intro-tag" data-i18n="img_tag" style="margin-bottom:1.4rem;">Soin &amp; Énergie</p>
       <h2 class="intro-title" data-i18n="img_title">Ressentir<br>pour <em>guérir</em></h2>
       <p class="intro-text" data-i18n="img_text">Le magnétiseur canalise et redistribue les énergies vitales avec les mains, sans contact ou à distance. Une approche douce, rapide et profonde pour retrouver votre équilibre intérieur.</p>
-      <a href="https://cal.eu/ferreira-tony-niw1yi/secret" target="_blank" rel="noopener noreferrer"
+      <a href="#" onclick="openModal('modal-reservation'); return false;"
         style="display:inline-block;margin-top:1.8rem;font-size:0.62rem;letter-spacing:0.18em;
                text-transform:uppercase;padding:0.9rem 1.8rem;border:1px solid var(--line);
                color:var(--gold2);text-decoration:none;transition:all 0.3s;align-self:flex-start;"
@@ -1685,4 +1685,19 @@ function openModal(id) { document.getElementById(id).classList.add('open'); docu
 function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
 document.addEventListener('keydown', function(e) { if(e.key==='Escape') document.querySelectorAll('.hf-modal.open').forEach(function(m){ closeModal(m.id); }); });
 </script></body>
-</html>
+<!-- MODALE RÉSERVATION -->
+<div id="modal-reservation" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-reservation')"></div>
+  <div class="hf-modal-box" style="max-width:720px;">
+    <button class="hf-modal-close" onclick="closeModal('modal-reservation')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title">Réserver une séance</h2>
+    <div class="hf-modal-divider"></div>
+    <div style="padding:0 2.5rem 2.5rem;">
+      <iframe src="https://cal.eu/ferreira-tony-niw1yi/secret"
+        style="width:100%;height:520px;border:none;border-radius:2px;"
+        loading="lazy">
+      </iframe>
+    </div>
+  </div>
+</div></html>
