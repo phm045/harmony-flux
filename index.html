@@ -1064,8 +1064,8 @@ footer {
   </svg>
   <span class="ft-copy" data-i18n="footer_copy">© 2025 Harmony Flux — Magnétisme</span>
   <div class="ft-links">
-    <a href="#" data-i18n="footer_legal">Mentions légales</a>
-    <a href="#" data-i18n="footer_privacy">Confidentialité</a>
+<a href="#" data-i18n="footer_legal" onclick="openModal('modal-mentions'); return false;">Mentions légales</a>
+<a href="#" data-i18n="footer_privacy" onclick="openModal('modal-confidentialite'); return false;">Confidentialité</a>
   </div>
 </footer>
 
@@ -1620,5 +1620,69 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
     }
   });
 })();
+</script><!-- MODALES -->
+<div id="modal-mentions" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-mentions')"></div>
+  <div class="hf-modal-box">
+    <button class="hf-modal-close" onclick="closeModal('modal-mentions')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title">Mentions légales</h2>
+    <div class="hf-modal-divider"></div>
+    <div class="hf-modal-body">
+      <h3>Éditeur du site</h3>
+      <p>Tony Ferreira — Magnétiseur indépendant<br>Saint-Saturnin-lès-Avignon, 84450<br>Tél. : <a href="tel:0788301574">07.88.30.15.74</a></p>
+      <h3>Hébergement</h3>
+      <p>GitHub Pages — GitHub, Inc., San Francisco, USA</p>
+      <h3>Activité</h3>
+      <p>Les soins proposés ne constituent pas un acte médical et ne remplacent pas un avis médical.</p>
+      <h3>Propriété intellectuelle</h3>
+      <p>Tout le contenu du site est la propriété exclusive de Harmony Flux. Toute reproduction sans autorisation est interdite.</p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-confidentialite" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-confidentialite')"></div>
+  <div class="hf-modal-box">
+    <button class="hf-modal-close" onclick="closeModal('modal-confidentialite')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title">Confidentialité</h2>
+    <div class="hf-modal-divider"></div>
+    <div class="hf-modal-body">
+      <h3>Données collectées</h3>
+      <p>Coordonnées fournies volontairement lors d'une prise de contact ou réservation.</p>
+      <h3>Utilisation</h3>
+      <p>Vos données servent uniquement à répondre à vos demandes et gérer vos réservations. Elles ne sont jamais vendues ni transmises à des tiers.</p>
+      <h3>Vos droits (RGPD)</h3>
+      <p>Vous disposez d'un droit d'accès, de rectification et de suppression. Contactez-nous par téléphone ou WhatsApp.</p>
+      <h3>Cookies</h3>
+      <p>Aucun cookie publicitaire ou de traçage tiers n'est utilisé.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.hf-modal { display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; padding:1.5rem; }
+.hf-modal.open { display:flex; }
+.hf-modal-overlay { position:absolute; inset:0; background:rgba(5,8,16,0.88); backdrop-filter:blur(6px); cursor:pointer; }
+.hf-modal-box { position:relative; z-index:1; background:#080d1a; border:1px solid rgba(200,168,75,0.2); max-width:580px; width:100%; max-height:88vh; display:flex; flex-direction:column; animation:modalIn 0.3s ease both; }
+@keyframes modalIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.hf-modal-close { position:absolute; top:1rem; right:1rem; width:32px; height:32px; background:none; border:1px solid rgba(200,168,75,0.2); color:#6a7a9a; cursor:pointer; font-size:1rem; transition:all 0.2s; }
+.hf-modal-close:hover { color:#c8a84b; border-color:rgba(200,168,75,0.5); }
+.hf-modal-tag { font-size:0.58rem; letter-spacing:0.28em; text-transform:uppercase; color:#c8a84b; padding:2rem 2.5rem 0; margin:0; }
+.hf-modal-title { font-family:'Cormorant',serif; font-size:2rem; font-weight:300; color:#e8eaf5; padding:0.4rem 2.5rem 0; margin:0; }
+.hf-modal-divider { height:1px; background:linear-gradient(to right,rgba(200,168,75,0.3),transparent); margin:1.2rem 2.5rem; flex-shrink:0; }
+.hf-modal-body { padding:0 2.5rem 2.5rem; overflow-y:auto; }
+.hf-modal-body h3 { font-family:'Cormorant',serif; font-size:1.05rem; color:#e8c870; margin:1.4rem 0 0.4rem; }
+.hf-modal-body h3:first-child { margin-top:0; }
+.hf-modal-body p { font-size:0.82rem; line-height:1.85; color:#7a8aaa; margin:0; }
+.hf-modal-body a { color:#e8c870; }
+@media(max-width:600px) { .hf-modal-tag,.hf-modal-title { padding-left:1.5rem; } .hf-modal-body { padding:0 1.5rem 2rem; } .hf-modal-divider { margin-left:1.5rem; margin-right:1.5rem; } }
+</style>
+
+<script>
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+document.addEventListener('keydown', function(e) { if(e.key==='Escape') document.querySelectorAll('.hf-modal.open').forEach(function(m){ closeModal(m.id); }); });
 </script></body>
 </html>
