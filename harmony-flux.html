@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<title>Harmony Flux — Magnétisme</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #050810;
+  --forest: #080d1a;
+  --moss: #0d1528;
+  --fern: #162040;
+  --sage: #1e3060;
+  --gold: #c8a84b;
+  --gold2: #e8c870;
+  --gold3: #f5e4aa;
+  --cream: #e8eaf5;
+  --muted: #9aaac8;
+  --muted2: #6a80a8;
+  --line: rgba(200,168,75,0.15);
+  --wa-green: #25D366;
+  --star: rgba(200,220,255,0.85);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--night);
+  color: var(--cream);
+  font-family: 'Raleway', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* grain */
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.9;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:300;
+  padding: 1.6rem 5vw;
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(to bottom, rgba(5,8,16,0.97), transparent);
+}
+
+.nav-logo-svg { height: 36px; width: auto; }
+
+.lang-switcher {
+  display:flex; gap:0.4rem; align-items:center; margin-right:1.2rem;
+}
+.lang-btn {
+  font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--muted); background:none; border:none; cursor:pointer;
+  padding:0.3rem 0.5rem; transition:color 0.3s;
+  font-family:'Raleway',sans-serif; font-weight:300;
+  border-bottom:1px solid transparent;
+}
+.lang-btn:hover { color:var(--gold); }
+.lang-btn.active { color:var(--gold2); border-bottom-color:var(--gold2); }
+.lang-sep { color:var(--muted2); font-size:0.6rem; }
+
+.nav-links { display:flex; gap:2.8rem; list-style:none; }
+.nav-links a {
+  font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--gold); }
+
+.nav-tel {
+  font-size: 0.75rem; letter-spacing: 0.1em;
+  color: var(--gold); text-decoration: none;
+  border: 1px solid var(--line);
+  padding: 0.5rem 1.2rem;
+  transition: all 0.3s;
+}
+.nav-tel:hover { background: var(--gold); color: var(--night); }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, #0d1a3a 0%, #050810 65%);
+}
+
+.bg-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(100,140,255,0.12);
+  animation: expandRing 8s ease-out infinite;
+  transform-origin: center;
+}
+
+#starfield {
+  position: absolute; inset: 0;
+  pointer-events: none; overflow: hidden; z-index: 1;
+}
+.star {
+  position: absolute; border-radius: 50%;
+  background: white;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%,100% { opacity:0; transform: scale(0.6); }
+  50%      { opacity: var(--max-op, 0.8); transform: scale(1); }
+}
+.shooting-star {
+  position: absolute;
+  width: 120px; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(200,220,255,0.8), transparent);
+  animation: shoot var(--s-dur, 6s) ease-in infinite;
+  animation-delay: var(--s-delay, 0s);
+  transform-origin: left center;
+  opacity: 0;
+}
+@keyframes shoot {
+  0%   { opacity:0; transform: translateX(-60px) rotate(-25deg); }
+  5%   { opacity:1; }
+  30%  { opacity:0; transform: translateX(300px) rotate(-25deg); }
+  100% { opacity:0; transform: translateX(300px) rotate(-25deg); }
+}
+.mag-aura {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,120,255,0.04) 0%, transparent 70%);
+  animation: pulse-aura 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes pulse-aura {
+  0%,100% { transform: scale(1); opacity: 0.4; }
+  50%     { transform: scale(1.15); opacity: 0.8; }
+}
+.bg-ring:nth-child(1) { width:300px; height:300px; top:50%; left:50%; margin:-150px 0 0 -150px; animation-delay:0s; }
+.bg-ring:nth-child(2) { width:550px; height:550px; top:50%; left:50%; margin:-275px 0 0 -275px; animation-delay:1.5s; }
+.bg-ring:nth-child(3) { width:800px; height:800px; top:50%; left:50%; margin:-400px 0 0 -400px; animation-delay:3s; }
+.bg-ring:nth-child(4) { width:1100px; height:1100px; top:50%; left:50%; margin:-550px 0 0 -550px; animation-delay:4.5s; }
+
+@keyframes expandRing {
+  0%   { opacity:0; transform:scale(0.85); }
+  20%  { opacity:1; }
+  100% { opacity:0; transform:scale(1.15); }
+}
+
+.hero-center {
+  position: relative; z-index:10;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-calli {
+  display: block; margin: 0 auto 2.5rem;
+  width: min(580px, 90vw);
+  opacity: 0;
+  animation: fadeIn 1.4s 0.3s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-calli, .hero-line, .hero-sub, .hero-desc, .hero-badges {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.hero-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  margin: 0 auto 2rem;
+  opacity:0; animation: fadeIn 1s 1s forwards;
+}
+
+.hero-sub {
+  font-family: 'Cormorant', serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-style: italic; font-weight:300;
+  color: var(--gold3);
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+  opacity:0; animation: fadeIn 1s 1.2s forwards;
+}
+
+.hero-desc {
+  font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 3rem;
+  opacity:0; animation: fadeIn 1s 1.5s forwards;
+}
+
+.hero-badges {
+  display: flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+  opacity:0; animation: fadeIn 1s 1.8s forwards;
+}
+.badge {
+  font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+  border: 1px solid var(--line);
+  color: var(--muted); padding: 0.5rem 1.2rem;
+}
+.badge.accent {
+  border-color: rgba(200,168,75,0.5); color: var(--gold2);
+}
+
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:0.6rem;
+  font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase;
+  color: var(--muted2); z-index:10;
+  animation: bounce 2.5s ease-in-out infinite;
+}
+.hero-scroll::after {
+  content:''; width:1px; height:30px;
+  background: linear-gradient(to bottom, var(--muted2), transparent);
+}
+@keyframes bounce {
+  0%,100% { transform:translateX(-50%) translateY(0); }
+  50%      { transform:translateX(-50%) translateY(6px); }
+}
+
+/* ── SECTIONS ── */
+.section-wrap { position:relative; z-index:10; }
+
+/* ── INTRO ── */
+#intro {
+  padding: 7rem 5vw;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6rem; align-items: center;
+  background: var(--forest);
+  border-top: 1px solid var(--line);
+}
+
+.intro-visual {
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  height: 400px;
+}
+.intro-circle {
+  width: 280px; height: 280px; border-radius:50%;
+  border: 1px solid rgba(100,140,255,0.25);
+  position:absolute;
+  animation: rotateSlow 30s linear infinite;
+  box-shadow: 0 0 20px rgba(80,120,255,0.06);
+}
+.intro-circle:nth-child(2) {
+  width:200px; height:200px;
+  border-color: rgba(200,168,75,0.2);
+  animation-duration:20s; animation-direction:reverse;
+}
+.intro-glyph {
+  position:relative; z-index:2;
+  font-family:'Cormorant',serif;
+  font-size:5rem; color:var(--gold); opacity:0.8;
+  animation: breathe 4s ease-in-out infinite;
+  text-shadow: 0 0 30px rgba(200,168,75,0.4);
+}
+.intro-magnet-svg {
+  position:absolute; opacity:0.12;
+  animation: rotateSlow 60s linear infinite;
+}
+@keyframes rotateSlow { to { transform:rotate(360deg); } }
+@keyframes breathe {
+  0%,100% { opacity:0.6; transform:scale(1); }
+  50%      { opacity:1;   transform:scale(1.06); }
+}
+
+.intro-tag {
+  font-size:0.62rem; letter-spacing:0.28em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:1.4rem;
+  display:flex; align-items:center; gap:1rem;
+}
+.intro-tag::before { content:''; width:40px; height:1px; background:var(--gold); }
+
+.intro-title {
+  font-family:'Cormorant',serif;
+  font-size: clamp(2rem,3.5vw,3rem);
+  font-weight:300; line-height:1.2;
+  color:var(--cream); margin-bottom:1.5rem;
+}
+.intro-title em { font-style:italic; color:var(--gold2); }
+
+.intro-text {
+  font-size:0.9rem; line-height:1.9; color:#8a9878;
+  margin-bottom:1.5rem;
+}
+
+.stat-row {
+  display:flex; gap:3rem; padding-top:1.8rem;
+  border-top:1px solid var(--line);
+}
+.stat-n {
+  font-family:'Cormorant',serif;
+  font-size:2.8rem; font-weight:300; color:var(--gold); line-height:1;
+}
+.stat-l { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted2); margin-top:0.3rem; }
+
+/* ── SÉANCES ── */
+#seances {
+  padding: 7rem 5vw;
+  background: var(--night);
+}
+
+.seances-header { max-width:560px; margin-bottom:4rem; }
+
+.seances-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--line);
+  border:1px solid var(--line);
+}
+
+.seance-card {
+  background:var(--night);
+  padding:3rem 2.2rem;
+  transition:background 0.4s;
+  position:relative; overflow:hidden;
+}
+.seance-card::before {
+  content:''; position:absolute;
+  bottom:0; left:0; right:0; height:2px;
+  background:linear-gradient(to right, transparent, var(--gold), transparent);
+  transform:scaleX(0); transition:transform 0.4s;
+}
+.seance-card:hover { background:var(--forest); }
+.seance-card:hover::before { transform:scaleX(1); }
+
+.seance-num {
+  font-family:'Cormorant',serif;
+  font-size:3.5rem; font-weight:300;
+  color:rgba(200,168,75,0.12); line-height:1;
+  margin-bottom:1.2rem;
+}
+.seance-title {
+  font-family:'Cormorant',serif;
+  font-size:1.4rem; font-weight:400; color:var(--cream);
+  margin-bottom:0.8rem;
+}
+.seance-text { font-size:0.82rem; line-height:1.8; color:var(--muted2); margin-bottom:1.4rem; }
+.seance-pill {
+  font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase;
+  border:1px solid rgba(200,168,75,0.3); color:var(--gold2);
+  padding:0.28rem 0.7rem; display:inline-block;
+}
+
+/* ── DURÉE HIGHLIGHT ── */
+#duree {
+  padding:5rem 5vw;
+  background:var(--moss);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; text-align:center; gap:1.2rem;
+}
+.duree-big {
+  font-family:'Cormorant',serif;
+  font-size:clamp(4rem,10vw,9rem);
+  font-weight:300; line-height:1;
+  color:var(--gold);
+  letter-spacing:-0.02em;
+}
+.duree-big span { font-style:italic; }
+.duree-label {
+  font-size:0.75rem; letter-spacing:0.3em; text-transform:uppercase;
+  color:var(--muted);
+}
+.duree-note {
+  font-family:'Cormorant',serif; font-style:italic;
+  font-size:1.2rem; color:var(--muted); margin-top:0.5rem;
+}
+
+/* ── MODALITÉS ── */
+#modalites {
+  padding:7rem 5vw;
+  background:var(--forest);
+  display:grid; grid-template-columns:1fr 1fr; gap:1px;
+}
+.mod {
+  padding:4rem 3.5rem;
+  position:relative;
+}
+.mod:first-child { border-right:1px solid var(--line); }
+.mod-icon {
+  width:58px; height:58px; margin-bottom:2rem;
+  border:1px solid rgba(200,168,75,0.25); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(circle, rgba(30,48,96,0.6) 0%, rgba(8,13,26,0.4) 100%);
+  box-shadow: 0 0 18px rgba(100,140,255,0.1), inset 0 0 10px rgba(100,140,255,0.05);
+  transition: box-shadow 0.4s, border-color 0.4s;
+}
+.mod:hover .mod-icon {
+  border-color: rgba(200,168,75,0.5);
+  box-shadow: 0 0 28px rgba(100,140,255,0.2), inset 0 0 14px rgba(100,140,255,0.1);
+}
+.mod-tag { font-size:0.6rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; }
+.mod-title {
+  font-family:'Cormorant',serif;
+  font-size:2rem; font-weight:300; color:var(--cream); margin-bottom:1rem; line-height:1.2;
+}
+.mod-title em { font-style:italic; color:var(--gold2); }
+.mod-text { font-size:0.85rem; line-height:1.85; color:var(--muted2); margin-bottom:1.8rem; }
+.mod-list { list-style:none; }
+.mod-list li {
+  font-size:0.78rem; color:#4a5840;
+  padding:0.55rem 0; border-bottom:1px solid rgba(200,168,75,0.07);
+  display:flex; align-items:center; gap:0.8rem;
+}
+.mod-list li::before { content:'◦'; color:var(--gold); font-size:1rem; }
+
+/* ── ZONES ── */
+#zones {
+  padding:7rem 5vw;
+  background:var(--night);
+}
+.zones-inner {
+  display:grid; grid-template-columns:1fr 2fr; gap:6rem; align-items:start;
+}
+.zones-title-block .intro-title { font-size:clamp(2rem,3vw,2.8rem); }
+
+.dept-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; }
+.dept {
+  padding:2rem 1.5rem;
+  border:1px solid var(--line);
+  transition:border-color 0.3s, transform 0.3s;
+  cursor:default;
+}
+.dept:hover { border-color:rgba(200,168,75,0.5); transform:translateY(-3px); }
+.dept-n {
+  font-family:'Cormorant',serif;
+  font-size:3.8rem; font-weight:300; color:rgba(200,168,75,0.18); line-height:1;
+}
+.dept-code { font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); margin:0.5rem 0 0.4rem; }
+.dept-name {
+  font-family:'Cormorant',serif;
+  font-size:1.3rem; font-weight:400; color:var(--cream); margin-bottom:0.6rem;
+}
+.dept-cities { font-size:0.72rem; line-height:1.7; color:var(--muted2); }
+
+.distance-card {
+  grid-column:1/-1;
+  padding:1.8rem 2rem;
+  background:var(--moss);
+  border:1px solid rgba(200,168,75,0.2);
+  display:flex; align-items:center; gap:2rem;
+}
+.distance-card .dist-ico { font-size:1.5rem; }
+.dist-text { font-size:0.82rem; line-height:1.7; color:var(--muted2); }
+.dist-text strong { color:var(--gold2); font-weight:400; }
+
+/* ── TARIFS ── */
+#tarifs {
+  padding:7rem 5vw;
+  background:var(--forest);
+}
+.tarifs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3.5rem; }
+.tarif {
+  padding:2.5rem 2rem; border:1px solid var(--line);
+  text-align:center; transition:all 0.3s;
+}
+.tarif.star {
+  background: none;
+  border-color: var(--line);
+}
+.tarif:not(.star):hover { border-color:rgba(200,168,75,0.35); }
+.tarif-lbl { font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--muted2); margin-bottom:0.8rem; }
+.tarif.star .tarif-lbl { color:var(--gold2); }
+.tarif-p {
+  font-family:'Cormorant',serif;
+  font-size:3.2rem; font-weight:300; color:var(--gold); line-height:1;
+}
+.tarif-u { font-size:0.7rem; color:var(--muted2); margin-top:0.3rem; }
+.tarif-sep { width:28px; height:1px; background:var(--line); margin:1.4rem auto; }
+.tarif.star .tarif-sep { background:rgba(200,168,75,0.3); }
+.tarif-feats { list-style:none; font-size:0.78rem; color:var(--muted2); line-height:2.1; }
+.tarif-btn {
+  display:block; width:100%; margin-top:2rem;
+  font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
+  padding:0.8rem; border:1px solid var(--line); color:var(--muted2);
+  text-decoration:none; transition:all 0.3s;
+  background:none; cursor:pointer; font-family:'Raleway',sans-serif; font-weight:300;
+  text-align:center;
+}
+.tarif-btn:hover { border-color:rgba(200,168,75,0.5); color:var(--gold2); }
+.tarif.star .tarif-btn:hover { background:none; color:var(--gold2); }
+
+/* ── TÉMOIGNAGES ── */
+#temoignages {
+  padding: 7rem 5vw;
+  background: var(--night);
+  border-top: 1px solid var(--line);
+  position: relative; overflow: hidden;
+}
+
+/* Fond décoratif subtil */
+#temoignages::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 800px; height: 800px;
+  margin: -400px 0 0 -400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,168,75,0.025) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.temoignages-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 4rem; flex-wrap: wrap; gap: 2rem;
+}
+
+/* Étoiles de notation */
+.stars {
+  display: flex; gap: 3px;
+}
+.star-ico {
+  color: var(--gold);
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+.star-ico.empty { color: var(--muted2); opacity: 0.4; }
+
+/* Carrousel / grille */
+.temoignages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.temoignage-card {
+  background: var(--forest);
+  border: 1px solid var(--line);
+  padding: 2.4rem 2rem;
+  position: relative;
+  transition: border-color 0.4s, transform 0.4s;
+  overflow: hidden;
+}
+.temoignage-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  transform: scaleX(0);
+  transition: transform 0.5s;
+}
+.temoignage-card:hover {
+  border-color: rgba(200,168,75,0.3);
+  transform: translateY(-4px);
+}
+.temoignage-card:hover::after { transform: scaleX(1); }
+
+/* Guillemet décoratif */
+.temoignage-quote-mark {
+  font-family: 'Cormorant', serif;
+  font-size: 5rem;
+  line-height: 1;
+  color: rgba(200,168,75,0.1);
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+}
+
+.temoignage-stars { margin-bottom: 1rem; }
+
+.temoignage-text {
+  font-family: 'Cormorant', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--cream);
+  margin-bottom: 1.6rem;
+  position: relative; z-index: 1;
+}
+
+.temoignage-footer {
+  display: flex; align-items: center; gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.2rem;
+}
+.temoignage-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sage), var(--fern));
+  border: 1px solid rgba(200,168,75,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant', serif;
+  font-size: 1rem; color: var(--gold); font-weight: 400;
+  flex-shrink: 0;
+}
+.temoignage-meta {}
+.temoignage-name {
+  font-size: 0.78rem; letter-spacing: 0.1em; color: var(--cream);
+  font-weight: 400;
+}
+.temoignage-detail {
+  font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted2); margin-top: 0.18rem;
+}
+.temoignage-badge {
+  font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
+  border: 1px solid rgba(200,168,75,0.25); color: var(--gold);
+  padding: 0.2rem 0.5rem; margin-left: auto; white-space: nowrap;
+}
+
+/* État vide */
+.temoignages-empty {
+  grid-column: 1 / -1;
+  padding: 4rem 2rem;
+  text-align: center;
+  border: 1px dashed rgba(200,168,75,0.15);
+}
+.temoignages-empty p {
+  font-family: 'Cormorant', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--muted2);
+}
+
+/* Bouton "Laisser un avis" */
+.temoignage-cta-wrap {
+  display: flex; align-items: center; gap: 2rem;
+  padding: 2.5rem 2.8rem;
+  border: 1px solid var(--line);
+  background: var(--forest);
+  position: relative; overflow: hidden;
+}
+.temoignage-cta-wrap::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(200,168,75,0.3), transparent);
+}
+.temoignage-cta-ico {
+  font-size: 2.2rem; opacity: 0.4; flex-shrink: 0;
+}
+.temoignage-cta-body { flex: 1; }
+.temoignage-cta-title {
+  font-family: 'Cormorant', serif;
+  font-size: 1.5rem; font-weight: 300; color: var(--cream);
+  margin-bottom: 0.3rem;
+}
+.temoignage-cta-title em { font-style: italic; color: var(--gold2); }
+.temoignage-cta-sub {
+  font-size: 0.78rem; line-height: 1.65; color: var(--muted2);
+}
+.temoignage-cta-btn {
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  border: 1px solid rgba(200,168,75,0.4);
+  color: var(--gold2);
+  background: none; cursor: pointer;
+  font-family: 'Raleway', sans-serif; font-weight: 300;
+  transition: all 0.3s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.temoignage-cta-btn:hover {
+  background: var(--gold);
+  color: var(--night);
+  border-color: var(--gold);
+}
+
+/* ── MODALE AVIS ── */
+#modal-avis .hf-modal-box { max-width: 620px; }
+
+.avis-form { display: flex; flex-direction: column; gap: 1.4rem; }
+
+/* Sélecteur d'étoiles interactif */
+.star-picker {
+  display: flex; flex-direction: column; gap: 0.6rem;
+}
+.star-picker-label {
+  font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted2);
+}
+.star-picker-stars {
+  display: flex; gap: 6px; cursor: pointer;
+}
+.star-picker-stars span {
+  font-size: 1.6rem;
+  color: var(--muted2);
+  transition: color 0.2s, transform 0.15s;
+  user-select: none;
+}
+.star-picker-stars span.lit {
+  color: var(--gold);
+}
+.star-picker-stars span:hover { transform: scale(1.2); }
+
+/* Champs du formulaire */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-field { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-field label {
+  font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted2);
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  background: rgba(22,32,64,0.5);
+  border: 1px solid rgba(200,168,75,0.15);
+  color: var(--cream);
+  font-family: 'Raleway', sans-serif; font-weight: 300;
+  font-size: 0.85rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-field input::placeholder,
+.form-field textarea::placeholder { color: var(--muted2); opacity: 0.6; }
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus { border-color: rgba(200,168,75,0.45); }
+.form-field textarea { resize: vertical; min-height: 110px; }
+.form-field select { cursor: pointer; }
+.form-field select option { background: var(--moss); }
+
+.form-submit {
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 1rem; width: 100%;
+  border: 1px solid rgba(200,168,75,0.4);
+  color: var(--gold2); background: none;
+  cursor: pointer; font-family: 'Raleway', sans-serif; font-weight: 300;
+  transition: all 0.3s; margin-top: 0.4rem;
+}
+.form-submit:hover { background: var(--gold); color: var(--night); border-color: var(--gold); }
+.form-submit:disabled { opacity: 0.5; cursor: default; }
+
+.form-success {
+  display: none;
+  padding: 2rem;
+  text-align: center;
+  border: 1px solid rgba(200,168,75,0.2);
+  background: rgba(13,21,40,0.6);
+}
+.form-success-ico { font-size: 2.5rem; margin-bottom: 1rem; }
+.form-success-title {
+  font-family: 'Cormorant', serif;
+  font-size: 1.6rem; font-weight: 300; color: var(--gold2);
+  margin-bottom: 0.5rem;
+}
+.form-success-sub {
+  font-size: 0.8rem; color: var(--muted2); line-height: 1.65;
+}
+
+/* ── CONTACT ── */
+#contact {
+  padding:7rem 5vw;
+  background:var(--night);
+  display:grid; grid-template-columns:1fr 1fr; gap:7rem; align-items:start;
+}
+.contact-left .intro-title { font-size:clamp(2rem,3vw,2.8rem); }
+.c-details { list-style:none; margin-top:2rem; }
+.c-details li {
+  display:flex; align-items:flex-start; gap:1rem;
+  font-size:0.82rem; color:var(--muted2);
+  padding:0.8rem 0; border-bottom:1px solid var(--line);
+}
+.c-details .ico { color:var(--gold); min-width:18px; font-size:0.9rem; }
+.c-details a { color:var(--gold2); text-decoration:none; }
+.c-details a:hover { text-decoration:underline; }
+
+.contact-wa {
+  display:flex; flex-direction:column; gap:1.4rem;
+  justify-content:center;
+}
+.contact-wa-title {
+  font-family:'Cormorant',serif;
+  font-size:clamp(1.6rem,2.5vw,2.2rem);
+  font-weight:300; color:var(--cream); line-height:1.2;
+  margin-bottom:0.4rem;
+}
+.contact-wa-title em { font-style:italic; color:var(--gold2); }
+.contact-wa-sub {
+  font-size:0.8rem; line-height:1.75; color:var(--muted2);
+  margin-bottom:1.4rem;
+}
+
+.wa-btn {
+  display:flex; align-items:center; gap:1rem;
+  padding:1.1rem 1.6rem;
+  border:1px solid rgba(37,211,102,0.25);
+  text-decoration:none;
+  transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+.wa-btn::before {
+  content:''; position:absolute; inset:0;
+  background: rgba(37,211,102,0.05);
+  opacity:0; transition:opacity 0.3s;
+}
+.wa-btn:hover::before { opacity:1; }
+.wa-btn:hover { border-color:rgba(37,211,102,0.5); }
+
+.wa-btn-icon {
+  width:42px; height:42px; border-radius:50%; flex-shrink:0;
+  background: rgba(37,211,102,0.12);
+  border:1px solid rgba(37,211,102,0.3);
+  display:flex; align-items:center; justify-content:center;
+}
+.wa-btn-icon svg { width:20px; height:20px; }
+
+.wa-btn-body { text-align:left; }
+.wa-btn-label {
+  font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase;
+  color: var(--wa-green); margin-bottom:0.25rem;
+}
+.wa-btn-text {
+  font-family:'Cormorant',serif;
+  font-size:1.2rem; font-weight:400; color:var(--cream);
+}
+
+.wa-note {
+  font-size:0.7rem; color:var(--muted2); margin-top:0.6rem;
+  padding-top:0.8rem; border-top:1px solid var(--line);
+}
+
+/* ── FOOTER ── */
+footer {
+  background:var(--night);
+  border-top:1px solid var(--line);
+  padding:1.8rem 5vw;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.ft-logo { height:24px; width:auto; opacity:0.5; }
+.ft-copy { font-size:0.62rem; letter-spacing:0.12em; color:var(--muted2); }
+.ft-links { display:flex; gap:2rem; }
+.ft-links a { font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted2); text-decoration:none; }
+.ft-links a:hover { color:var(--gold); }
+
+/* ── REVEAL ── */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity 0.8s ease, transform 0.8s ease; }
+.reveal.in { opacity:1; transform:translateY(0); }
+
+/* ── MODALES ── */
+.hf-modal { display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; padding:1.5rem; }
+.hf-modal.open { display:flex; }
+.hf-modal-overlay { position:absolute; inset:0; background:rgba(5,8,16,0.88); backdrop-filter:blur(6px); cursor:pointer; }
+.hf-modal-box { position:relative; z-index:1; background:#080d1a; border:1px solid rgba(200,168,75,0.2); max-width:580px; width:100%; max-height:88vh; display:flex; flex-direction:column; animation:modalIn 0.3s ease both; }
+@keyframes modalIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.hf-modal-close { position:absolute; top:1rem; right:1rem; width:32px; height:32px; background:none; border:1px solid rgba(200,168,75,0.2); color:#6a7a9a; cursor:pointer; font-size:1rem; transition:all 0.2s; }
+.hf-modal-close:hover { color:#c8a84b; border-color:rgba(200,168,75,0.5); }
+.hf-modal-tag { font-size:0.58rem; letter-spacing:0.28em; text-transform:uppercase; color:#c8a84b; padding:2rem 2.5rem 0; margin:0; }
+.hf-modal-title { font-family:'Cormorant',serif; font-size:2rem; font-weight:300; color:#e8eaf5; padding:0.4rem 2.5rem 0; margin:0; }
+.hf-modal-divider { height:1px; background:linear-gradient(to right,rgba(200,168,75,0.3),transparent); margin:1.2rem 2.5rem; flex-shrink:0; }
+.hf-modal-body { padding:0 2.5rem 2.5rem; overflow-y:auto; }
+.hf-modal-body h3 { font-family:'Cormorant',serif; font-size:1.05rem; color:#e8c870; margin:1.4rem 0 0.4rem; }
+.hf-modal-body h3:first-child { margin-top:0; }
+.hf-modal-body p { font-size:0.82rem; line-height:1.85; color:#7a8aaa; margin:0; }
+.hf-modal-body a { color:#e8c870; }
+@media(max-width:600px) { .hf-modal-tag,.hf-modal-title { padding-left:1.5rem; } .hf-modal-body { padding:0 1.5rem 2rem; } .hf-modal-divider { margin-left:1.5rem; margin-right:1.5rem; } }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav { padding:1.2rem 4vw; }
+  .nav-links { display:none; }
+  #intro, #modalites, #contact { grid-template-columns:1fr; gap:3rem; }
+  #intro { padding:5rem 5vw; }
+  .seances-grid, .tarifs-grid, .dept-cards { grid-template-columns:1fr; }
+  .temoignages-grid { grid-template-columns:1fr; }
+  .temoignage-cta-wrap { flex-direction:column; align-items:flex-start; gap:1.2rem; }
+  .form-row { grid-template-columns:1fr; }
+  .zones-inner { grid-template-columns:1fr; gap:3rem; }
+  #duree { padding:4rem 5vw; }
+  footer { flex-direction:column; gap:0.8rem; padding:1.5rem 4vw; }
+  .hero-calli { width:92vw; }
+  .temoignages-header { flex-direction:column; align-items:flex-start; }
+  .lang-switcher { margin-right:0.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#">
+    <svg class="nav-logo-svg" viewBox="0 0 200 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Harmony Flux">
+      <defs>
+        <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#c8a84b"/>
+          <stop offset="100%" stop-color="#e8c870"/>
+        </linearGradient>
+      </defs>
+      <path d="M4 18 C6 14 8 13 10 14 C8 15 7 17 8 19 C9 21 11 20 10 18" stroke="#c8a84b" stroke-width="0.8" fill="none" opacity="0.6"/>
+      <text x="16" y="24" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="400" letter-spacing="3" fill="url(#navGrad)">HARMONY</text>
+      <path d="M107 18 L110 15 L113 18 L110 21 Z" fill="#c8a84b" opacity="0.5"/>
+      <text x="118" y="24" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="400" letter-spacing="3" fill="#e8c870">FLUX</text>
+      <path d="M168 14 C170 13 172 14 172 16 C172 18 170 19 169 18 C170 17 171 15 169 14" stroke="#e8c870" stroke-width="0.8" fill="none" opacity="0.5"/>
+    </svg>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#intro" data-i18n="nav_about">À propos</a></li>
+    <li><a href="#seances" data-i18n="nav_soins">Soins</a></li>
+    <li><a href="#zones" data-i18n="nav_zones">Zones</a></li>
+    <li><a href="#tarifs" data-i18n="nav_tarifs">Tarifs</a></li>
+    <li><a href="#temoignages" data-i18n="nav_avis">Avis</a></li>
+  </ul>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+    <span class="lang-sep">·</span>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <span class="lang-sep">·</span>
+    <button class="lang-btn" onclick="setLang('pt')">PT</button>
+  </div>
+  <a href="tel:0788301574" class="nav-tel">07.88.30.15.74</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="bg-ring"></div>
+  <div class="bg-ring"></div>
+  <div class="bg-ring"></div>
+  <div class="bg-ring"></div>
+
+  <div id="starfield">
+    <div class="shooting-star" style="top:15%;left:20%;--s-dur:8s;--s-delay:2s;"></div>
+    <div class="shooting-star" style="top:35%;left:55%;--s-dur:11s;--s-delay:6s;"></div>
+    <div class="shooting-star" style="top:8%;left:70%;--s-dur:9s;--s-delay:0s;"></div>
+    <div class="mag-aura" style="width:600px;height:600px;top:50%;left:50%;margin:-300px 0 0 -300px;animation-delay:0s;"></div>
+    <div class="mag-aura" style="width:900px;height:900px;top:50%;left:50%;margin:-450px 0 0 -450px;animation-delay:3s;"></div>
+  </div>
+
+  <div class="hero-center">
+    <svg class="hero-calli" viewBox="0 0 560 110" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Harmony Flux">
+      <defs>
+        <linearGradient id="heroGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#a07828"/>
+          <stop offset="50%" stop-color="#e8c870"/>
+          <stop offset="100%" stop-color="#c8a84b"/>
+        </linearGradient>
+        <linearGradient id="heroGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#c8a84b"/>
+          <stop offset="100%" stop-color="#f5e4aa"/>
+        </linearGradient>
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <line x1="60" y1="18" x2="220" y2="18" stroke="#c8a84b" stroke-width="0.4" opacity="0.35"/>
+      <line x1="340" y1="18" x2="500" y2="18" stroke="#e8c870" stroke-width="0.4" opacity="0.35"/>
+      <path d="M52 18 L56 14 L60 18 L56 22 Z" fill="#c8a84b" opacity="0.4"/>
+      <path d="M500 18 L504 14 L508 18 L504 22 Z" fill="#e8c870" opacity="0.4"/>
+      <text x="280" y="72" text-anchor="middle" font-family="Georgia, 'Palatino Linotype', Palatino, serif" font-size="52" font-weight="400" letter-spacing="14" fill="#c8a84b" filter="url(#softGlow)">HARMONY</text>
+      <g transform="translate(280, 82)">
+        <line x1="-42" y1="0" x2="-18" y2="0" stroke="#c8a84b" stroke-width="0.6" opacity="0.5"/>
+        <circle cx="-10" cy="0" r="1.2" fill="#c8a84b" opacity="0.6"/>
+        <circle cx="0" cy="0" r="2" fill="#c8a84b" opacity="0.8"/>
+        <circle cx="10" cy="0" r="1.2" fill="#c8a84b" opacity="0.6"/>
+        <line x1="18" y1="0" x2="42" y2="0" stroke="#c8a84b" stroke-width="0.6" opacity="0.5"/>
+      </g>
+      <text x="280" y="106" text-anchor="middle" font-family="Georgia, 'Palatino Linotype', Palatino, serif" font-size="28" font-weight="400" letter-spacing="22" fill="#e8c870">FLUX</text>
+      <line x1="100" y1="110" x2="460" y2="110" stroke="#c8a84b" stroke-width="0.3" opacity="0.2"/>
+    </svg>
+
+    <div class="hero-line"></div>
+    <p class="hero-sub" data-i18n="hero_sub">Magnétisme &amp; Soins Énergétiques</p>
+    <p class="hero-desc" data-i18n="hero_desc">Séances courtes · efficaces · sur mesure</p>
+    <div class="hero-badges">
+      <span class="badge accent" data-i18n="badge_min">10 à 15 minutes</span>
+      <span class="badge" data-i18n="badge_home">À domicile</span>
+      <span class="badge" data-i18n="badge_remote">À distance</span>
+      <span class="badge" data-i18n="badge_radius">20 min autour de St-Saturnin-lès-Avignon</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll" data-i18n="hero_scroll">Découvrir</div>
+</section>
+
+<!-- INTRO -->
+<section id="intro" class="section-wrap">
+  <div class="intro-visual reveal" style="position:relative;">
+    <div class="intro-circle"></div>
+    <div class="intro-circle"></div>
+    <svg class="intro-magnet-svg" width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="160" cy="160" r="140" stroke="#c8a84b" stroke-width="0.6" stroke-dasharray="4 8"/>
+      <circle cx="160" cy="160" r="100" stroke="#6080ff" stroke-width="0.5" stroke-dasharray="2 6"/>
+      <circle cx="160" cy="160" r="60" stroke="#c8a84b" stroke-width="0.5" stroke-dasharray="3 5"/>
+      <line x1="160" y1="20" x2="160" y2="300" stroke="#6080ff" stroke-width="0.4" opacity="0.5"/>
+      <line x1="20" y1="160" x2="300" y2="160" stroke="#6080ff" stroke-width="0.4" opacity="0.5"/>
+      <line x1="60" y1="60" x2="260" y2="260" stroke="#c8a84b" stroke-width="0.3" opacity="0.4"/>
+      <line x1="260" y1="60" x2="60" y2="260" stroke="#c8a84b" stroke-width="0.3" opacity="0.4"/>
+      <circle cx="160" cy="160" r="4" fill="#c8a84b" opacity="0.7"/>
+      <circle cx="160" cy="60" r="2.5" fill="#6080ff" opacity="0.6"/>
+      <circle cx="160" cy="260" r="2.5" fill="#6080ff" opacity="0.6"/>
+      <circle cx="60" cy="160" r="2.5" fill="#6080ff" opacity="0.6"/>
+      <circle cx="260" cy="160" r="2.5" fill="#6080ff" opacity="0.6"/>
+    </svg>
+    <div class="intro-glyph">✦</div>
+  </div>
+  <div class="reveal">
+    <p class="intro-tag" data-i18n="about_tag">À propos</p>
+    <h2 class="intro-title" data-i18n="about_title">Une pratique<br>ancrée dans <em>l'essentiel</em></h2>
+    <p class="intro-text" data-i18n="about_text1">Le magnétisme agit sur les flux énergétiques qui traversent le corps. En quelques minutes seulement, un soin ciblé peut rétablir l'équilibre, soulager la douleur ou apaiser les tensions accumulées.</p>
+    <p class="intro-text" data-i18n="about_text2">Mes séances, volontairement courtes et intenses, sont pensées pour s'intégrer dans votre quotidien — sans vous demander du temps que vous n'avez pas.</p>
+    <div class="stat-row">
+      <div><div class="stat-n">10'</div><div class="stat-l" data-i18n="stat_min">Durée minimale</div></div>
+      <div><div class="stat-n">15'</div><div class="stat-l" data-i18n="stat_max">Durée maximale</div></div>
+      <div><div class="stat-n">~20'</div><div class="stat-l" data-i18n="stat_radius">Rayon domicile</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- IMAGE À PROPOS -->
+<section style="background:var(--forest);padding:0;position:relative;z-index:10;overflow:hidden;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;min-height:500px;">
+    <div style="position:relative;overflow:hidden;">
+      <img src="about.jpg" alt="Séance de magnétisme"
+        style="width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(0.88) saturate(1.1);"
+      />
+      <div style="position:absolute;inset:0;background:linear-gradient(to right, transparent 60%, var(--forest));"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;padding:5rem 4rem;">
+      <p class="intro-tag" data-i18n="img_tag" style="margin-bottom:1.4rem;">Soin &amp; Énergie</p>
+      <h2 class="intro-title" data-i18n="img_title">Ressentir<br>pour <em>guérir</em></h2>
+      <p class="intro-text" data-i18n="img_text">Le magnétiseur canalise et redistribue les énergies vitales avec les mains, sans contact ou à distance. Une approche douce, rapide et profonde pour retrouver votre équilibre intérieur.</p>
+      <a href="#" onclick="openModal('modal-reservation'); return false;"
+        style="display:inline-block;margin-top:1.8rem;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;padding:0.9rem 1.8rem;border:1px solid var(--line);color:var(--gold2);text-decoration:none;transition:all 0.3s;align-self:flex-start;"
+        onmouseover="this.style.background='var(--gold)';this.style.color='var(--night)';this.style.borderColor='var(--gold)';"
+        onmouseout="this.style.background='';this.style.color='var(--gold2)';this.style.borderColor='var(--line)';"
+        data-i18n="img_cta">Réserver une séance →</a>
+    </div>
+  </div>
+</section>
+
+<!-- DURÉE HIGHLIGHT -->
+<section id="duree" class="section-wrap">
+  <p class="duree-label" data-i18n="duree_label">Durée d'une séance</p>
+  <div class="duree-big">10 <span>à</span> 15<span style="font-size:0.5em;opacity:0.6">min</span></div>
+  <p class="duree-note" data-i18n="duree_note">Des soins brefs, profonds et efficaces — sans rendez-vous long</p>
+</section>
+
+<!-- SÉANCES -->
+<section id="seances" class="section-wrap">
+  <div class="seances-header reveal">
+    <p class="intro-tag" data-i18n="soins_tag">Soins proposés</p>
+    <h2 class="intro-title" data-i18n="soins_title">Ce que je <em>vous offre</em></h2>
+  </div>
+  <div class="seances-grid">
+    <div class="seance-card reveal">
+      <div class="seance-num">01</div>
+      <h3 class="seance-title" data-i18n="s1_title">Soin Magnétique Global</h3>
+      <p class="seance-text" data-i18n="s1_text">Rééquilibrage des flux vitaux sur l'ensemble du corps. En 10 à 15 minutes, une reconnexion profonde à votre énergie naturelle.</p>
+      <span class="seance-pill" data-i18n="s1_pill">Présentiel · Distance</span>
+    </div>
+    <div class="seance-card reveal">
+      <div class="seance-num">02</div>
+      <h3 class="seance-title" data-i18n="s2_title">Soulagement des Douleurs</h3>
+      <p class="seance-text" data-i18n="s2_text">Intervention ciblée sur les zones douloureuses : articulations, migraines, tensions. Action rapide, résultats ressentis dès la première séance.</p>
+      <span class="seance-pill" data-i18n="s2_pill">Présentiel</span>
+    </div>
+    <div class="seance-card reveal">
+      <div class="seance-num">03</div>
+      <h3 class="seance-title" data-i18n="s3_title">Stress &amp; Anxiété</h3>
+      <p class="seance-text" data-i18n="s3_text">Apaisement du système nerveux énergétique. Quelques minutes suffisent pour retrouver calme, clarté et ancrage dans le présent.</p>
+      <span class="seance-pill" data-i18n="s3_pill">Présentiel · Distance</span>
+    </div>
+    <div class="seance-card reveal">
+      <div class="seance-num">04</div>
+      <h3 class="seance-title" data-i18n="s4_title">Blocages Émotionnels</h3>
+      <p class="seance-text" data-i18n="s4_text">Libération des tensions émotionnelles profondes. Idéal lors de transitions, deuils ou périodes d'instabilité intérieure.</p>
+      <span class="seance-pill" data-i18n="s4_pill">Présentiel · Distance</span>
+    </div>
+    <div class="seance-card reveal">
+      <div class="seance-num">05</div>
+      <h3 class="seance-title" data-i18n="s5_title">Soin Enfant</h3>
+      <p class="seance-text" data-i18n="s5_text">Approche douce pour les plus jeunes : sommeil, concentration, anxiété scolaire. Séance adaptée à leur sensibilité particulière.</p>
+      <span class="seance-pill" data-i18n="s5_pill">Présentiel · Domicile</span>
+    </div>
+    <div class="seance-card reveal">
+      <div class="seance-num">06</div>
+      <h3 class="seance-title" data-i18n="s6_title">Suivi Personnalisé</h3>
+      <p class="seance-text" data-i18n="s6_text">Plusieurs séances rapprochées pour un travail en profondeur. Le format court se prête à un suivi régulier, intégré au quotidien.</p>
+      <span class="seance-pill" data-i18n="s6_pill">Sur mesure</span>
+    </div>
+  </div>
+</section>
+
+<!-- MODALITÉS -->
+<section id="modalites" class="section-wrap">
+  <div class="mod reveal">
+    <div class="mod-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 12 L13 3 L23 12" stroke="#c8a84b" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 11 L5 22 L10 22 L10 16 L16 16 L16 22 L21 22 L21 11" stroke="#c8a84b" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="13" cy="13" r="5" stroke="rgba(100,140,255,0.35)" stroke-width="0.6" stroke-dasharray="2 3"/>
+        <circle cx="13" cy="11" r="1" fill="#e8c870" opacity="0.8"/>
+      </svg>
+    </div>
+    <p class="mod-tag" data-i18n="mod1_tag">Modalité 01</p>
+    <h2 class="mod-title" data-i18n="mod1_title">À domicile<br><em>chez vous</em></h2>
+    <p class="mod-text" data-i18n="mod1_text">Je me déplace directement à votre domicile dans les départements 84, 13 et 30. Vous restez dans votre environnement, sans effort de déplacement.</p>
+    <ul class="mod-list">
+      <li data-i18n="mod1_li1">Déplacement inclus dans les 3 dpts</li>
+      <li data-i18n="mod1_li2">Séance de 10 à 15 minutes</li>
+      <li data-i18n="mod1_li3">Aucun matériel à prévoir</li>
+      <li data-i18n="mod1_li4">Horaires flexibles</li>
+    </ul>
+  </div>
+  <div class="mod reveal">
+    <div class="mod-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="13" cy="13" r="3" stroke="#c8a84b" stroke-width="1.3"/>
+        <circle cx="13" cy="13" r="6.5" stroke="#c8a84b" stroke-width="0.8" opacity="0.55"/>
+        <circle cx="13" cy="13" r="10" stroke="rgba(100,140,255,0.4)" stroke-width="0.6" opacity="0.7"/>
+        <circle cx="13" cy="13" r="1.5" fill="#e8c870"/>
+        <line x1="13" y1="1" x2="13" y2="3.5" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+        <line x1="13" y1="22.5" x2="13" y2="25" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+        <line x1="1" y1="13" x2="3.5" y2="13" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+        <line x1="22.5" y1="13" x2="25" y2="13" stroke="#c8a84b" stroke-width="0.8" opacity="0.5"/>
+      </svg>
+    </div>
+    <p class="mod-tag" data-i18n="mod2_tag">Modalité 02</p>
+    <h2 class="mod-title" data-i18n="mod2_title">À distance<br><em>depuis chez vous</em></h2>
+    <p class="mod-text" data-i18n="mod2_text">Le magnétisme à distance est aussi efficace qu'en présence physique. Depuis n'importe où en France, recevez un soin complet par téléphone ou visio.</p>
+    <ul class="mod-list">
+      <li data-i18n="mod2_li1">Par téléphone ou visioconférence</li>
+      <li data-i18n="mod2_li2">Partout en France</li>
+      <li data-i18n="mod2_li3">10 à 15 minutes chrono</li>
+      <li data-i18n="mod2_li4">Idéal pour mobilité réduite</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ZONES -->
+<section id="zones" class="section-wrap">
+  <div class="zones-inner">
+    <div class="zones-title-block reveal">
+      <p class="intro-tag" data-i18n="zones_tag">Zone de déplacement</p>
+      <h2 class="intro-title" data-i18n="zones_title">Je viens<br>jusqu'à <em>vous</em></h2>
+      <p class="intro-text" data-i18n="zones_desc" style="margin-top:1rem;">Basé à <strong style="color:var(--gold2);font-weight:400;">Saint-Saturnin-lès-Avignon (84450)</strong>, je me déplace à domicile dans un rayon de <strong style="color:var(--gold2);font-weight:400;">20 minutes</strong> autour de chez moi. Pour tout le reste, la séance à distance est tout aussi efficace.</p>
+    </div>
+    <div>
+      <div class="dept-cards">
+        <div class="dept reveal">
+          <div class="dept-n" style="font-size:2.2rem;line-height:1.2;color:rgba(200,168,75,0.25);">84</div>
+          <p class="dept-code" data-i18n="dept1_code">Vaucluse — Grand Avignon</p>
+          <h3 class="dept-name" data-i18n="dept1_name">Avignon &amp; Sorgues</h3>
+          <p class="dept-cities">Avignon · Le Pontet · Vedène · Morières-lès-Avignon · Jonquerettes · Châteauneuf-de-Gadagne · Entraigues-sur-la-Sorgue · Sorgues · Rognonas · Barbentane</p>
+        </div>
+        <div class="dept reveal">
+          <div class="dept-n" style="font-size:2.2rem;line-height:1.2;color:rgba(200,168,75,0.25);">84</div>
+          <p class="dept-code" data-i18n="dept2_code">Vaucluse — Pays des Sorgues</p>
+          <h3 class="dept-name" data-i18n="dept2_name">Sorgues &amp; Luberon</h3>
+          <p class="dept-cities">Le Thor · L'Isle-sur-la-Sorgue · Pernes-les-Fontaines · Velleron · Althen-des-Paluds · Caumont-sur-Durance</p>
+        </div>
+        <div class="dept reveal">
+          <div class="dept-n" style="font-size:2.2rem;line-height:1.2;color:rgba(200,168,75,0.25);">30&amp;13</div>
+          <p class="dept-code" data-i18n="dept3_code">Gard &amp; Bouches-du-Rhône</p>
+          <h3 class="dept-name" data-i18n="dept3_name">Villeneuve &amp; alentours</h3>
+          <p class="dept-cities">Villeneuve-lès-Avignon · Les Angles · Rochefort-du-Gard · Cabannes · Saint-Andiol</p>
+        </div>
+        <div class="distance-card reveal">
+          <span class="dist-ico">◎</span>
+          <p class="dist-text" data-i18n="dist_text"><strong data-i18n="dist_strong">Hors zone ou toute la France — séance à distance.</strong> Au-delà de 20 minutes de Saint-Saturnin-lès-Avignon, je vous reçois par téléphone ou visio pour un soin complet de 10 à 15 minutes, aussi efficace qu'en présentiel.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs" class="section-wrap">
+  <div class="reveal" style="max-width:500px">
+    <p class="intro-tag" data-i18n="tarifs_tag">Tarifs</p>
+    <h2 class="intro-title" data-i18n="tarifs_title">Simple &amp; <em>transparent</em></h2>
+  </div>
+  <div class="tarifs-grid">
+    <div class="tarif reveal">
+      <p class="tarif-lbl" data-i18n="t1_lbl">Séance à distance</p>
+      <div class="tarif-p">35€</div>
+      <p class="tarif-u" data-i18n="t1_u">10 à 15 min · visio ou tél</p>
+      <div class="tarif-sep"></div>
+      <ul class="tarif-feats">
+        <li data-i18n="t1_f1">Toute la France</li>
+        <li data-i18n="t1_f2">Bilan énergétique inclus</li>
+        <li data-i18n="t1_f3">Retour après séance</li>
+      </ul>
+      <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
+    </div>
+    <div class="tarif reveal">
+      <p class="tarif-lbl" data-i18n="t2_lbl">Séance à domicile</p>
+      <div class="tarif-p">50€</div>
+      <p class="tarif-u" data-i18n="t2_u">10 à 15 min · rayon 20 min de St-Saturnin</p>
+      <div class="tarif-sep"></div>
+      <ul class="tarif-feats">
+        <li data-i18n="t2_f1">Déplacement inclus</li>
+        <li data-i18n="t2_f2">Soin à votre domicile</li>
+        <li data-i18n="t2_f3">Bilan &amp; conseils</li>
+      </ul>
+      <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
+    </div>
+    <div class="tarif reveal">
+      <p class="tarif-lbl" data-i18n="t3_lbl">Forfait 5 séances</p>
+      <div class="tarif-p">180€</div>
+      <p class="tarif-u" data-i18n="t3_u">soit 36€/séance · −10%</p>
+      <div class="tarif-sep"></div>
+      <ul class="tarif-feats">
+        <li data-i18n="t3_f1">Présentiel ou distance</li>
+        <li data-i18n="t3_f2">Suivi personnalisé</li>
+        <li data-i18n="t3_f3">Valable 3 mois</li>
+      </ul>
+      <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     TÉMOIGNAGES
+═══════════════════════════════════════════ -->
+<section id="temoignages" class="section-wrap">
+  <div class="temoignages-header reveal">
+    <div>
+      <p class="intro-tag" data-i18n="avis_tag">Témoignages</p>
+      <h2 class="intro-title" data-i18n="avis_title">Ils ont <em>ressenti</em></h2>
+    </div>
+    <!-- Moyenne globale -->
+    <div id="temoignages-moyenne" style="text-align:right;">
+      <div class="stars" id="moyenne-stars" style="justify-content:flex-end; margin-bottom:0.3rem;"></div>
+      <p id="moyenne-label" style="font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted2);"></p>
+    </div>
+  </div>
+
+  <!-- Grille des témoignages -->
+  <div class="temoignages-grid" id="temoignages-liste">
+    <!-- Rempli par JS -->
+  </div>
+
+  <!-- Appel à l'action pour laisser un avis -->
+  <div class="temoignage-cta-wrap reveal">
+    <span class="temoignage-cta-ico">✦</span>
+    <div class="temoignage-cta-body">
+      <h3 class="temoignage-cta-title" data-i18n="avis_cta_title">Votre expérience <em>compte</em></h3>
+      <p class="temoignage-cta-sub" data-i18n="avis_cta_sub">Vous avez bénéficié d'une séance ? Partagez votre ressenti — chaque témoignage aide d'autres personnes à franchir le pas.</p>
+    </div>
+    <button type="button" class="temoignage-cta-btn" onclick="openModal('modal-avis')" data-i18n="avis_cta_btn">Laisser un avis</button>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section-wrap">
+  <div class="contact-left reveal">
+    <p class="intro-tag" data-i18n="contact_tag">Contact</p>
+    <h2 class="intro-title" data-i18n="contact_title">Prenez <em>rendez-vous</em></h2>
+    <p class="intro-text" data-i18n="contact_sub" style="margin-top:1rem;">Disponible du lundi au samedi, de 9h à 19h. Réponse rapide garantie.</p>
+    <ul class="c-details">
+      <li><span class="ico">☎</span><a href="tel:0788301574">07.88.30.15.74</a></li>
+      <li><span class="ico">✉</span><span>harmonyflux84@gmail.com</span></li>
+      <li><span class="ico">◉</span><span data-i18n="contact_addr">Rayon 20 min autour de Saint-Saturnin-lès-Avignon (84450)<br>Avignon · Le Pontet · Vedène · Le Thor · L'Isle-sur-la-Sorgue…<br>+ distance : toute la France</span></li>
+      <li><span class="ico">◷</span><span data-i18n="contact_hours">Lundi – Samedi · 9h–19h</span></li>
+    </ul>
+  </div>
+
+  <div class="contact-wa reveal">
+    <p class="intro-tag" data-i18n="wa_tag">WhatsApp</p>
+    <h3 class="contact-wa-title" data-i18n="wa_title">Contactez-moi<br><em>directement</em></h3>
+    <p class="contact-wa-sub" data-i18n="wa_sub">La façon la plus rapide de me joindre. Je réponds généralement en quelques minutes, du lundi au samedi de 9h à 19h.</p>
+
+    <a id="wa-msg-btn" href="https://wa.me/33788301574?text=Bonjour%2C%20je%20souhaite%20prendre%20rendez-vous%20pour%20une%20s%C3%A9ance%20de%20magn%C3%A9tisme." target="_blank" rel="noopener noreferrer" class="wa-btn">
+      <span class="wa-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.21-1.25-6.22-3.48-8.52zM12 22c-1.85 0-3.65-.5-5.22-1.44l-.37-.22-3.87 1.01 1.04-3.77-.24-.39A9.94 9.94 0 0 1 2 12C2 6.48 6.48 2 12 2c2.67 0 5.18 1.04 7.07 2.93A9.94 9.94 0 0 1 22 12c0 5.52-4.48 10-10 10zm5.47-7.4c-.3-.15-1.77-.87-2.04-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.51-.17 0-.37-.02-.57-.02s-.52.07-.8.37c-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z" fill="#25D366"/>
+        </svg>
+      </span>
+      <span class="wa-btn-body">
+        <span class="wa-btn-label" data-i18n="wa_tag">WhatsApp</span>
+        <span class="wa-btn-text" data-i18n="wa_msg">Envoyer un message</span>
+      </span>
+    </a>
+
+    <a id="wa-call-btn" href="https://wa.me/33788301574" target="_blank" rel="noopener noreferrer" class="wa-btn">
+      <span class="wa-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z" fill="#25D366"/>
+        </svg>
+      </span>
+      <span class="wa-btn-body">
+        <span class="wa-btn-label" data-i18n="wa_tag">WhatsApp</span>
+        <span class="wa-btn-text" data-i18n="wa_call">Appeler via WhatsApp</span>
+      </span>
+    </a>
+
+    <p class="wa-note"><span data-i18n="wa_note_pre">Ou réservez directement en ligne via</span> <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' style="background:none;border:none;color:var(--gold2);font-size:0.7rem;cursor:pointer;padding:0;font-family:inherit;" data-i18n="wa_cal_btn">le calendrier de réservation →</button></p>
+  </div>
+</section>
+
+<footer>
+  <svg class="ft-logo" viewBox="0 0 180 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Harmony Flux">
+    <defs>
+      <linearGradient id="ftGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#c8a84b"/>
+        <stop offset="100%" stop-color="#e8c870"/>
+      </linearGradient>
+    </defs>
+    <text x="90" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" font-weight="400" letter-spacing="4" fill="url(#ftGrad)" opacity="0.5">HARMONY · FLUX</text>
+  </svg>
+  <span class="ft-copy" data-i18n="footer_copy">© 2025 Harmony Flux — Magnétisme</span>
+  <div class="ft-links">
+    <a href="#" data-i18n="footer_legal" onclick="openModal('modal-mentions'); return false;">Mentions légales</a>
+    <a href="#" data-i18n="footer_privacy" onclick="openModal('modal-confidentialite'); return false;">Confidentialité</a>
+  </div>
+</footer>
+
+<!-- ═══ MODALE : LAISSER UN AVIS ═══ -->
+<div id="modal-avis" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-avis')"></div>
+  <div class="hf-modal-box" style="max-width:620px;">
+    <button class="hf-modal-close" onclick="closeModal('modal-avis')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title" data-i18n="avis_modal_title">Laisser un témoignage</h2>
+    <div class="hf-modal-divider"></div>
+    <div class="hf-modal-body">
+
+      <!-- Formulaire -->
+      <div id="avis-form-wrap">
+        <div class="avis-form">
+
+          <!-- Étoiles interactives -->
+          <div class="star-picker">
+            <span class="star-picker-label" data-i18n="avis_note">Votre note</span>
+            <div class="star-picker-stars" id="star-picker" role="group" aria-label="Note de 1 à 5 étoiles">
+              <span data-val="1" role="button" tabindex="0" aria-label="1 étoile">★</span>
+              <span data-val="2" role="button" tabindex="0" aria-label="2 étoiles">★</span>
+              <span data-val="3" role="button" tabindex="0" aria-label="3 étoiles">★</span>
+              <span data-val="4" role="button" tabindex="0" aria-label="4 étoiles">★</span>
+              <span data-val="5" role="button" tabindex="0" aria-label="5 étoiles">★</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="avis-prenom" data-i18n="avis_prenom">Prénom *</label>
+              <input type="text" id="avis-prenom" placeholder="Marie" required maxlength="40"/>
+            </div>
+            <div class="form-field">
+              <label for="avis-ville" data-i18n="avis_ville">Ville</label>
+              <input type="text" id="avis-ville" placeholder="Avignon" maxlength="40"/>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="avis-soin" data-i18n="avis_soin">Type de soin reçu</label>
+            <select id="avis-soin">
+              <option value="" data-i18n="avis_soin_opt0">— Choisir —</option>
+              <option value="global" data-i18n="avis_soin_opt1">Soin Magnétique Global</option>
+              <option value="douleur" data-i18n="avis_soin_opt2">Soulagement des Douleurs</option>
+              <option value="stress" data-i18n="avis_soin_opt3">Stress &amp; Anxiété</option>
+              <option value="blocage" data-i18n="avis_soin_opt4">Blocages Émotionnels</option>
+              <option value="enfant" data-i18n="avis_soin_opt5">Soin Enfant</option>
+              <option value="suivi" data-i18n="avis_soin_opt6">Suivi Personnalisé</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="avis-modalite" data-i18n="avis_modalite">Modalité</label>
+            <select id="avis-modalite">
+              <option value="" data-i18n="avis_mod_opt0">— Choisir —</option>
+              <option value="presentiel" data-i18n="avis_mod_opt1">À domicile (présentiel)</option>
+              <option value="distance" data-i18n="avis_mod_opt2">À distance (visio / tél)</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="avis-texte" data-i18n="avis_texte_label">Votre témoignage *</label>
+            <textarea id="avis-texte" placeholder="Décrivez votre expérience en quelques mots…" required maxlength="400"></textarea>
+            <span id="avis-char-count" style="font-size:0.58rem;color:var(--muted2);text-align:right;margin-top:0.25rem;">0 / 400</span>
+          </div>
+
+          <p id="avis-error" style="font-size:0.75rem;color:#e87070;display:none;"></p>
+
+          <button type="button" class="form-submit" id="avis-submit" data-i18n="avis_submit">Publier mon témoignage →</button>
+          <p style="font-size:0.62rem;color:var(--muted2);line-height:1.6;" data-i18n="avis_note_rgpd">Votre prénom et ville seront visibles publiquement. Aucune donnée sensible n'est collectée.</p>
+        </div>
+      </div>
+
+      <!-- Message de succès -->
+      <div id="avis-success" class="form-success">
+        <div class="form-success-ico">✦</div>
+        <h3 class="form-success-title" data-i18n="avis_merci_title">Merci pour votre témoignage</h3>
+        <p class="form-success-sub" data-i18n="avis_merci_sub">Il a bien été publié et apparaît désormais dans la section Témoignages.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALE : MENTIONS LÉGALES ═══ -->
+<div id="modal-mentions" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-mentions')"></div>
+  <div class="hf-modal-box">
+    <button class="hf-modal-close" onclick="closeModal('modal-mentions')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title">Mentions légales</h2>
+    <div class="hf-modal-divider"></div>
+    <div class="hf-modal-body">
+      <h3>Éditeur du site</h3>
+      <p>Tony Ferreira — Magnétiseur indépendant<br>Saint-Saturnin-lès-Avignon, 84450<br>Tél. : <a href="tel:0788301574">07.88.30.15.74</a></p>
+      <h3>Hébergement</h3>
+      <p>GitHub Pages — GitHub, Inc., San Francisco, USA</p>
+      <h3>Activité</h3>
+      <p>Les soins proposés ne constituent pas un acte médical et ne remplacent pas un avis médical.</p>
+      <h3>Propriété intellectuelle</h3>
+      <p>Tout le contenu du site est la propriété exclusive de Harmony Flux. Toute reproduction sans autorisation est interdite.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALE : CONFIDENTIALITÉ ═══ -->
+<div id="modal-confidentialite" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-confidentialite')"></div>
+  <div class="hf-modal-box">
+    <button class="hf-modal-close" onclick="closeModal('modal-confidentialite')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title">Confidentialité</h2>
+    <div class="hf-modal-divider"></div>
+    <div class="hf-modal-body">
+      <h3>Données collectées</h3>
+      <p>Coordonnées fournies volontairement lors d'une prise de contact ou réservation.</p>
+      <h3>Utilisation</h3>
+      <p>Vos données servent uniquement à répondre à vos demandes et gérer vos réservations. Elles ne sont jamais vendues ni transmises à des tiers.</p>
+      <h3>Vos droits (RGPD)</h3>
+      <p>Vous disposez d'un droit d'accès, de rectification et de suppression. Contactez-nous par téléphone ou WhatsApp.</p>
+      <h3>Cookies</h3>
+      <p>Aucun cookie publicitaire ou de traçage tiers n'est utilisé.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALE : RÉSERVATION ═══ -->
+<div id="modal-reservation" class="hf-modal">
+  <div class="hf-modal-overlay" onclick="closeModal('modal-reservation')"></div>
+  <div class="hf-modal-box" style="max-width:720px;">
+    <button class="hf-modal-close" onclick="closeModal('modal-reservation')">✕</button>
+    <p class="hf-modal-tag">Harmony Flux</p>
+    <h2 class="hf-modal-title">Réserver une séance</h2>
+    <div class="hf-modal-divider"></div>
+    <div style="padding:0 2.5rem 2.5rem;">
+      <iframe src="https://cal.eu/ferreira-tony-niw1yi/secret"
+        style="width:100%;height:520px;border:none;border-radius:2px;"
+        loading="lazy">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+
+<!-- Traductions (inclut les nouvelles clés) -->
+<script>
+const translations = {
+  fr: {
+    nav_about:'À propos', nav_soins:'Soins', nav_zones:'Zones', nav_tarifs:'Tarifs', nav_avis:'Avis',
+    hero_sub:'Magnétisme &amp; Soins Énergétiques',
+    hero_desc:'Séances courtes · efficaces · sur mesure',
+    badge_min:'10 à 15 minutes', badge_home:'À domicile', badge_remote:'À distance',
+    badge_radius:'20 min autour de St-Saturnin-lès-Avignon',
+    hero_scroll:'Découvrir',
+    about_tag:'À propos',
+    about_title:'Une pratique<br>ancrée dans <em>l\'essentiel</em>',
+    about_text1:'Le magnétisme agit sur les flux énergétiques qui traversent le corps. En quelques minutes seulement, un soin ciblé peut rétablir l\'équilibre, soulager la douleur ou apaiser les tensions accumulées.',
+    about_text2:'Mes séances, volontairement courtes et intenses, sont pensées pour s\'intégrer dans votre quotidien — sans vous demander du temps que vous n\'avez pas.',
+    stat_min:'Durée minimale', stat_max:'Durée maximale', stat_radius:'Rayon domicile',
+    img_tag:'Soin &amp; Énergie', img_title:'Ressentir<br>pour <em>guérir</em>',
+    img_text:'Le magnétiseur canalise et redistribue les énergies vitales avec les mains, sans contact ou à distance. Une approche douce, rapide et profonde pour retrouver votre équilibre intérieur.',
+    img_cta:'Réserver une séance →',
+    duree_label:'Durée d\'une séance',
+    duree_note:'Des soins brefs, profonds et efficaces — sans rendez-vous long',
+    soins_tag:'Soins proposés', soins_title:'Ce que je <em>vous offre</em>',
+    s1_title:'Soin Magnétique Global', s1_text:'Rééquilibrage des flux vitaux sur l\'ensemble du corps. En 10 à 15 minutes, une reconnexion profonde à votre énergie naturelle.', s1_pill:'Présentiel · Distance',
+    s2_title:'Soulagement des Douleurs', s2_text:'Intervention ciblée sur les zones douloureuses : articulations, migraines, tensions. Action rapide, résultats ressentis dès la première séance.', s2_pill:'Présentiel',
+    s3_title:'Stress &amp; Anxiété', s3_text:'Apaisement du système nerveux énergétique. Quelques minutes suffisent pour retrouver calme, clarté et ancrage dans le présent.', s3_pill:'Présentiel · Distance',
+    s4_title:'Blocages Émotionnels', s4_text:'Libération des tensions émotionnelles profondes. Idéal lors de transitions, deuils ou périodes d\'instabilité intérieure.', s4_pill:'Présentiel · Distance',
+    s5_title:'Soin Enfant', s5_text:'Approche douce pour les plus jeunes : sommeil, concentration, anxiété scolaire. Séance adaptée à leur sensibilité particulière.', s5_pill:'Présentiel · Domicile',
+    s6_title:'Suivi Personnalisé', s6_text:'Plusieurs séances rapprochées pour un travail en profondeur. Le format court se prête à un suivi régulier, intégré au quotidien.', s6_pill:'Sur mesure',
+    mod1_tag:'Modalité 01', mod1_title:'À domicile<br><em>chez vous</em>',
+    mod1_text:'Je me déplace directement à votre domicile dans les départements 84, 13 et 30. Vous restez dans votre environnement, sans effort de déplacement.',
+    mod1_li1:'Déplacement inclus dans les 3 dpts', mod1_li2:'Séance de 10 à 15 minutes', mod1_li3:'Aucun matériel à prévoir', mod1_li4:'Horaires flexibles',
+    mod2_tag:'Modalité 02', mod2_title:'À distance<br><em>depuis chez vous</em>',
+    mod2_text:'Le magnétisme à distance est aussi efficace qu\'en présence physique. Depuis n\'importe où en France, recevez un soin complet par téléphone ou visio.',
+    mod2_li1:'Par téléphone ou visioconférence', mod2_li2:'Partout en France', mod2_li3:'10 à 15 minutes chrono', mod2_li4:'Idéal pour mobilité réduite',
+    zones_tag:'Zone de déplacement', zones_title:'Je viens<br>jusqu\'à <em>vous</em>',
+    zones_desc:'Basé à <strong style="color:var(--gold2);font-weight:400;">Saint-Saturnin-lès-Avignon (84450)</strong>, je me déplace à domicile dans un rayon de <strong style="color:var(--gold2);font-weight:400;">20 minutes</strong> autour de chez moi. Pour tout le reste, la séance à distance est tout aussi efficace.',
+    dept1_code:'Vaucluse — Grand Avignon', dept1_name:'Avignon &amp; Sorgues',
+    dept2_code:'Vaucluse — Pays des Sorgues', dept2_name:'Sorgues &amp; Luberon',
+    dept3_code:'Gard &amp; Bouches-du-Rhône', dept3_name:'Villeneuve &amp; alentours',
+    dist_strong:'Hors zone ou toute la France — séance à distance.',
+    dist_text:'<strong>Hors zone ou toute la France — séance à distance.</strong> Au-delà de 20 minutes de Saint-Saturnin-lès-Avignon, je vous reçois par téléphone ou visio pour un soin complet de 10 à 15 minutes, aussi efficace qu\'en présentiel.',
+    tarifs_tag:'Tarifs', tarifs_title:'Simple &amp; <em>transparent</em>',
+    t1_lbl:'Séance à distance', t1_u:'10 à 15 min · visio ou tél', t1_f1:'Toute la France', t1_f2:'Bilan énergétique inclus', t1_f3:'Retour après séance',
+    t2_lbl:'Séance à domicile', t2_u:'10 à 15 min · rayon 20 min de St-Saturnin', t2_f1:'Déplacement inclus', t2_f2:'Soin à votre domicile', t2_f3:'Bilan &amp; conseils',
+    t3_lbl:'Forfait 5 séances', t3_u:'soit 36€/séance · −10%', t3_f1:'Présentiel ou distance', t3_f2:'Suivi personnalisé', t3_f3:'Valable 3 mois',
+    btn_reserver:'Réserver',
+    // Témoignages
+    avis_tag:'Témoignages', avis_title:'Ils ont <em>ressenti</em>',
+    avis_cta_title:'Votre expérience <em>compte</em>',
+    avis_cta_sub:'Vous avez bénéficié d\'une séance ? Partagez votre ressenti — chaque témoignage aide d\'autres personnes à franchir le pas.',
+    avis_cta_btn:'Laisser un avis',
+    avis_modal_title:'Laisser un témoignage',
+    avis_note:'Votre note', avis_prenom:'Prénom *', avis_ville:'Ville',
+    avis_soin:'Type de soin reçu',
+    avis_soin_opt0:'— Choisir —', avis_soin_opt1:'Soin Magnétique Global', avis_soin_opt2:'Soulagement des Douleurs',
+    avis_soin_opt3:'Stress &amp; Anxiété', avis_soin_opt4:'Blocages Émotionnels', avis_soin_opt5:'Soin Enfant', avis_soin_opt6:'Suivi Personnalisé',
+    avis_modalite:'Modalité',
+    avis_mod_opt0:'— Choisir —', avis_mod_opt1:'À domicile (présentiel)', avis_mod_opt2:'À distance (visio / tél)',
+    avis_texte_label:'Votre témoignage *',
+    avis_submit:'Publier mon témoignage →',
+    avis_note_rgpd:'Votre prénom et ville seront visibles publiquement. Aucune donnée sensible n\'est collectée.',
+    avis_merci_title:'Merci pour votre témoignage',
+    avis_merci_sub:'Il a bien été publié et apparaît désormais dans la section Témoignages.',
+    avis_erreur_note:'Veuillez sélectionner une note.',
+    avis_erreur_prenom:'Veuillez indiquer votre prénom.',
+    avis_erreur_texte:'Veuillez écrire votre témoignage.',
+    avis_empty:'Soyez le premier à partager votre expérience.',
+    avis_moyenne_label:'note moyenne',
+    avis_badge_presentiel:'À domicile', avis_badge_distance:'À distance',
+    // Contact
+    contact_tag:'Contact', contact_title:'Prenez <em>rendez-vous</em>',
+    contact_sub:'Disponible du lundi au samedi, de 9h à 19h. Réponse rapide garantie.',
+    contact_addr:'Rayon 20 min autour de Saint-Saturnin-lès-Avignon (84450)<br>Avignon · Le Pontet · Vedène · Le Thor · L\'Isle-sur-la-Sorgue…<br>+ distance : toute la France',
+    contact_hours:'Lundi – Samedi · 9h–19h',
+    wa_tag:'WhatsApp', wa_title:'Contactez-moi<br><em>directement</em>',
+    wa_sub:'La façon la plus rapide de me joindre. Je réponds généralement en quelques minutes, du lundi au samedi de 9h à 19h.',
+    wa_msg:'Envoyer un message', wa_call:'Appeler via WhatsApp',
+    wa_note_pre:'Ou réservez directement en ligne via', wa_cal_btn:'le calendrier de réservation →',
+    footer_copy:'© 2025 Harmony Flux — Magnétisme',
+    footer_legal:'Mentions légales', footer_privacy:'Confidentialité',
+    wa_href_msg:'https://wa.me/33788301574?text=Bonjour%2C%20je%20souhaite%20prendre%20rendez-vous%20pour%20une%20s%C3%A9ance%20de%20magn%C3%A9tisme.',
+    wa_href_call:'https://wa.me/33788301574',
+  },
+  en: {
+    nav_about:'About', nav_soins:'Treatments', nav_zones:'Areas', nav_tarifs:'Pricing', nav_avis:'Reviews',
+    hero_sub:'Magnetism &amp; Energy Healing', hero_desc:'Short sessions · effective · tailored',
+    badge_min:'10 to 15 minutes', badge_home:'Home visit', badge_remote:'Remote',
+    badge_radius:'20 min around St-Saturnin-lès-Avignon', hero_scroll:'Discover',
+    about_tag:'About', about_title:'A practice<br>rooted in <em>the essential</em>',
+    about_text1:'Magnetism acts on the energetic flows that run through the body. In just a few minutes, a targeted session can restore balance, relieve pain or calm accumulated tensions.',
+    about_text2:'My sessions, intentionally short and intense, are designed to fit into your daily life — without asking for time you don\'t have.',
+    stat_min:'Minimum duration', stat_max:'Maximum duration', stat_radius:'Home radius',
+    img_tag:'Care &amp; Energy', img_title:'Feel<br>to <em>heal</em>',
+    img_text:'The magnetizer channels and redistributes vital energies through their hands, with or without contact, or remotely. A gentle, fast and deep approach to restoring your inner balance.',
+    img_cta:'Book a session →',
+    duree_label:'Session duration', duree_note:'Brief, deep and effective sessions — no lengthy appointment',
+    soins_tag:'Treatments offered', soins_title:'What I<br>offer <em>you</em>',
+    s1_title:'Global Magnetic Treatment', s1_text:'Rebalancing of the body\'s vital flows. In 10 to 15 minutes, a deep reconnection to your natural energy.', s1_pill:'In-person · Remote',
+    s2_title:'Pain Relief', s2_text:'Targeted intervention on painful areas: joints, migraines, tensions. Fast action, results felt from the first session.', s2_pill:'In-person',
+    s3_title:'Stress &amp; Anxiety', s3_text:'Calming of the energetic nervous system. A few minutes are enough to regain calm, clarity and groundedness.', s3_pill:'In-person · Remote',
+    s4_title:'Emotional Blockages', s4_text:'Release of deep emotional tensions. Ideal during transitions, grief or periods of inner instability.', s4_pill:'In-person · Remote',
+    s5_title:'Child Treatment', s5_text:'A gentle approach for the youngest: sleep, concentration, school anxiety. Session adapted to their particular sensitivity.', s5_pill:'In-person · Home',
+    s6_title:'Personalised Follow-up', s6_text:'Several close sessions for in-depth work. The short format lends itself to regular follow-up, integrated into daily life.', s6_pill:'Tailored',
+    mod1_tag:'Method 01', mod1_title:'Home visit<br><em>at your place</em>',
+    mod1_text:'I come directly to your home in departments 84, 13 and 30. You stay in your own environment, without any travel effort.',
+    mod1_li1:'Travel included in 3 departments', mod1_li2:'10 to 15 minute session', mod1_li3:'No equipment needed', mod1_li4:'Flexible hours',
+    mod2_tag:'Method 02', mod2_title:'Remote<br><em>from your home</em>',
+    mod2_text:'Distance magnetism is just as effective as physical presence. From anywhere in France, receive a full session by phone or video call.',
+    mod2_li1:'By phone or video call', mod2_li2:'Anywhere in France', mod2_li3:'10 to 15 minutes', mod2_li4:'Ideal for reduced mobility',
+    zones_tag:'Travel zone', zones_title:'I come<br><em>to you</em>',
+    zones_desc:'Based in <strong style="color:var(--gold2);font-weight:400;">Saint-Saturnin-lès-Avignon (84450)</strong>, I travel to your home within a <strong style="color:var(--gold2);font-weight:400;">20-minute</strong> radius. For everything else, remote sessions are just as effective.',
+    dept1_code:'Vaucluse — Greater Avignon', dept1_name:'Avignon &amp; Sorgues',
+    dept2_code:'Vaucluse — Sorgues Valley', dept2_name:'Sorgues &amp; Luberon',
+    dept3_code:'Gard &amp; Bouches-du-Rhône', dept3_name:'Villeneuve &amp; surroundings',
+    dist_strong:'Outside the zone or anywhere in France — remote session.',
+    dist_text:'<strong>Outside the zone or anywhere in France — remote session.</strong> Beyond 20 minutes from Saint-Saturnin-lès-Avignon, I receive you by phone or video for a complete 10 to 15-minute session, just as effective as in person.',
+    tarifs_tag:'Pricing', tarifs_title:'Simple &amp; <em>transparent</em>',
+    t1_lbl:'Remote session', t1_u:'10 to 15 min · video or phone', t1_f1:'All of France', t1_f2:'Energy assessment included', t1_f3:'Follow-up after session',
+    t2_lbl:'Home session', t2_u:'10 to 15 min · 20 min radius from St-Saturnin', t2_f1:'Travel included', t2_f2:'Treatment at your home', t2_f3:'Assessment &amp; advice',
+    t3_lbl:'5-session package', t3_u:'i.e. 36€/session · −10%', t3_f1:'In-person or remote', t3_f2:'Personalised follow-up', t3_f3:'Valid for 3 months',
+    btn_reserver:'Book',
+    avis_tag:'Testimonials', avis_title:'They have <em>felt it</em>',
+    avis_cta_title:'Your experience <em>matters</em>',
+    avis_cta_sub:'Have you had a session? Share your experience — every testimonial helps others take the step.',
+    avis_cta_btn:'Leave a review',
+    avis_modal_title:'Leave a testimonial',
+    avis_note:'Your rating', avis_prenom:'First name *', avis_ville:'City',
+    avis_soin:'Type of treatment received',
+    avis_soin_opt0:'— Choose —', avis_soin_opt1:'Global Magnetic Treatment', avis_soin_opt2:'Pain Relief',
+    avis_soin_opt3:'Stress &amp; Anxiety', avis_soin_opt4:'Emotional Blockages', avis_soin_opt5:'Child Treatment', avis_soin_opt6:'Personalised Follow-up',
+    avis_modalite:'Method',
+    avis_mod_opt0:'— Choose —', avis_mod_opt1:'Home visit (in-person)', avis_mod_opt2:'Remote (video / phone)',
+    avis_texte_label:'Your testimonial *',
+    avis_submit:'Publish my testimonial →',
+    avis_note_rgpd:'Your first name and city will be publicly visible. No sensitive data is collected.',
+    avis_merci_title:'Thank you for your testimonial',
+    avis_merci_sub:'It has been published and now appears in the Testimonials section.',
+    avis_erreur_note:'Please select a rating.',
+    avis_erreur_prenom:'Please enter your first name.',
+    avis_erreur_texte:'Please write your testimonial.',
+    avis_empty:'Be the first to share your experience.',
+    avis_moyenne_label:'average rating',
+    avis_badge_presentiel:'Home visit', avis_badge_distance:'Remote',
+    contact_tag:'Contact', contact_title:'Book an <em>appointment</em>',
+    contact_sub:'Available Monday to Saturday, 9am to 7pm. Fast reply guaranteed.',
+    contact_addr:'20-min radius around Saint-Saturnin-lès-Avignon (84450)<br>Avignon · Le Pontet · Vedène · Le Thor · L\'Isle-sur-la-Sorgue…<br>+ remote: all of France',
+    contact_hours:'Mon – Sat · 9am – 7pm',
+    wa_tag:'WhatsApp', wa_title:'Contact me<br><em>directly</em>',
+    wa_sub:'The fastest way to reach me. I usually reply within minutes, Monday to Saturday, 9am to 7pm.',
+    wa_msg:'Send a message', wa_call:'Call via WhatsApp',
+    wa_note_pre:'Or book directly online via', wa_cal_btn:'the booking calendar →',
+    footer_copy:'© 2025 Harmony Flux — Magnetism',
+    footer_legal:'Legal notice', footer_privacy:'Privacy',
+    wa_href_msg:'https://wa.me/33788301574?text=Hello%2C%20I%20would%20like%20to%20book%20an%20appointment%20for%20a%20magnetism%20session.',
+    wa_href_call:'https://wa.me/33788301574',
+  },
+  pt: {
+    nav_about:'Sobre', nav_soins:'Tratamentos', nav_zones:'Áreas', nav_tarifs:'Preços', nav_avis:'Avaliações',
+    hero_sub:'Magnetismo &amp; Cuidados Energéticos', hero_desc:'Sessões curtas · eficazes · personalizadas',
+    badge_min:'10 a 15 minutos', badge_home:'Ao domicílio', badge_remote:'À distância',
+    badge_radius:'20 min em redor de St-Saturnin-lès-Avignon', hero_scroll:'Descobrir',
+    about_tag:'Sobre', about_title:'Uma prática<br>enraizada no <em>essencial</em>',
+    about_text1:'O magnetismo atua sobre os fluxos energéticos que percorrem o corpo. Em apenas alguns minutos, um tratamento dirigido pode restaurar o equilíbrio, aliviar a dor ou acalmar as tensões acumuladas.',
+    about_text2:'As minhas sessões, intencionalmente curtas e intensas, foram pensadas para se integrar no seu quotidiano — sem lhe pedir tempo que não tem.',
+    stat_min:'Duração mínima', stat_max:'Duração máxima', stat_radius:'Raio domicílio',
+    img_tag:'Cuidado &amp; Energia', img_title:'Sentir<br>para <em>curar</em>',
+    img_text:'O magnetizador canaliza e redistribui as energias vitais com as mãos, sem contacto ou à distância. Uma abordagem suave, rápida e profunda para recuperar o seu equilíbrio interior.',
+    img_cta:'Reservar uma sessão →',
+    duree_label:'Duração de uma sessão', duree_note:'Cuidados breves, profundos e eficazes — sem consultas demoradas',
+    soins_tag:'Tratamentos oferecidos', soins_title:'O que eu<br><em>ofereço</em>',
+    s1_title:'Tratamento Magnético Global', s1_text:'Reequilíbrio dos fluxos vitais de todo o corpo. Em 10 a 15 minutos, uma reconexão profunda à sua energia natural.', s1_pill:'Presencial · Distância',
+    s2_title:'Alívio das Dores', s2_text:'Intervenção dirigida nas zonas dolorosas: articulações, enxaquecas, tensões. Ação rápida, resultados sentidos desde a primeira sessão.', s2_pill:'Presencial',
+    s3_title:'Stress &amp; Ansiedade', s3_text:'Acalmar o sistema nervoso energético. Poucos minutos bastam para recuperar calma, clareza e enraizamento no presente.', s3_pill:'Presencial · Distância',
+    s4_title:'Bloqueios Emocionais', s4_text:'Libertação de tensões emocionais profundas. Ideal em transições, lutos ou períodos de instabilidade interior.', s4_pill:'Presencial · Distância',
+    s5_title:'Tratamento Infantil', s5_text:'Abordagem suave para os mais novos: sono, concentração, ansiedade escolar. Sessão adaptada à sua sensibilidade particular.', s5_pill:'Presencial · Domicílio',
+    s6_title:'Acompanhamento Personalizado', s6_text:'Várias sessões próximas para um trabalho em profundidade. O formato curto presta-se a um acompanhamento regular, integrado no quotidiano.', s6_pill:'Personalizado',
+    mod1_tag:'Modalidade 01', mod1_title:'Ao domicílio<br><em>em sua casa</em>',
+    mod1_text:'Desloco-me diretamente ao seu domicílio nos departamentos 84, 13 e 30. Fica no seu ambiente, sem esforço de deslocamento.',
+    mod1_li1:'Deslocamento incluído nos 3 dpts', mod1_li2:'Sessão de 10 a 15 minutos', mod1_li3:'Nenhum equipamento necessário', mod1_li4:'Horários flexíveis',
+    mod2_tag:'Modalidade 02', mod2_title:'À distância<br><em>de sua casa</em>',
+    mod2_text:'O magnetismo à distância é tão eficaz quanto a presença física. De qualquer lugar em França, receba um tratamento completo por telefone ou videoconferência.',
+    mod2_li1:'Por telefone ou videoconferência', mod2_li2:'Em toda a França', mod2_li3:'10 a 15 minutos', mod2_li4:'Ideal para mobilidade reduzida',
+    zones_tag:'Zona de deslocamento', zones_title:'Eu vou<br><em>até si</em>',
+    zones_desc:'Baseado em <strong style="color:var(--gold2);font-weight:400;">Saint-Saturnin-lès-Avignon (84450)</strong>, desloco-me ao domicílio num raio de <strong style="color:var(--gold2);font-weight:400;">20 minutos</strong>. Para todo o resto, a sessão à distância é igualmente eficaz.',
+    dept1_code:'Vaucluse — Grande Avignon', dept1_name:'Avignon &amp; Sorgues',
+    dept2_code:'Vaucluse — Vale de Sorgues', dept2_name:'Sorgues &amp; Luberon',
+    dept3_code:'Gard &amp; Bouches-du-Rhône', dept3_name:'Villeneuve &amp; arredores',
+    dist_strong:'Fora da zona ou toda a França — sessão à distância.',
+    dist_text:'<strong>Fora da zona ou toda a França — sessão à distância.</strong> Além de 20 minutos de Saint-Saturnin-lès-Avignon, recebo-o por telefone ou videoconferência para um tratamento completo de 10 a 15 minutos, tão eficaz como em presença.',
+    tarifs_tag:'Preços', tarifs_title:'Simples &amp; <em>transparente</em>',
+    t1_lbl:'Sessão à distância', t1_u:'10 a 15 min · vídeo ou telefone', t1_f1:'Toda a França', t1_f2:'Balanço energético incluído', t1_f3:'Retorno após sessão',
+    t2_lbl:'Sessão ao domicílio', t2_u:'10 a 15 min · raio 20 min de St-Saturnin', t2_f1:'Deslocamento incluído', t2_f2:'Tratamento no seu domicílio', t2_f3:'Balanço &amp; conselhos',
+    t3_lbl:'Pack 5 sessões', t3_u:'36€/sessão · −10%', t3_f1:'Presencial ou distância', t3_f2:'Acompanhamento personalizado', t3_f3:'Válido 3 meses',
+    btn_reserver:'Reservar',
+    avis_tag:'Testemunhos', avis_title:'Eles <em>sentiram</em>',
+    avis_cta_title:'A sua experiência <em>conta</em>',
+    avis_cta_sub:'Beneficiou de uma sessão? Partilhe a sua experiência — cada testemunho ajuda outras pessoas a dar o passo.',
+    avis_cta_btn:'Deixar uma avaliação',
+    avis_modal_title:'Deixar um testemunho',
+    avis_note:'A sua nota', avis_prenom:'Primeiro nome *', avis_ville:'Cidade',
+    avis_soin:'Tipo de tratamento recebido',
+    avis_soin_opt0:'— Escolher —', avis_soin_opt1:'Tratamento Magnético Global', avis_soin_opt2:'Alívio das Dores',
+    avis_soin_opt3:'Stress &amp; Ansiedade', avis_soin_opt4:'Bloqueios Emocionais', avis_soin_opt5:'Tratamento Infantil', avis_soin_opt6:'Acompanhamento Personalizado',
+    avis_modalite:'Modalidade',
+    avis_mod_opt0:'— Escolher —', avis_mod_opt1:'Ao domicílio (presencial)', avis_mod_opt2:'À distância (vídeo / telefone)',
+    avis_texte_label:'O seu testemunho *',
+    avis_submit:'Publicar o meu testemunho →',
+    avis_note_rgpd:'O seu primeiro nome e cidade serão visíveis publicamente. Nenhum dado sensível é recolhido.',
+    avis_merci_title:'Obrigado pelo seu testemunho',
+    avis_merci_sub:'Foi publicado e aparece agora na secção Testemunhos.',
+    avis_erreur_note:'Selecione uma nota.',
+    avis_erreur_prenom:'Indique o seu primeiro nome.',
+    avis_erreur_texte:'Escreva o seu testemunho.',
+    avis_empty:'Seja o primeiro a partilhar a sua experiência.',
+    avis_moyenne_label:'nota média',
+    avis_badge_presentiel:'Ao domicílio', avis_badge_distance:'À distância',
+    contact_tag:'Contacto', contact_title:'Marque uma <em>consulta</em>',
+    contact_sub:'Disponível de segunda a sábado, das 9h às 19h. Resposta rápida garantida.',
+    contact_addr:'Raio de 20 min em redor de Saint-Saturnin-lès-Avignon (84450)<br>Avignon · Le Pontet · Vedène · Le Thor · L\'Isle-sur-la-Sorgue…<br>+ distância: toda a França',
+    contact_hours:'Seg – Sáb · 9h – 19h',
+    wa_tag:'WhatsApp', wa_title:'Contacte-me<br><em>diretamente</em>',
+    wa_sub:'A forma mais rápida de me contactar. Respondo geralmente em poucos minutos, de segunda a sábado das 9h às 19h.',
+    wa_msg:'Enviar mensagem', wa_call:'Ligar via WhatsApp',
+    wa_note_pre:'Ou reserve diretamente online via', wa_cal_btn:'o calendário de reservas →',
+    footer_copy:'© 2025 Harmony Flux — Magnetismo',
+    footer_legal:'Aviso legal', footer_privacy:'Privacidade',
+    wa_href_msg:'https://wa.me/33788301574?text=Ol%C3%A1%2C%20gostaria%20de%20marcar%20uma%20sess%C3%A3o%20de%20magnetismo.',
+    wa_href_call:'https://wa.me/33788301574',
+  }
+};
+
+let currentLang = 'fr';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
+  });
+  const t = translations[lang];
+  if (!t) return;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  const msgBtn = document.getElementById('wa-msg-btn');
+  if (msgBtn && t.wa_href_msg) msgBtn.href = t.wa_href_msg;
+  const callBtn = document.getElementById('wa-call-btn');
+  if (callBtn && t.wa_href_call) callBtn.href = t.wa_href_call;
+  document.documentElement.lang = lang;
+  const titles = { fr: 'Harmony Flux — Magnétisme', en: 'Harmony Flux — Magnetism', pt: 'Harmony Flux — Magnetismo' };
+  document.title = titles[lang] || document.title;
+  renderTemoignages();
+}
+
+function t(key) {
+  return (translations[currentLang] || translations.fr)[key] || key;
+}
+</script>
+
+<!-- Ciel étoilé -->
+<script>
+(function() {
+  const sf = document.getElementById('starfield');
+  if (!sf) return;
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.2 + 0.5;
+    const isBlue = Math.random() > 0.7;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${(Math.random()*4+2).toFixed(1)}s;--delay:${(Math.random()*6).toFixed(1)}s;--max-op:${(Math.random()*0.5+0.3).toFixed(2)};background:${isBlue?'rgba(180,210,255,0.9)':'rgba(255,255,255,0.9)'};box-shadow:${isBlue?`0 0 ${size*2}px rgba(120,170,255,0.6)`:`0 0 ${size}px rgba(255,255,255,0.4)`};`;
+    sf.appendChild(s);
+  }
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 1.5 + 1.5;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${(Math.random()*3+3).toFixed(1)}s;--delay:${(Math.random()*5).toFixed(1)}s;--max-op:0.9;background:#c8a84b;box-shadow:0 0 6px rgba(200,168,75,0.7);`;
+    sf.appendChild(s);
+  }
+})();
+</script>
+
+<!-- ═══ LOGIQUE TÉMOIGNAGES ═══ -->
+<script>
+// Données persistées dans localStorage
+const STORAGE_KEY = 'harmonyflux_temoignages_v1';
+
+// Témoignages initiaux (exemples)
+const defaultTemoignages = [
+  {
+    id: 1,
+    prenom: 'Sophie',
+    ville: 'Avignon',
+    note: 5,
+    soin: 'stress',
+    modalite: 'presentiel',
+    texte: 'Une séance incroyablement apaisante. En moins de 15 minutes, j'ai ressenti une légèreté que je n'avais plus depuis des mois. Je recommande vivement !',
+    date: '2025-02-14'
+  },
+  {
+    id: 2,
+    prenom: 'Marc',
+    ville: 'Le Pontet',
+    note: 5,
+    soin: 'douleur',
+    modalite: 'presentiel',
+    texte: 'Je souffrais de migraines chroniques depuis des années. Après deux séances, la fréquence a nettement diminué. Tony a un don réel.',
+    date: '2025-01-28'
+  },
+  {
+    id: 3,
+    prenom: 'Isabelle',
+    ville: 'Lyon',
+    note: 5,
+    soin: 'global',
+    modalite: 'distance',
+    texte: 'Sceptique au départ, j'ai tenté la séance à distance. Le résultat m'a vraiment surprise — une chaleur bienfaisante et un calme profond dès la fin de l'appel.',
+    date: '2025-03-05'
+  }
+];
+
+function loadTemoignages() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [...defaultTemoignages];
+  } catch(e) {
+    return [...defaultTemoignages];
+  }
+}
+
+function saveTemoignages(list) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function starsHtml(note, size) {
+  const s = size || '0.85rem';
+  let html = '<div class="stars">';
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="star-ico${i > note ? ' empty' : ''}" style="font-size:${s}">★</span>`;
+  }
+  return html + '</div>';
+}
+
+function badgeLabel(soin, modalite) {
+  const soinMap = {
+    global:'Soin Global', douleur:'Douleurs', stress:'Stress', blocage:'Blocages', enfant:'Enfant', suivi:'Suivi'
+  };
+  return soinMap[soin] || soin || '';
+}
+
+function renderTemoignages() {
+  const list = loadTemoignages();
+  const container = document.getElementById('temoignages-liste');
+  if (!container) return;
+
+  // Mise à jour de la moyenne
+  const moyDiv = document.getElementById('temoignages-moyenne');
+  const moyStars = document.getElementById('moyenne-stars');
+  const moyLabel = document.getElementById('moyenne-label');
+  if (list.length > 0) {
+    const moy = list.reduce((a, b) => a + b.note, 0) / list.length;
+    moyStars.innerHTML = starsHtml(Math.round(moy)).replace('<div class="stars">', '').replace('</div>', '');
+    moyStars.style.justifyContent = 'flex-end';
+    moyLabel.textContent = `${moy.toFixed(1)} / 5 — ${list.length} ${t('avis_moyenne_label')}`;
+    moyDiv.style.display = '';
+  } else {
+    moyDiv.style.display = 'none';
+  }
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="temoignages-empty reveal"><p>${t('avis_empty')}</p></div>`;
+    return;
+  }
+
+  container.innerHTML = list.map((item, idx) => {
+    const initiale = (item.prenom || '?')[0].toUpperCase();
+    const badge = badgeLabel(item.soin, item.modalite);
+    const modBadge = item.modalite === 'distance' ? t('avis_badge_distance') : t('avis_badge_presentiel');
+    return `
+    <div class="temoignage-card reveal" style="animation-delay:${idx * 0.08}s;">
+      <span class="temoignage-quote-mark">"</span>
+      <div class="temoignage-stars">${starsHtml(item.note)}</div>
+      <p class="temoignage-text">${escapeHtml(item.texte)}</p>
+      <div class="temoignage-footer">
+        <div class="temoignage-avatar">${initiale}</div>
+        <div class="temoignage-meta">
+          <p class="temoignage-name">${escapeHtml(item.prenom)}${item.ville ? '<span style="color:var(--muted2);font-weight:300;"> · ' + escapeHtml(item.ville) + '</span>' : ''}</p>
+          <p class="temoignage-detail">${modBadge}${badge ? ' · ' + badge : ''}</p>
+        </div>
+        ${badge ? `<span class="temoignage-badge">${badge}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Relancer les animations reveal sur les nouvelles cartes
+  container.querySelectorAll('.reveal:not(.in)').forEach((el, i) => {
+    setTimeout(() => el.classList.add('in'), i * 80 + 100);
+  });
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ── Sélecteur d'étoiles interactif ──
+let selectedNote = 0;
+
+(function initStarPicker() {
+  const picker = document.getElementById('star-picker');
+  if (!picker) return;
+  const spans = picker.querySelectorAll('span');
+
+  function highlight(n) {
+    spans.forEach((s, i) => s.classList.toggle('lit', i < n));
+  }
+
+  spans.forEach(s => {
+    s.addEventListener('mouseover', () => highlight(+s.dataset.val));
+    s.addEventListener('mouseleave', () => highlight(selectedNote));
+    s.addEventListener('click', () => { selectedNote = +s.dataset.val; highlight(selectedNote); });
+    s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { selectedNote = +s.dataset.val; highlight(selectedNote); } });
+  });
+})();
+
+// Compteur de caractères
+document.addEventListener('DOMContentLoaded', function() {
+  const ta = document.getElementById('avis-texte');
+  const cnt = document.getElementById('avis-char-count');
+  if (ta && cnt) {
+    ta.addEventListener('input', () => { cnt.textContent = `${ta.value.length} / 400`; });
+  }
+});
+
+// Soumission du formulaire
+document.getElementById('avis-submit').addEventListener('click', function() {
+  const errEl = document.getElementById('avis-error');
+  errEl.style.display = 'none';
+
+  const prenom = document.getElementById('avis-prenom').value.trim();
+  const texte = document.getElementById('avis-texte').value.trim();
+  const ville = document.getElementById('avis-ville').value.trim();
+  const soin = document.getElementById('avis-soin').value;
+  const modalite = document.getElementById('avis-modalite').value;
+
+  if (!selectedNote) { errEl.textContent = t('avis_erreur_note'); errEl.style.display = 'block'; return; }
+  if (!prenom) { errEl.textContent = t('avis_erreur_prenom'); errEl.style.display = 'block'; return; }
+  if (!texte) { errEl.textContent = t('avis_erreur_texte'); errEl.style.display = 'block'; return; }
+
+  const list = loadTemoignages();
+  const newAvis = {
+    id: Date.now(),
+    prenom, ville, note: selectedNote,
+    soin, modalite, texte,
+    date: new Date().toISOString().split('T')[0]
+  };
+  list.unshift(newAvis);
+  saveTemoignages(list);
+
+  // Afficher le succès
+  document.getElementById('avis-form-wrap').style.display = 'none';
+  document.getElementById('avis-success').style.display = 'block';
+  document.getElementById('avis-success').style.animation = 'modalIn 0.4s ease both';
+
+  // Recharger la grille
+  renderTemoignages();
+});
+
+// Init au chargement
+document.addEventListener('DOMContentLoaded', renderTemoignages);
+</script>
+
+<!-- Cal.com -->
+<script type="text/javascript">
+(function (C, A, L) {
+  let p = function (a, ar) { a.q.push(ar); };
+  let d = C.document;
+  C.Cal = C.Cal || function () {
+    let cal = C.Cal; let ar = arguments;
+    if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement('script')).src = A; cal.loaded = true; }
+    if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === 'string') { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ['initNamespace', namespace]); } else p(cal, ar); return; }
+    p(cal, ar);
+  };
+})(window, 'https://app.cal.com/embed/embed.js', 'init');
+Cal('init', 'harmony', { origin: 'https://cal.eu' });
+Cal.ns['harmony']('ui', { theme: 'dark', styles: { branding: { brandColor: '#c8a84b' } }, hideEventTypeDetails: false, layout: 'month_view' });
+</script>
+
+<!-- Modales -->
+<script>
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  // Reset du formulaire avis
+  if (id === 'modal-avis') {
+    document.getElementById('avis-form-wrap').style.display = '';
+    document.getElementById('avis-success').style.display = 'none';
+    document.getElementById('avis-prenom').value = '';
+    document.getElementById('avis-ville').value = '';
+    document.getElementById('avis-texte').value = '';
+    document.getElementById('avis-soin').value = '';
+    document.getElementById('avis-modalite').value = '';
+    document.getElementById('avis-char-count').textContent = '0 / 400';
+    document.getElementById('avis-error').style.display = 'none';
+    selectedNote = 0;
+    document.querySelectorAll('#star-picker span').forEach(s => s.classList.remove('lit'));
+  }
+  m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) { m.classList.remove('open'); document.body.style.overflow = ''; }
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.querySelectorAll('.hf-modal.open').forEach(m => closeModal(m.id));
+});
+</script>
+
+<!-- Scroll Reveal -->
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) { setTimeout(() => e.target.classList.add('in'), i * 90); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
