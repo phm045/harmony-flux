@@ -291,7 +291,7 @@ nav {
 .intro-title em { font-style:italic; color:var(--gold2); }
 
 .intro-text {
-  font-size:0.9rem; line-height:1.9; color:#8a9878;
+  font-size:0.9rem; line-height:1.9; color:var(--muted);
   margin-bottom:1.5rem;
 }
 
@@ -410,7 +410,7 @@ nav {
 .mod-text { font-size:0.85rem; line-height:1.85; color:var(--muted2); margin-bottom:1.8rem; }
 .mod-list { list-style:none; }
 .mod-list li {
-  font-size:0.78rem; color:#4a5840;
+  font-size:0.78rem; color:var(--muted2);
   padding:0.55rem 0; border-bottom:1px solid rgba(200,168,75,0.07);
   display:flex; align-items:center; gap:0.8rem;
 }
@@ -861,22 +861,135 @@ footer {
 .hf-modal-body a { color:#e8c870; }
 @media(max-width:600px) { .hf-modal-tag,.hf-modal-title { padding-left:1.5rem; } .hf-modal-body { padding:0 1.5rem 2rem; } .hf-modal-divider { margin-left:1.5rem; margin-right:1.5rem; } }
 
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  nav { padding:1.2rem 4vw; }
-  .nav-links { display:none; }
-  #intro, #modalites, #contact { grid-template-columns:1fr; gap:3rem; }
-  #intro { padding:5rem 5vw; }
-  .seances-grid, .tarifs-grid, .dept-cards { grid-template-columns:1fr; }
-  .temoignages-grid { grid-template-columns:1fr; }
-  .temoignage-cta-wrap { flex-direction:column; align-items:flex-start; gap:1.2rem; }
-  .form-row { grid-template-columns:1fr; }
+/* ── BURGER MENU ── */
+.burger {
+  display:none; background:none; border:none; cursor:pointer;
+  width:36px; height:36px; position:relative; z-index:400;
+  flex-direction:column; align-items:center; justify-content:center; gap:5px;
+}
+.burger span {
+  display:block; width:22px; height:1.5px; background:var(--muted);
+  transition:all 0.35s ease; transform-origin:center;
+}
+.burger.open span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); background:var(--gold); }
+.burger.open span:nth-child(2) { opacity:0; }
+.burger.open span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); background:var(--gold); }
+
+.mobile-menu {
+  display:none; position:fixed; inset:0; z-index:350;
+  background:rgba(5,8,16,0.97); backdrop-filter:blur(12px);
+  flex-direction:column; align-items:center; justify-content:center; gap:2.4rem;
+}
+.mobile-menu.open { display:flex; }
+.mobile-menu a {
+  font-size:0.8rem; letter-spacing:0.28em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none; transition:color 0.3s;
+}
+.mobile-menu a:hover { color:var(--gold); }
+.mobile-menu .lang-switcher-mobile {
+  display:flex; gap:0.6rem; align-items:center; margin-top:1rem;
+}
+.mobile-menu .nav-tel-mobile {
+  font-size:0.85rem; letter-spacing:0.1em;
+  color:var(--gold); text-decoration:none;
+  border:1px solid var(--line); padding:0.7rem 1.8rem;
+  transition:all 0.3s; margin-top:0.5rem;
+}
+.mobile-menu .nav-tel-mobile:hover { background:var(--gold); color:var(--night); }
+
+/* ── RESPONSIVE: TABLETTE ── */
+@media(max-width:1024px){
+  .nav-links { gap:1.6rem; }
+  .nav-links a { font-size:0.6rem; letter-spacing:0.16em; }
+  #intro { padding:5rem 5vw; gap:4rem; }
+  .seances-grid { grid-template-columns:repeat(2,1fr); }
+  .tarifs-grid { grid-template-columns:repeat(3,1fr); }
+  .dept-cards { grid-template-columns:1fr 1fr; }
   .zones-inner { grid-template-columns:1fr; gap:3rem; }
-  #duree { padding:4rem 5vw; }
-  footer { flex-direction:column; gap:0.8rem; padding:1.5rem 4vw; }
-  .hero-calli { width:92vw; }
+  #modalites { gap:0; }
+  .mod { padding:3rem 2.5rem; }
+}
+
+/* ── RESPONSIVE: MOBILE ── */
+@media(max-width:768px){
+  nav { padding:1rem 4vw; }
+  .nav-links, .nav-tel, .lang-switcher { display:none; }
+  .burger { display:flex; }
+
+  .hero-center { padding:1.5rem; }
+  .hero-calli { width:min(340px,88vw); margin-bottom:1.8rem; }
+  .hero-sub { font-size:1.1rem; }
+  .hero-desc { font-size:0.68rem; letter-spacing:0.14em; margin-bottom:2rem; }
+  .hero-badges { gap:0.6rem; }
+  .badge { font-size:0.55rem; padding:0.4rem 0.8rem; letter-spacing:0.14em; }
+  .hero-scroll { bottom:1.5rem; font-size:0.55rem; }
+
+  #intro { padding:4rem 5vw; grid-template-columns:1fr; gap:2.5rem; }
+  .intro-visual { height:250px; }
+  .intro-circle { width:200px; height:200px; }
+  .intro-circle:nth-child(2) { width:140px; height:140px; }
+  .intro-glyph { font-size:3.5rem; }
+  .intro-title { font-size:clamp(1.6rem,6vw,2.2rem); }
+  .intro-text { font-size:0.82rem; }
+  .stat-row { gap:1.8rem; flex-wrap:wrap; }
+  .stat-n { font-size:2.2rem; }
+
+  /* About image section */
+  .about-image-section { grid-template-columns:1fr; gap:2rem; padding:4rem 5vw; }
+  .about-img-grid { grid-template-columns:1fr !important; min-height:auto !important; }
+  .about-img-wrap { height:280px; }
+  .about-img-content { padding:2.5rem 5vw !important; }
+
+  #seances { padding:4rem 5vw; }
+  .seances-grid { grid-template-columns:1fr; }
+  .seance-card { padding:2rem 1.5rem; }
+  .seance-num { font-size:2.5rem; margin-bottom:0.8rem; }
+  .seance-title { font-size:1.2rem; }
+
+  #duree { padding:3rem 5vw; }
+  .duree-big { font-size:clamp(3rem,12vw,5rem); }
+
+  #modalites { grid-template-columns:1fr; gap:0; padding:4rem 5vw; }
+  .mod { padding:2.5rem 0; }
+  .mod:first-child { border-right:none; border-bottom:1px solid var(--line); padding-bottom:3rem; }
+
+  #zones { padding:4rem 5vw; }
+  .zones-inner { grid-template-columns:1fr; gap:2.5rem; }
+  .dept-cards { grid-template-columns:1fr; gap:1rem; }
+  .dept { padding:1.5rem 1.2rem; }
+  .dept-n { font-size:2.8rem; }
+  .dept-name { font-size:1.1rem; }
+  .distance-card { flex-direction:column; gap:1rem; padding:1.4rem; }
+
+  #tarifs { padding:4rem 5vw; }
+  .tarifs-grid { grid-template-columns:1fr; gap:1.2rem; margin-top:2.5rem; }
+  .tarif { padding:2rem 1.5rem; }
+  .tarif-p { font-size:2.6rem; }
+
+  #temoignages { padding:4rem 5vw; }
+  .temoignages-grid { grid-template-columns:1fr; gap:1.2rem; }
+  .temoignage-card { padding:1.8rem 1.4rem; }
+  .temoignage-badge { display:none; }
+  .temoignage-cta-wrap { flex-direction:column; align-items:stretch; gap:1.2rem; padding:1.8rem 1.4rem; text-align:center; }
+  .temoignage-cta-btn { width:100%; }
+
+  #contact { padding:4rem 5vw; grid-template-columns:1fr; gap:3rem; }
+  .contact-wa-title { font-size:1.5rem; }
+
+  footer { flex-direction:column; gap:1rem; padding:1.5rem 4vw; text-align:center; }
+  .ft-links { justify-content:center; }
+
   .temoignages-header { flex-direction:column; align-items:flex-start; }
-  .lang-switcher { margin-right:0.4rem; }
+  .form-row { grid-template-columns:1fr; }
+}
+
+/* ── RESPONSIVE: PETIT MOBILE ── */
+@media(max-width:380px){
+  .hero-calli { width:92vw; }
+  .badge { font-size:0.5rem; padding:0.35rem 0.6rem; }
+  .stat-row { gap:1.2rem; }
+  .stat-n { font-size:1.8rem; }
+  .tarif-p { font-size:2.2rem; }
 }
 </style>
 </head>
@@ -915,8 +1028,29 @@ footer {
     <span class="lang-sep">·</span>
     <button class="lang-btn" onclick="setLang('pt')">PT</button>
   </div>
+  <button class="burger" id="burger-btn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <a href="tel:0788301574" class="nav-tel">07.88.30.15.74</a>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#intro" data-i18n="nav_about" onclick="closeMobile()">À propos</a>
+  <a href="#seances" data-i18n="nav_soins" onclick="closeMobile()">Soins</a>
+  <a href="#zones" data-i18n="nav_zones" onclick="closeMobile()">Zones</a>
+  <a href="#tarifs" data-i18n="nav_tarifs" onclick="closeMobile()">Tarifs</a>
+  <a href="#temoignages" data-i18n="nav_avis" onclick="closeMobile()">Avis</a>
+  <a href="#contact" data-i18n="nav_contact" onclick="closeMobile()">Contact</a>
+  <div class="lang-switcher-mobile">
+    <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+    <span class="lang-sep">·</span>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <span class="lang-sep">·</span>
+    <button class="lang-btn" onclick="setLang('pt')">PT</button>
+  </div>
+  <a href="tel:0788301574" class="nav-tel-mobile">07.88.30.15.74</a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -1015,15 +1149,15 @@ footer {
 </section>
 
 <!-- IMAGE À PROPOS -->
-<section style="background:var(--forest);padding:0;position:relative;z-index:10;overflow:hidden;">
-  <div style="display:grid;grid-template-columns:1fr 1fr;min-height:500px;">
-    <div style="position:relative;overflow:hidden;">
+<section class="about-img-section" style="background:var(--forest);padding:0;position:relative;z-index:10;overflow:hidden;">
+  <div class="about-img-grid" style="display:grid;grid-template-columns:1fr 1fr;min-height:500px;">
+    <div class="about-img-wrap" style="position:relative;overflow:hidden;">
       <img src="about.jpg" alt="Séance de magnétisme"
         style="width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(0.88) saturate(1.1);"
       />
       <div style="position:absolute;inset:0;background:linear-gradient(to right, transparent 60%, var(--forest));"></div>
     </div>
-    <div style="display:flex;flex-direction:column;justify-content:center;padding:5rem 4rem;">
+    <div class="about-img-content" style="display:flex;flex-direction:column;justify-content:center;padding:5rem 4rem;">
       <p class="intro-tag" data-i18n="img_tag" style="margin-bottom:1.4rem;">Soin &amp; Énergie</p>
       <h2 class="intro-title" data-i18n="img_title">Ressentir<br>pour <em>guérir</em></h2>
       <p class="intro-text" data-i18n="img_text">Le magnétiseur canalise et redistribue les énergies vitales avec les mains, sans contact ou à distance. Une approche douce, rapide et profonde pour retrouver votre équilibre intérieur.</p>
@@ -1976,6 +2110,24 @@ function closeModal(id) {
 }
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') document.querySelectorAll('.hf-modal.open').forEach(m => closeModal(m.id));
+});
+</script>
+
+<!-- Mobile Menu -->
+<script>
+const burgerBtn = document.getElementById('burger-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+
+function closeMobile() {
+  burgerBtn.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+burgerBtn.addEventListener('click', function() {
+  const isOpen = mobileMenu.classList.toggle('open');
+  burgerBtn.classList.toggle('open');
+  document.body.style.overflow = isOpen ? 'hidden' : '';
 });
 </script>
 
