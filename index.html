@@ -1313,10 +1313,10 @@ footer {
     <h2 class="intro-title" data-i18n="tarifs_title">Simple &amp; <em>transparent</em></h2>
   </div>
   <div class="tarifs-grid">
-    <div class="tarif reveal">
+    <div class="tarif reveal" data-tarif-id="distance">
       <p class="tarif-lbl" data-i18n="t1_lbl">Séance à distance</p>
-      <div class="tarif-p">35€</div>
-      <p class="tarif-u" data-i18n="t1_u">10 à 15 min · visio ou tél</p>
+      <div class="tarif-p" data-tarif-price>35€</div>
+      <p class="tarif-u" data-i18n="t1_u" data-tarif-subtitle>10 à 15 min · visio ou tél</p>
       <div class="tarif-sep"></div>
       <ul class="tarif-feats">
         <li data-i18n="t1_f1">Toute la France</li>
@@ -1325,10 +1325,10 @@ footer {
       </ul>
       <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
     </div>
-    <div class="tarif reveal">
+    <div class="tarif reveal" data-tarif-id="domicile">
       <p class="tarif-lbl" data-i18n="t2_lbl">Séance à domicile</p>
-      <div class="tarif-p">50€</div>
-      <p class="tarif-u" data-i18n="t2_u">10 à 15 min · rayon 20 min de St-Saturnin</p>
+      <div class="tarif-p" data-tarif-price>50€</div>
+      <p class="tarif-u" data-i18n="t2_u" data-tarif-subtitle>10 à 15 min · rayon 20 min de St-Saturnin</p>
       <div class="tarif-sep"></div>
       <ul class="tarif-feats">
         <li data-i18n="t2_f1">Déplacement inclus</li>
@@ -1337,10 +1337,10 @@ footer {
       </ul>
       <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
     </div>
-    <div class="tarif reveal">
+    <div class="tarif reveal" data-tarif-id="forfait">
       <p class="tarif-lbl" data-i18n="t3_lbl">Forfait 5 séances</p>
-      <div class="tarif-p">180€</div>
-      <p class="tarif-u" data-i18n="t3_u">soit 36€/séance · −10%</p>
+      <div class="tarif-p" data-tarif-price>180€</div>
+      <p class="tarif-u" data-i18n="t3_u" data-tarif-subtitle>soit 36€/séance · −10%</p>
       <div class="tarif-sep"></div>
       <ul class="tarif-feats">
         <li data-i18n="t3_f1">Présentiel ou distance</li>
@@ -2140,6 +2140,26 @@ const obs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+<!-- Dynamic pricing from prices.json -->
+<script>
+(function(){
+  fetch('prices.json?v='+Date.now())
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data.tarifs) return;
+      data.tarifs.forEach(t => {
+        const card = document.querySelector('[data-tarif-id="'+t.id+'"]');
+        if (!card) return;
+        const priceEl = card.querySelector('[data-tarif-price]');
+        const subtitleEl = card.querySelector('[data-tarif-subtitle]');
+        if (priceEl && t.price) priceEl.textContent = t.price;
+        if (subtitleEl && t.subtitle) subtitleEl.textContent = t.subtitle;
+      });
+    })
+    .catch(()=>{});
+})();
 </script>
 
 </body>

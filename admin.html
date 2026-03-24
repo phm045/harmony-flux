@@ -382,6 +382,81 @@ body::after {
   border-color:var(--gold); color:var(--gold);
 }
 
+/* Pricing editor */
+.pricing-editor {
+  background:var(--forest); border:1px solid var(--line);
+  margin-bottom:1.8rem;
+}
+
+.pricing-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.5rem; cursor:pointer;
+}
+.pricing-header:hover { background:rgba(200,168,75,0.03); }
+
+.pricing-header-left {
+  display:flex; align-items:center; gap:0.8rem;
+}
+
+.pricing-toggle {
+  background:none; border:none; color:var(--muted);
+  font-size:0.8rem; cursor:pointer; transition:transform 0.3s;
+  padding:0.3rem;
+}
+.pricing-toggle.open { transform:rotate(180deg); }
+
+.pricing-body {
+  padding:0 1.5rem 1.5rem; border-top:1px solid var(--line);
+}
+
+.pricing-cards {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1rem; padding-top:1.2rem;
+}
+
+.pricing-card {
+  background:var(--moss); border:1px solid var(--line);
+  padding:1.2rem; display:flex; flex-direction:column; gap:0.8rem;
+}
+
+.pricing-card-title {
+  font-family:'Cormorant',serif; font-size:0.95rem;
+  color:var(--gold2); font-weight:400;
+}
+
+.pricing-field { display:flex; flex-direction:column; gap:0.25rem; }
+
+.pricing-field label {
+  font-size:0.55rem; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--muted2);
+}
+
+.pricing-field input {
+  background:var(--fern); border:1px solid var(--line);
+  color:var(--cream); padding:0.5rem 0.7rem;
+  font-family:'Raleway',sans-serif; font-size:0.8rem;
+  font-weight:300; transition:border-color 0.3s;
+}
+.pricing-field input:focus {
+  outline:none; border-color:var(--gold);
+}
+
+.pricing-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top:1.2rem; margin-top:0.5rem;
+  border-top:1px solid var(--line);
+}
+
+.pricing-status {
+  font-size:0.7rem; color:var(--muted);
+}
+.pricing-status.success { color:var(--green); }
+.pricing-status.error { color:var(--red); }
+
+@media(max-width:768px) {
+  .pricing-cards { grid-template-columns:1fr; }
+}
+
 /* Iframe popup */
 .iframe-overlay {
   position:fixed; inset:0; z-index:700;
@@ -1043,6 +1118,32 @@ body::after {
       </div>
     </div>
 
+    <!-- Pricing editor -->
+    <div class="pricing-editor" id="pricing-editor">
+      <div class="pricing-header">
+        <div class="pricing-header-left">
+          <div class="planning-icon">€</div>
+          <div class="planning-text">
+            Tarifs du site
+            <small>Modifier les prix visibles par les visiteurs sur le site</small>
+          </div>
+        </div>
+        <button class="pricing-toggle" id="pricing-toggle" onclick="togglePricingEditor()">▼</button>
+      </div>
+      <div class="pricing-body" id="pricing-body" style="display:none;">
+        <div class="pricing-cards" id="pricing-cards">
+          <!-- Cards will be rendered by JS -->
+        </div>
+        <div class="pricing-footer">
+          <span class="pricing-status" id="pricing-status"></span>
+          <button class="action-btn btn-complete" id="btn-save-prices" onclick="savePrices()">
+            <span class="btn-spinner"></span>
+            <span class="btn-label">Enregistrer les tarifs</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Filter bar -->
     <div class="filter-bar">
       <div class="filter-group">
@@ -1693,6 +1794,144 @@ document.getElementById('filter-search').addEventListener('input', function() {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(applyFilters, 300);
 });
+
+/* ═══════════════════════════════════════
+   PRICING EDITOR
+   ═══════════════════════════════════════ */
+
+const GITHUB_REPO = 'phm045/harmony-flux';
+const PRICES_PATH = 'prices.json';
+let currentPrices = null;
+let pricesSha = null;
+
+function togglePricingEditor() {
+  const body = document.getElementById('pricing-body');
+  const toggle = document.getElementById('pricing-toggle');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    toggle.classList.add('open');
+    loadPrices();
+  } else {
+    body.style.display = 'none';
+    toggle.classList.remove('open');
+  }
+}
+
+async function loadPrices() {
+  const statusEl = document.getElementById('pricing-status');
+  statusEl.textContent = 'Chargement des tarifs…';
+  statusEl.className = 'pricing-status';
+
+  try {
+    // Fetch from GitHub API to get the sha (needed for update)
+    const resp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRICES_PATH);
+    if (!resp.ok) throw new Error('Fichier prices.json introuvable');
+    const file = await resp.json();
+    pricesSha = file.sha;
+    currentPrices = JSON.parse(atob(file.content));
+    renderPricingCards();
+    statusEl.textContent = 'Dernière mise à jour : ' + (currentPrices.updated ? new Date(currentPrices.updated).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'inconnue');
+  } catch (e) {
+    statusEl.textContent = 'Erreur : ' + e.message;
+    statusEl.className = 'pricing-status error';
+  }
+}
+
+function renderPricingCards() {
+  const container = document.getElementById('pricing-cards');
+  if (!currentPrices || !currentPrices.tarifs) return;
+
+  let html = '';
+  currentPrices.tarifs.forEach((t, i) => {
+    html += '<div class="pricing-card">';
+    html += '<div class="pricing-card-title">' + escapeHtml(t.label) + '</div>';
+    html += '<div class="pricing-field"><label>Prix</label>';
+    html += '<input type="text" id="price-' + i + '" value="' + escapeHtml(t.price) + '" placeholder="ex: 35€"></div>';
+    html += '<div class="pricing-field"><label>Sous-titre</label>';
+    html += '<input type="text" id="subtitle-' + i + '" value="' + escapeHtml(t.subtitle) + '" placeholder="ex: 15 min · visio"></div>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+async function savePrices() {
+  if (!currentPrices) return;
+  const btn = document.getElementById('btn-save-prices');
+  const statusEl = document.getElementById('pricing-status');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  statusEl.textContent = 'Sauvegarde en cours…';
+  statusEl.className = 'pricing-status';
+
+  try {
+    // Read values from inputs
+    currentPrices.tarifs.forEach((t, i) => {
+      const priceInput = document.getElementById('price-' + i);
+      const subtitleInput = document.getElementById('subtitle-' + i);
+      if (priceInput) t.price = priceInput.value.trim();
+      if (subtitleInput) t.subtitle = subtitleInput.value.trim();
+    });
+    currentPrices.updated = new Date().toISOString();
+
+    // Get current sha (might have changed)
+    const getResp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRICES_PATH);
+    if (getResp.ok) {
+      const getFile = await getResp.json();
+      pricesSha = getFile.sha;
+    }
+
+    // Update file via GitHub API
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentPrices, null, 2) + '\n')));
+    const resp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + PRICES_PATH, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'token ' + getGitHubToken()
+      },
+      body: JSON.stringify({
+        message: 'Mise à jour des tarifs depuis le panneau admin',
+        content: content,
+        sha: pricesSha
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.message || 'Erreur GitHub');
+    }
+
+    const result = await resp.json();
+    pricesSha = result.content.sha;
+    statusEl.textContent = 'Tarifs mis à jour avec succès. Les visiteurs verront les nouveaux prix.';
+    statusEl.className = 'pricing-status success';
+  } catch (e) {
+    statusEl.textContent = 'Erreur : ' + e.message;
+    statusEl.className = 'pricing-status error';
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// GitHub token — stored in sessionStorage after first use
+function getGitHubToken() {
+  return sessionStorage.getItem('gh_token') || '';
+}
+
+function setGitHubToken(token) {
+  sessionStorage.setItem('gh_token', token);
+}
+
+// On first save attempt, if no token, prompt for it
+const _origSavePrices = savePrices;
+savePrices = async function() {
+  if (!getGitHubToken()) {
+    const token = prompt('Pour sauvegarder les tarifs, entrez votre token GitHub (Personal Access Token) avec les droits "repo" :\n\nCréez-en un sur github.com/settings/tokens');
+    if (!token) return;
+    setGitHubToken(token.trim());
+  }
+  return _origSavePrices();
+};
 
 /* ═══════════════════════════════════════
    CAL.EU IFRAME POPUP

@@ -1,0 +1,26 @@
+{
+  "tarifs": [
+    {
+      "id": "distance",
+      "label": "Séance à distance",
+      "price": "35€",
+      "subtitle": "10 à 15 min · visio ou tél",
+      "features": ["Toute la France", "Bilan énergétique inclus", "Retour après séance"]
+    },
+    {
+      "id": "domicile",
+      "label": "Séance à domicile",
+      "price": "50€",
+      "subtitle": "10 à 15 min · rayon 20 min de St-Saturnin",
+      "features": ["Déplacement inclus", "Soin à votre domicile", "Bilan & conseils"]
+    },
+    {
+      "id": "forfait",
+      "label": "Forfait 5 séances",
+      "price": "180€",
+      "subtitle": "soit 36€/séance · −10%",
+      "features": ["Présentiel ou distance", "Suivi personnalisé", "Valable 3 mois"]
+    }
+  ],
+  "updated": "2026-03-24T20:51:00+01:00"
+}
