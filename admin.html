@@ -326,6 +326,62 @@ body::after {
   opacity:0.6;
 }
 
+/* Planning bar */
+.planning-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:linear-gradient(135deg, var(--fern), var(--sage));
+  border:1px solid var(--line);
+  padding:1rem 1.5rem; margin-bottom:1.8rem;
+  gap:1rem; flex-wrap:wrap;
+}
+
+.planning-bar-left {
+  display:flex; align-items:center; gap:0.8rem;
+}
+
+.planning-icon {
+  font-size:1.3rem; line-height:1;
+}
+
+.planning-text {
+  font-family:'Cormorant',serif; font-size:1rem;
+  color:var(--cream); font-weight:400;
+}
+
+.planning-text small {
+  display:block; font-family:'Raleway',sans-serif;
+  font-size:0.65rem; color:var(--muted); font-weight:300;
+  margin-top:0.15rem;
+}
+
+.planning-actions {
+  display:flex; gap:0.5rem; flex-wrap:wrap;
+}
+
+.planning-btn {
+  font-family:'Raleway',sans-serif; font-weight:400;
+  font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase;
+  padding:0.5rem 1.1rem; border-radius:2px; cursor:pointer;
+  transition:all 0.3s; text-decoration:none; display:inline-block;
+  white-space:nowrap;
+}
+
+.planning-btn-primary {
+  background:var(--gold); color:var(--night);
+  border:1px solid var(--gold);
+}
+.planning-btn-primary:hover {
+  background:var(--gold2); border-color:var(--gold2);
+}
+
+.planning-btn-secondary {
+  background:transparent; color:var(--muted);
+  border:1px solid var(--line);
+}
+.planning-btn-secondary:hover {
+  border-color:var(--gold); color:var(--gold);
+}
+
 /* Bookings list */
 .bookings-list {
   display:flex;
@@ -898,6 +954,23 @@ body::after {
       <div class="stat-card">
         <div class="stat-number" id="stat-cancelled"><span class="skeleton" style="display:inline-block;width:40px;height:2rem;">&nbsp;</span></div>
         <div class="stat-label">Annulés</div>
+      </div>
+    </div>
+
+    <!-- Planning bar -->
+    <div class="planning-bar">
+      <div class="planning-bar-left">
+        <div class="planning-icon">✨</div>
+        <div class="planning-text">
+          Gérer mon planning
+          <small>Modifier vos disponibilités, types d'événements et paramètres Cal.eu</small>
+        </div>
+      </div>
+      <div class="planning-actions">
+        <a href="https://app.cal.eu/availability" target="_blank" rel="noopener" class="planning-btn planning-btn-primary">Disponibilités</a>
+        <a href="https://app.cal.eu/event-types" target="_blank" rel="noopener" class="planning-btn planning-btn-secondary">Types d'événements</a>
+        <a href="https://app.cal.eu/bookings/upcoming" target="_blank" rel="noopener" class="planning-btn planning-btn-secondary">Mes RDV Cal.eu</a>
+        <a href="https://app.cal.eu/settings/my-account/profile" target="_blank" rel="noopener" class="planning-btn planning-btn-secondary">Paramètres</a>
       </div>
     </div>
 
