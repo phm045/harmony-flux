@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Harmony Flux</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #050810;
+  --forest: #080d1a;
+  --moss: #0d1528;
+  --fern: #162040;
+  --sage: #1e3060;
+  --gold: #c8a84b;
+  --gold2: #e8c870;
+  --gold3: #f5e4aa;
+  --cream: #e8eaf5;
+  --muted: #9aaac8;
+  --muted2: #6a80a8;
+  --line: rgba(200,168,75,0.15);
+  --green: #4ade80;
+  --orange: #f59e0b;
+  --red: #ef4444;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--night);
+  color: var(--cream);
+  font-family: 'Raleway', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* grain overlay */
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.9;
+}
+
+/* ═══ LOGIN SCREEN ═══ */
+#login-screen {
+  position: fixed; inset:0; z-index:500;
+  display: flex; align-items:center; justify-content:center;
+  background: var(--night);
+}
+
+.login-box {
+  position:relative; z-index:10;
+  background: var(--forest);
+  border: 1px solid var(--line);
+  padding: 3rem 2.5rem;
+  width: min(440px, 92vw);
+  text-align:center;
+}
+
+.login-logo {
+  font-family: 'Cormorant', serif;
+  font-size: 1.6rem;
+  color: var(--gold2);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+}
+
+.login-field {
+  width:100%; margin-bottom:1rem;
+}
+
+.login-field label {
+  display:block; text-align:left;
+  font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:0.4rem;
+}
+
+.login-field input {
+  width:100%;
+  background: var(--moss);
+  border:1px solid var(--line);
+  color:var(--cream);
+  padding:0.8rem 1rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.85rem; font-weight:300;
+  outline:none;
+  transition: border-color 0.3s;
+}
+
+.login-field input:focus {
+  border-color: var(--gold);
+}
+
+.login-btn {
+  width:100%; margin-top:1rem;
+  background: transparent;
+  border:1px solid var(--gold);
+  color: var(--gold);
+  padding: 0.85rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase;
+  cursor:pointer;
+  transition: all 0.3s;
+}
+
+.login-btn:hover {
+  background:var(--gold); color:var(--night);
+}
+
+.login-error {
+  display:none;
+  margin-top:1rem;
+  font-size:0.75rem;
+  color:var(--red);
+}
+
+/* ═══ ADMIN LAYOUT ═══ */
+#admin-app {
+  display:none;
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+}
+
+/* Header */
+.admin-header {
+  background: linear-gradient(to bottom, rgba(5,8,16,0.97), var(--forest));
+  border-bottom:1px solid var(--line);
+  padding:1.4rem 5vw;
+  display:flex; justify-content:space-between; align-items:center;
+  position:sticky; top:0; z-index:100;
+}
+
+.admin-brand {
+  display:flex; align-items:center; gap:1.5rem;
+}
+
+.admin-brand-name {
+  font-family:'Cormorant',serif;
+  font-size:1.2rem;
+  color:var(--gold2);
+  letter-spacing:0.1em;
+}
+
+.admin-brand-sep {
+  width:1px; height:24px;
+  background:var(--line);
+}
+
+.admin-brand-page {
+  font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--muted);
+}
+
+.admin-header-right {
+  display:flex; align-items:center; gap:1.5rem;
+}
+
+.back-link {
+  font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none;
+  transition:color 0.3s;
+}
+.back-link:hover { color:var(--gold); }
+
+.logout-btn {
+  background:transparent;
+  border:1px solid rgba(239,68,68,0.3);
+  color:var(--red);
+  padding:0.45rem 1rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+.logout-btn:hover {
+  background:var(--red); color:#fff; border-color:var(--red);
+}
+
+/* Main content */
+.admin-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 5vw 4rem;
+}
+
+/* Stats cards */
+.stats-row {
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--forest);
+  border:1px solid var(--line);
+  padding:1.5rem;
+  text-align:center;
+  transition: border-color 0.3s;
+}
+
+.stat-card:hover {
+  border-color: var(--gold);
+}
+
+.stat-number {
+  font-family:'Cormorant',serif;
+  font-size:2.4rem;
+  color:var(--gold2);
+  line-height:1;
+  margin-bottom:0.5rem;
+}
+
+.stat-label {
+  font-size:0.6rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--moss) 25%, var(--fern) 50%, var(--moss) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 2px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.stat-number .skeleton {
+  display:inline-block;
+  width:40px; height:2.4rem;
+}
+
+/* Filter bar */
+.filter-bar {
+  background:var(--forest);
+  border:1px solid var(--line);
+  padding:1.2rem 1.5rem;
+  margin-bottom:1.5rem;
+  display:flex;
+  gap:1rem;
+  align-items:flex-end;
+  flex-wrap:wrap;
+}
+
+.filter-group {
+  display:flex;
+  flex-direction:column;
+  gap:0.3rem;
+}
+
+.filter-group label {
+  font-size:0.55rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.filter-group select,
+.filter-group input[type="date"],
+.filter-group input[type="text"] {
+  background:var(--moss);
+  border:1px solid var(--line);
+  color:var(--cream);
+  padding:0.55rem 0.8rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.78rem;
+  font-weight:300;
+  outline:none;
+  transition:border-color 0.3s;
+  min-width: 140px;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  border-color:var(--gold);
+}
+
+.filter-group select option {
+  background:var(--moss);
+  color:var(--cream);
+}
+
+.filter-actions {
+  display:flex; gap:0.6rem; margin-left:auto; align-items:flex-end;
+}
+
+.btn-refresh,
+.btn-reset {
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--muted);
+  padding:0.55rem 1rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.6rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.3s;
+  white-space:nowrap;
+}
+
+.btn-refresh:hover { border-color:var(--gold); color:var(--gold); }
+.btn-reset:hover { border-color:var(--muted); color:var(--cream); }
+
+.btn-refresh.loading {
+  pointer-events:none;
+  opacity:0.6;
+}
+
+/* Bookings list */
+.bookings-list {
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+.booking-item {
+  background:var(--forest);
+  border:1px solid var(--line);
+  margin-bottom:-1px;
+  transition: border-color 0.3s;
+}
+
+.booking-item:first-child { border-top-left-radius:2px; border-top-right-radius:2px; }
+.booking-item:last-child { border-bottom-left-radius:2px; border-bottom-right-radius:2px; }
+
+.booking-item:hover {
+  border-color:rgba(200,168,75,0.3);
+  z-index:1;
+  position:relative;
+}
+
+.booking-header {
+  display:grid;
+  grid-template-columns: 180px 1fr 160px 120px 90px 40px;
+  align-items:center;
+  padding:1rem 1.5rem;
+  cursor:pointer;
+  gap:1rem;
+  user-select:none;
+}
+
+.booking-date {
+  font-size:0.82rem;
+  color:var(--cream);
+}
+
+.booking-date small {
+  display:block;
+  font-size:0.65rem;
+  color:var(--muted);
+  margin-top:0.15rem;
+}
+
+.booking-title {
+  font-family:'Cormorant',serif;
+  font-size:1rem;
+  color:var(--gold3);
+}
+
+.booking-attendee {
+  font-size:0.78rem;
+  color:var(--muted);
+}
+
+.booking-attendee strong {
+  color:var(--cream);
+  font-weight:400;
+}
+
+.booking-duration {
+  font-size:0.72rem;
+  color:var(--muted);
+  text-align:center;
+}
+
+.booking-status {
+  display:inline-block;
+  font-size:0.55rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding:0.3rem 0.7rem;
+  border-radius:2px;
+  font-weight:400;
+}
+
+.status-accepted,
+.status-confirmed {
+  background:rgba(74,222,128,0.12);
+  color:var(--green);
+  border:1px solid rgba(74,222,128,0.25);
+}
+
+.status-pending {
+  background:rgba(245,158,11,0.12);
+  color:var(--orange);
+  border:1px solid rgba(245,158,11,0.25);
+}
+
+.status-cancelled,
+.status-rejected {
+  background:rgba(239,68,68,0.12);
+  color:var(--red);
+  border:1px solid rgba(239,68,68,0.25);
+}
+
+.status-rescheduled {
+  background:rgba(154,170,200,0.12);
+  color:var(--muted);
+  border:1px solid rgba(154,170,200,0.25);
+}
+
+.booking-chevron {
+  text-align:center;
+  color:var(--muted2);
+  font-size:0.75rem;
+  transition:transform 0.3s;
+}
+
+.booking-item.expanded .booking-chevron {
+  transform:rotate(180deg);
+}
+
+.booking-details {
+  display:none;
+  padding:0 1.5rem 1.2rem;
+  border-top:1px solid var(--line);
+  margin:0 1.5rem;
+}
+
+.booking-item.expanded .booking-details {
+  display:block;
+}
+
+.detail-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+  padding-top:1rem;
+}
+
+.detail-item label {
+  display:block;
+  font-size:0.55rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:0.25rem;
+}
+
+.detail-item span {
+  font-size:0.82rem;
+  color:var(--cream);
+}
+
+.detail-item a {
+  color:var(--gold);
+  text-decoration:none;
+  font-size:0.82rem;
+}
+
+.detail-item a:hover {
+  color:var(--gold2);
+}
+
+/* Pagination */
+.pagination {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:0.5rem;
+  margin-top:2rem;
+}
+
+.page-btn {
+  background:var(--forest);
+  border:1px solid var(--line);
+  color:var(--muted);
+  padding:0.5rem 0.9rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.72rem;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.page-btn:hover { border-color:var(--gold); color:var(--gold); }
+
+.page-btn.active {
+  border-color:var(--gold);
+  color:var(--gold);
+  background:rgba(200,168,75,0.08);
+}
+
+.page-btn:disabled {
+  opacity:0.3;
+  cursor:default;
+}
+
+.page-info {
+  font-size:0.65rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+  margin:0 0.5rem;
+}
+
+/* Empty state */
+.empty-state {
+  text-align:center;
+  padding:4rem 2rem;
+  background:var(--forest);
+  border:1px solid var(--line);
+}
+
+.empty-state-icon {
+  font-size:2.5rem;
+  margin-bottom:1rem;
+  opacity:0.4;
+}
+
+.empty-state p {
+  font-size:0.85rem;
+  color:var(--muted);
+  margin-bottom:0.5rem;
+}
+
+.empty-state small {
+  font-size:0.7rem;
+  color:var(--muted2);
+}
+
+/* Error state */
+.error-state {
+  text-align:center;
+  padding:3rem 2rem;
+  background:var(--forest);
+  border:1px solid rgba(239,68,68,0.2);
+}
+
+.error-state p {
+  font-size:0.85rem;
+  color:var(--red);
+  margin-bottom:1rem;
+}
+
+.error-state .btn-retry {
+  background:transparent;
+  border:1px solid var(--red);
+  color:var(--red);
+  padding:0.55rem 1.5rem;
+  font-family:'Raleway',sans-serif;
+  font-size:0.6rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.error-state .btn-retry:hover {
+  background:var(--red); color:#fff;
+}
+
+/* Settings section */
+.settings-section {
+  margin-top:2.5rem;
+  padding:1.5rem;
+  background:var(--forest);
+  border:1px solid var(--line);
+}
+
+.settings-title {
+  font-family:'Cormorant',serif;
+  font-size:1.1rem;
+  color:var(--gold3);
+  margin-bottom:1rem;
+}
+
+.settings-item {
+  font-size:0.78rem;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+}
+
+.settings-item strong {
+  color:var(--cream);
+  font-weight:400;
+}
+
+.settings-dot {
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--green);
+  display:inline-block;
+}
+
+/* Loading overlay for bookings */
+.bookings-loading {
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+.skeleton-row {
+  background:var(--forest);
+  border:1px solid var(--line);
+  margin-bottom:-1px;
+  padding:1rem 1.5rem;
+  display:grid;
+  grid-template-columns: 180px 1fr 160px 120px 90px 40px;
+  gap:1rem;
+  align-items:center;
+}
+
+.skeleton-block {
+  height:14px;
+  border-radius:2px;
+}
+
+.skeleton-block.w-full { width:100%; }
+.skeleton-block.w-3-4 { width:75%; }
+.skeleton-block.w-1-2 { width:50%; }
+.skeleton-block.w-1-4 { width:25%; }
+.skeleton-block.h-lg { height:20px; }
+
+/* Auto-refresh indicator */
+.auto-refresh-indicator {
+  font-size:0.55rem;
+  color:var(--muted2);
+  letter-spacing:0.1em;
+  text-align:right;
+  margin-bottom:0.8rem;
+}
+
+/* Footer */
+.admin-footer {
+  text-align:center;
+  padding:2rem 5vw;
+  border-top:1px solid var(--line);
+  margin-top:3rem;
+}
+
+.admin-footer a {
+  font-size:0.6rem;
+  color:var(--muted2);
+  text-decoration:none;
+  letter-spacing:0.12em;
+}
+
+.admin-footer a:hover {
+  color:var(--gold);
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 900px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .booking-header {
+    grid-template-columns: 1fr 1fr;
+    gap:0.6rem;
+  }
+
+  .booking-date { order:1; }
+  .booking-status { order:2; text-align:right; }
+  .booking-title { order:3; grid-column:1/-1; }
+  .booking-attendee { order:4; grid-column:1/-1; }
+  .booking-duration { order:5; text-align:left; }
+  .booking-chevron { order:6; }
+
+  .skeleton-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-grid {
+    grid-template-columns:1fr;
+  }
+
+  .filter-bar {
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    min-width:auto;
+    width:100%;
+  }
+
+  .filter-actions {
+    margin-left:0;
+    justify-content:stretch;
+  }
+
+  .filter-actions .btn-refresh,
+  .filter-actions .btn-reset {
+    flex:1;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap:0.6rem;
+  }
+
+  .stat-card { padding:1rem; }
+  .stat-number { font-size:1.8rem; }
+
+  .admin-header {
+    flex-direction:column;
+    gap:0.8rem;
+    padding:1rem 4vw;
+  }
+
+  .admin-brand { gap:0.8rem; }
+  .admin-brand-name { font-size:1rem; }
+
+  .booking-header {
+    grid-template-columns: 1fr auto;
+    padding:0.8rem 1rem;
+    gap:0.4rem;
+  }
+
+  .booking-details {
+    margin:0 1rem;
+    padding:0 1rem 1rem;
+  }
+
+  .login-box {
+    padding:2rem 1.5rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Harmony Flux</div>
+    <div class="login-subtitle">Panneau d'Administration</div>
+    <div class="login-field">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label for="login-password">Mot de passe</label>
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="login-submit">Connexion</button>
+    <div class="login-error" id="login-error">Email ou mot de passe incorrect.</div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN APP ═══ -->
+<div id="admin-app">
+  <header class="admin-header">
+    <div class="admin-brand">
+      <span class="admin-brand-name">Harmony Flux</span>
+      <span class="admin-brand-sep"></span>
+      <span class="admin-brand-page">Panneau d'Administration</span>
+    </div>
+    <div class="admin-header-right">
+      <a href="index.html" class="back-link">← Retour au site</a>
+      <button class="logout-btn" id="logout-btn">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-total"><span class="skeleton" style="display:inline-block;width:40px;height:2rem;">&nbsp;</span></div>
+        <div class="stat-label">Total RDV</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-upcoming"><span class="skeleton" style="display:inline-block;width:40px;height:2rem;">&nbsp;</span></div>
+        <div class="stat-label">À venir</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-past"><span class="skeleton" style="display:inline-block;width:40px;height:2rem;">&nbsp;</span></div>
+        <div class="stat-label">Passés</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-cancelled"><span class="skeleton" style="display:inline-block;width:40px;height:2rem;">&nbsp;</span></div>
+        <div class="stat-label">Annulés</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="filter-status">Statut</label>
+        <select id="filter-status">
+          <option value="all">Tous</option>
+          <option value="upcoming">À venir</option>
+          <option value="past">Passés</option>
+          <option value="cancelled">Annulés</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="filter-date-from">Date début</label>
+        <input type="date" id="filter-date-from">
+      </div>
+      <div class="filter-group">
+        <label for="filter-date-to">Date fin</label>
+        <input type="date" id="filter-date-to">
+      </div>
+      <div class="filter-group">
+        <label for="filter-search">Recherche</label>
+        <input type="text" id="filter-search" placeholder="Nom ou email...">
+      </div>
+      <div class="filter-actions">
+        <button class="btn-refresh" id="btn-refresh">Rafraîchir</button>
+        <button class="btn-reset" id="btn-reset">Réinitialiser</button>
+      </div>
+    </div>
+
+    <!-- Auto-refresh indicator -->
+    <div class="auto-refresh-indicator" id="refresh-indicator">
+      Actualisation automatique toutes les 5 min — <span id="last-refresh-time">--</span>
+    </div>
+
+    <!-- Bookings container -->
+    <div id="bookings-container">
+      <!-- Skeleton loader shown initially -->
+      <div class="bookings-loading" id="bookings-skeleton">
+        <div class="skeleton-row"><div class="skeleton skeleton-block w-3-4"></div><div class="skeleton skeleton-block w-full"></div><div class="skeleton skeleton-block w-1-2"></div><div class="skeleton skeleton-block w-1-4"></div><div class="skeleton skeleton-block w-1-4"></div><div></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-block w-3-4"></div><div class="skeleton skeleton-block w-full"></div><div class="skeleton skeleton-block w-1-2"></div><div class="skeleton skeleton-block w-1-4"></div><div class="skeleton skeleton-block w-1-4"></div><div></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-block w-3-4"></div><div class="skeleton skeleton-block w-full"></div><div class="skeleton skeleton-block w-1-2"></div><div class="skeleton skeleton-block w-1-4"></div><div class="skeleton skeleton-block w-1-4"></div><div></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-block w-3-4"></div><div class="skeleton skeleton-block w-full"></div><div class="skeleton skeleton-block w-1-2"></div><div class="skeleton skeleton-block w-1-4"></div><div class="skeleton skeleton-block w-1-4"></div><div></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-block w-3-4"></div><div class="skeleton skeleton-block w-full"></div><div class="skeleton skeleton-block w-1-2"></div><div class="skeleton skeleton-block w-1-4"></div><div class="skeleton skeleton-block w-1-4"></div><div></div></div>
+      </div>
+
+      <!-- Bookings will be rendered here -->
+      <div class="bookings-list" id="bookings-list" style="display:none;"></div>
+
+      <!-- Error state -->
+      <div class="error-state" id="error-state" style="display:none;">
+        <p id="error-message">Impossible de charger les rendez-vous.</p>
+        <button class="btn-retry" id="btn-retry">Réessayer</button>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="empty-state-icon">📅</div>
+        <p>Aucun rendez-vous trouvé</p>
+        <small>Essayez de modifier les filtres ou vérifiez la connexion à Cal.com</small>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination" style="display:none;"></div>
+
+    <!-- Settings -->
+    <div class="settings-section">
+      <div class="settings-title">Paramètres</div>
+      <div class="settings-item">
+        <span class="settings-dot"></span>
+        Notifications envoyées à : <strong>tonydegois84@gmail.com</strong>
+      </div>
+    </div>
+  </main>
+
+  <footer class="admin-footer">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+  </footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   AUTHENTICATION
+   ═══════════════════════════════════════ */
+
+const ADMIN_EMAIL = 'tonydegois84@gmail.com';
+const ADMIN_HASH = 'ec327cbf9cefdeeb7e0881714c18a79d6c308347a32d333c9d8ead23282552f5';
+
+/* ═══════════════════════════════════════
+   CAL.COM API CONFIG (must be before auth check)
+   ═══════════════════════════════════════ */
+
+const CAL_API_BASE = 'https://api.cal.com/v2/bookings';
+const CAL_API_KEY = 'cal_live_02a29a00f52ed72bd2dfd618be1b02d6';
+
+let allBookings = [];
+let filteredBookings = [];
+let currentPage = 1;
+const PAGE_SIZE = 20;
+let refreshInterval = null;
+
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function isAuthenticated() {
+  return sessionStorage.getItem('hf_admin_auth') === 'true';
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-app').style.display = 'block';
+  loadBookings();
+  startAutoRefresh();
+}
+
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-app').style.display = 'none';
+  sessionStorage.removeItem('hf_admin_auth');
+  if (refreshInterval) clearInterval(refreshInterval);
+}
+
+// Check session on load
+if (isAuthenticated()) {
+  showApp();
+} 
+
+// Login handler
+document.getElementById('login-submit').addEventListener('click', handleLogin);
+document.getElementById('login-password').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('login-email').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  const errorEl = document.getElementById('login-error');
+
+  if (!email || !password) {
+    errorEl.textContent = 'Veuillez remplir tous les champs.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const hash = await sha256(password);
+
+  if (email === ADMIN_EMAIL && hash === ADMIN_HASH) {
+    sessionStorage.setItem('hf_admin_auth', 'true');
+    errorEl.style.display = 'none';
+    showApp();
+  } else {
+    errorEl.textContent = 'Email ou mot de passe incorrect.';
+    errorEl.style.display = 'block';
+  }
+}
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', showLogin);
+
+
+/* ═══════════════════════════════════════
+   CAL.COM API FUNCTIONS
+   ═══════════════════════════════════════ */
+
+async function fetchBookings() {
+  const headers = {
+    'Authorization': 'Bearer ' + CAL_API_KEY,
+    'cal-api-version': '2024-08-13',
+    'Content-Type': 'application/json'
+  };
+
+  // Fetch all statuses
+  const statuses = ['upcoming', 'past', 'cancelled', 'recurring'];
+  const results = [];
+
+  for (const status of statuses) {
+    try {
+      let url = CAL_API_BASE + '?status=' + status + '&take=250';
+      const resp = await fetch(url, { headers });
+      if (!resp.ok) throw new Error('API error: ' + resp.status);
+      const data = await resp.json();
+      if (data.status === 'success' && data.data) {
+        const bookings = Array.isArray(data.data) ? data.data : [];
+        bookings.forEach(b => {
+          if (!b._fetchedStatus) b._fetchedStatus = status;
+        });
+        results.push(...bookings);
+      }
+    } catch (e) {
+      console.warn('Failed to fetch ' + status + ' bookings:', e);
+    }
+  }
+
+  // Deduplicate by uid
+  const seen = new Set();
+  const unique = [];
+  for (const b of results) {
+    const uid = b.uid || b.id || JSON.stringify(b);
+    if (!seen.has(uid)) {
+      seen.add(uid);
+      unique.push(b);
+    }
+  }
+
+  return unique;
+}
+
+async function loadBookings() {
+  showSkeleton();
+  hideError();
+  hideEmpty();
+  document.getElementById('bookings-list').style.display = 'none';
+  document.getElementById('pagination').style.display = 'none';
+
+  try {
+    allBookings = await fetchBookings();
+    updateStats();
+    applyFilters();
+    updateRefreshTime();
+  } catch (e) {
+    console.error('Error loading bookings:', e);
+    hideSkeleton();
+    showError('Impossible de charger les rendez-vous. Vérifiez votre connexion internet.');
+  }
+}
+
+function updateStats() {
+  const now = new Date();
+  let total = allBookings.length;
+  let upcoming = 0, past = 0, cancelled = 0;
+
+  allBookings.forEach(b => {
+    const status = getBookingStatus(b);
+    if (status === 'cancelled') cancelled++;
+    else if (isUpcoming(b)) upcoming++;
+    else past++;
+  });
+
+  animateNumber('stat-total', total);
+  animateNumber('stat-upcoming', upcoming);
+  animateNumber('stat-past', past);
+  animateNumber('stat-cancelled', cancelled);
+}
+
+function animateNumber(id, target) {
+  const el = document.getElementById(id);
+  el.textContent = target;
+}
+
+function getBookingStatus(b) {
+  const s = (b.status || '').toLowerCase();
+  if (s === 'cancelled' || s === 'rejected') return 'cancelled';
+  if (s === 'pending') return 'pending';
+  if (s === 'rescheduled') return 'rescheduled';
+  return 'confirmed';
+}
+
+function isUpcoming(b) {
+  const start = new Date(b.startTime || b.start);
+  return start > new Date();
+}
+
+function getStatusLabel(status) {
+  const map = {
+    confirmed: 'Confirmé',
+    accepted: 'Confirmé',
+    pending: 'En attente',
+    cancelled: 'Annulé',
+    rejected: 'Annulé',
+    rescheduled: 'Reporté'
+  };
+  return map[status] || status;
+}
+
+function getStatusClass(status) {
+  if (status === 'cancelled' || status === 'rejected') return 'status-cancelled';
+  if (status === 'pending') return 'status-pending';
+  if (status === 'rescheduled') return 'status-rescheduled';
+  return 'status-accepted';
+}
+
+/* ═══════════════════════════════════════
+   FILTERS
+   ═══════════════════════════════════════ */
+
+function applyFilters() {
+  const statusFilter = document.getElementById('filter-status').value;
+  const dateFrom = document.getElementById('filter-date-from').value;
+  const dateTo = document.getElementById('filter-date-to').value;
+  const search = document.getElementById('filter-search').value.trim().toLowerCase();
+
+  filteredBookings = allBookings.filter(b => {
+    // Status filter
+    if (statusFilter === 'upcoming' && (!isUpcoming(b) || getBookingStatus(b) === 'cancelled')) return false;
+    if (statusFilter === 'past' && (isUpcoming(b) || getBookingStatus(b) === 'cancelled')) return false;
+    if (statusFilter === 'cancelled' && getBookingStatus(b) !== 'cancelled') return false;
+
+    // Date filter
+    const bDate = new Date(b.startTime || b.start);
+    if (dateFrom && bDate < new Date(dateFrom + 'T00:00:00')) return false;
+    if (dateTo && bDate > new Date(dateTo + 'T23:59:59')) return false;
+
+    // Search filter
+    if (search) {
+      const attendees = b.attendees || [];
+      const attendeeMatch = attendees.some(a =>
+        (a.name || '').toLowerCase().includes(search) ||
+        (a.email || '').toLowerCase().includes(search)
+      );
+      const titleMatch = (b.title || '').toLowerCase().includes(search);
+      const eventMatch = (b.eventType && b.eventType.title || '').toLowerCase().includes(search);
+      if (!attendeeMatch && !titleMatch && !eventMatch) return false;
+    }
+
+    return true;
+  });
+
+  // Sort by date descending (newest first)
+  filteredBookings.sort((a, b) => {
+    const da = new Date(a.startTime || a.start);
+    const db = new Date(b.startTime || b.start);
+    return db - da;
+  });
+
+  currentPage = 1;
+  renderBookings();
+}
+
+/* ═══════════════════════════════════════
+   RENDER
+   ═══════════════════════════════════════ */
+
+function formatDateFR(dateStr) {
+  const d = new Date(dateStr);
+  const opts = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'Europe/Paris'
+  };
+  return d.toLocaleDateString('fr-FR', opts);
+}
+
+function formatTimeFR(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Paris'
+  });
+}
+
+function getDuration(b) {
+  if (b.startTime && b.endTime) {
+    const start = new Date(b.startTime);
+    const end = new Date(b.endTime);
+    const diffMin = Math.round((end - start) / 60000);
+    if (diffMin >= 60) {
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      return m > 0 ? h + 'h' + m + 'min' : h + 'h';
+    }
+    return diffMin + ' min';
+  }
+  if (b.duration) return b.duration + ' min';
+  return '—';
+}
+
+function getAttendee(b) {
+  const attendees = b.attendees || [];
+  if (attendees.length > 0) {
+    return {
+      name: attendees[0].name || 'Inconnu',
+      email: attendees[0].email || ''
+    };
+  }
+  return { name: 'Inconnu', email: '' };
+}
+
+function getLocation(b) {
+  if (b.location) return b.location;
+  if (b.meetingUrl) return b.meetingUrl;
+  if (b.metadata && b.metadata.videoCallUrl) return b.metadata.videoCallUrl;
+  return null;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function renderBookings() {
+  hideSkeleton();
+  hideError();
+
+  const list = document.getElementById('bookings-list');
+  const emptyState = document.getElementById('empty-state');
+  const pagination = document.getElementById('pagination');
+
+  if (filteredBookings.length === 0) {
+    list.style.display = 'none';
+    emptyState.style.display = 'block';
+    pagination.style.display = 'none';
+    return;
+  }
+
+  hideEmpty();
+
+  // Pagination
+  const totalPages = Math.ceil(filteredBookings.length / PAGE_SIZE);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const pageBookings = filteredBookings.slice(start, end);
+
+  let html = '';
+  pageBookings.forEach((b, idx) => {
+    const status = getBookingStatus(b);
+    const statusLabel = getStatusLabel(status);
+    const statusClass = getStatusClass(status);
+    const attendee = getAttendee(b);
+    const location = getLocation(b);
+    const startTime = b.startTime || b.start;
+    const title = b.title || (b.eventType && b.eventType.title) || 'Rendez-vous';
+
+    html += '<div class="booking-item" data-idx="' + idx + '">';
+    html += '<div class="booking-header" onclick="toggleBooking(this)">';
+    html += '<div class="booking-date">' + formatTimeFR(startTime) + '<small>' + formatDateFR(startTime) + '</small></div>';
+    html += '<div class="booking-title">' + escapeHtml(title) + '</div>';
+    html += '<div class="booking-attendee"><strong>' + escapeHtml(attendee.name) + '</strong><br>' + escapeHtml(attendee.email) + '</div>';
+    html += '<div class="booking-duration">' + getDuration(b) + '</div>';
+    html += '<div><span class="booking-status ' + statusClass + '">' + statusLabel + '</span></div>';
+    html += '<div class="booking-chevron">▼</div>';
+    html += '</div>';
+
+    // Details accordion
+    html += '<div class="booking-details">';
+    html += '<div class="detail-grid">';
+    html += '<div class="detail-item"><label>Date & Heure</label><span>' + formatDateFR(startTime) + ' à ' + formatTimeFR(startTime) + '</span></div>';
+    html += '<div class="detail-item"><label>Durée</label><span>' + getDuration(b) + '</span></div>';
+    html += '<div class="detail-item"><label>Participant</label><span>' + escapeHtml(attendee.name) + (attendee.email ? ' (' + escapeHtml(attendee.email) + ')' : '') + '</span></div>';
+    html += '<div class="detail-item"><label>Statut</label><span class="booking-status ' + statusClass + '">' + statusLabel + '</span></div>';
+
+    if (location) {
+      const isUrl = location.startsWith('http');
+      html += '<div class="detail-item"><label>Lieu / Lien</label>';
+      if (isUrl) {
+        html += '<a href="' + escapeHtml(location) + '" target="_blank" rel="noopener">' + escapeHtml(location) + '</a>';
+      } else {
+        html += '<span>' + escapeHtml(location) + '</span>';
+      }
+      html += '</div>';
+    }
+
+    if (b.uid) {
+      html += '<div class="detail-item"><label>Réf.</label><span style="font-size:0.7rem;color:var(--muted2);">' + escapeHtml(b.uid) + '</span></div>';
+    }
+
+    // Notes
+    if (b.description || (b.responses && Object.keys(b.responses).length > 0)) {
+      html += '<div class="detail-item" style="grid-column:1/-1;"><label>Notes</label><span>';
+      if (b.description) html += escapeHtml(b.description);
+      if (b.responses) {
+        const entries = Object.entries(b.responses);
+        if (entries.length > 0) {
+          entries.forEach(([key, val]) => {
+            if (key === 'name' || key === 'email' || key === 'location') return;
+            html += '<br><em style="color:var(--muted);">' + escapeHtml(key) + ':</em> ' + escapeHtml(typeof val === 'object' ? JSON.stringify(val) : String(val));
+          });
+        }
+      }
+      html += '</span></div>';
+    }
+
+    html += '</div></div></div>';
+  });
+
+  list.innerHTML = html;
+  list.style.display = 'flex';
+
+  // Render pagination
+  if (totalPages > 1) {
+    let pHtml = '';
+    pHtml += '<button class="page-btn" onclick="goToPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>←</button>';
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (totalPages <= 7 || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+        pHtml += '<button class="page-btn' + (i === currentPage ? ' active' : '') + '" onclick="goToPage(' + i + ')">' + i + '</button>';
+      } else if (i === currentPage - 2 || i === currentPage + 2) {
+        pHtml += '<span class="page-info">…</span>';
+      }
+    }
+
+    pHtml += '<span class="page-info">' + filteredBookings.length + ' résultat' + (filteredBookings.length > 1 ? 's' : '') + '</span>';
+    pHtml += '<button class="page-btn" onclick="goToPage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>→</button>';
+
+    pagination.innerHTML = pHtml;
+    pagination.style.display = 'flex';
+  } else {
+    pagination.style.display = 'none';
+  }
+}
+
+function goToPage(page) {
+  const totalPages = Math.ceil(filteredBookings.length / PAGE_SIZE);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderBookings();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleBooking(header) {
+  const item = header.parentElement;
+  item.classList.toggle('expanded');
+}
+
+/* ═══════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════ */
+
+function showSkeleton() {
+  document.getElementById('bookings-skeleton').style.display = 'flex';
+}
+
+function hideSkeleton() {
+  document.getElementById('bookings-skeleton').style.display = 'none';
+}
+
+function showError(msg) {
+  document.getElementById('error-message').textContent = msg || 'Impossible de charger les rendez-vous.';
+  document.getElementById('error-state').style.display = 'block';
+}
+
+function hideError() {
+  document.getElementById('error-state').style.display = 'none';
+}
+
+function hideEmpty() {
+  document.getElementById('empty-state').style.display = 'none';
+}
+
+function updateRefreshTime() {
+  const now = new Date();
+  document.getElementById('last-refresh-time').textContent =
+    'Dernière mise à jour : ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
+}
+
+/* ═══════════════════════════════════════
+   AUTO REFRESH
+   ═══════════════════════════════════════ */
+
+function startAutoRefresh() {
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(() => {
+    if (isAuthenticated()) loadBookings();
+  }, 5 * 60 * 1000); // 5 minutes
+}
+
+/* ═══════════════════════════════════════
+   EVENT LISTENERS
+   ═══════════════════════════════════════ */
+
+document.getElementById('btn-refresh').addEventListener('click', function() {
+  this.classList.add('loading');
+  this.textContent = 'Chargement…';
+  loadBookings().finally(() => {
+    this.classList.remove('loading');
+    this.textContent = 'Rafraîchir';
+  });
+});
+
+document.getElementById('btn-retry').addEventListener('click', function() {
+  loadBookings();
+});
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  document.getElementById('filter-status').value = 'all';
+  document.getElementById('filter-date-from').value = '';
+  document.getElementById('filter-date-to').value = '';
+  document.getElementById('filter-search').value = '';
+  applyFilters();
+});
+
+// Live filter on change
+document.getElementById('filter-status').addEventListener('change', applyFilters);
+document.getElementById('filter-date-from').addEventListener('change', applyFilters);
+document.getElementById('filter-date-to').addEventListener('change', applyFilters);
+
+let searchTimeout;
+document.getElementById('filter-search').addEventListener('input', function() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(applyFilters, 300);
+});
+
+</script>
+</body>
+</html>
