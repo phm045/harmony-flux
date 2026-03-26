@@ -457,6 +457,171 @@ body::after {
   .pricing-cards { grid-template-columns:1fr; }
 }
 
+/* Revenue editor */
+.revenue-editor {
+  background:var(--forest); border:1px solid var(--line);
+  margin-bottom:1.8rem;
+}
+
+.revenue-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.5rem; cursor:pointer;
+}
+.revenue-header:hover { background:rgba(200,168,75,0.03); }
+
+.revenue-header-left {
+  display:flex; align-items:center; gap:0.8rem;
+}
+
+.revenue-toggle {
+  background:none; border:none; color:var(--muted);
+  font-size:0.8rem; cursor:pointer; transition:transform 0.3s;
+  padding:0.3rem;
+}
+.revenue-toggle.open { transform:rotate(180deg); }
+
+.revenue-body {
+  padding:0 1.5rem 1.5rem; border-top:1px solid var(--line);
+}
+
+.revenue-form {
+  display:flex; gap:0.8rem; align-items:flex-end;
+  flex-wrap:wrap; padding-top:1.2rem; padding-bottom:1.2rem;
+}
+
+.revenue-form .filter-group select,
+.revenue-form .filter-group input[type="number"] {
+  background:var(--moss); border:1px solid var(--line);
+  color:var(--cream); padding:0.55rem 0.8rem;
+  font-family:'Raleway',sans-serif; font-size:0.78rem;
+  font-weight:300; outline:none; transition:border-color 0.3s;
+  min-width:120px;
+}
+.revenue-form .filter-group select:focus,
+.revenue-form .filter-group input:focus {
+  border-color:var(--gold);
+}
+
+.revenue-btn-add {
+  background:rgba(200,168,75,0.12); color:var(--gold);
+  border:1px solid rgba(200,168,75,0.3);
+  font-family:'Raleway',sans-serif; font-weight:400;
+  font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:0.55rem 1.2rem; cursor:pointer; transition:all 0.3s;
+}
+.revenue-btn-add:hover {
+  background:rgba(200,168,75,0.25);
+}
+
+.revenue-summary {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1rem; margin-bottom:1.5rem;
+}
+
+.revenue-summary-card {
+  background:var(--moss); border:1px solid var(--line);
+  padding:1.2rem; text-align:center;
+  transition:border-color 0.3s;
+}
+.revenue-summary-card:hover { border-color:var(--gold); }
+
+.revenue-summary-value {
+  font-family:'Cormorant',serif; font-size:1.8rem;
+  color:var(--gold2); line-height:1; margin-bottom:0.4rem;
+}
+
+.revenue-summary-label {
+  font-size:0.55rem; letter-spacing:0.15em;
+  text-transform:uppercase; color:var(--muted);
+}
+
+.revenue-year-filter {
+  display:flex; align-items:center; gap:0.8rem;
+  margin-bottom:1rem;
+}
+.revenue-year-filter label {
+  font-size:0.55rem; letter-spacing:0.15em;
+  text-transform:uppercase; color:var(--muted);
+}
+.revenue-year-filter select {
+  background:var(--moss); border:1px solid var(--line);
+  color:var(--cream); padding:0.45rem 0.7rem;
+  font-family:'Raleway',sans-serif; font-size:0.78rem;
+  font-weight:300; outline:none; transition:border-color 0.3s;
+}
+.revenue-year-filter select:focus { border-color:var(--gold); }
+
+.revenue-table {
+  width:100%; border-collapse:collapse; margin-bottom:1.5rem;
+}
+.revenue-table th {
+  text-align:left; font-size:0.55rem; letter-spacing:0.15em;
+  text-transform:uppercase; color:var(--muted);
+  padding:0.7rem 0.8rem; border-bottom:1px solid var(--line);
+}
+.revenue-table td {
+  padding:0.7rem 0.8rem; font-size:0.78rem;
+  border-bottom:1px solid rgba(200,168,75,0.07);
+  color:var(--cream);
+}
+.revenue-table tr:hover td { background:rgba(200,168,75,0.03); }
+
+.revenue-delete-btn {
+  background:rgba(239,68,68,0.12); color:var(--red);
+  border:1px solid rgba(239,68,68,0.3);
+  font-family:'Raleway',sans-serif; font-weight:400;
+  font-size:0.5rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:0.3rem 0.7rem; cursor:pointer; transition:all 0.3s;
+}
+.revenue-delete-btn:hover {
+  background:rgba(239,68,68,0.25);
+}
+
+.revenue-chart {
+  margin-bottom:1.5rem;
+}
+.revenue-chart-title {
+  font-size:0.55rem; letter-spacing:0.15em;
+  text-transform:uppercase; color:var(--muted);
+  margin-bottom:0.8rem;
+}
+.revenue-chart-bar-row {
+  display:flex; align-items:center; gap:0.6rem;
+  margin-bottom:0.35rem; font-size:0.72rem;
+}
+.revenue-chart-bar-label {
+  min-width:40px; color:var(--muted); font-size:0.65rem;
+  text-align:right;
+}
+.revenue-chart-bar-track {
+  flex:1; height:18px; background:var(--moss);
+  border:1px solid rgba(200,168,75,0.07); overflow:hidden;
+}
+.revenue-chart-bar-fill {
+  height:100%; background:linear-gradient(90deg, var(--gold), var(--gold2));
+  transition:width 0.4s ease;
+}
+.revenue-chart-bar-amount {
+  min-width:60px; color:var(--cream); font-size:0.68rem;
+}
+
+.revenue-footer {
+  display:flex; align-items:center; justify-content:flex-end;
+  padding-top:1rem; border-top:1px solid var(--line);
+}
+
+.revenue-btn-pdf {
+  background:rgba(200,168,75,0.12); color:var(--gold);
+  border:1px solid rgba(200,168,75,0.3);
+  font-family:'Raleway',sans-serif; font-weight:400;
+  font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:0.55rem 1.4rem; cursor:pointer; transition:all 0.3s;
+  display:flex; align-items:center; gap:0.5rem;
+}
+.revenue-btn-pdf:hover {
+  background:var(--gold); color:var(--night); border-color:var(--gold);
+}
+
 /* Iframe popup */
 .iframe-overlay {
   position:fixed; inset:0; z-index:700;
@@ -1073,6 +1238,19 @@ body::after {
   .pricing-footer { flex-direction:column; gap:0.8rem; align-items:stretch; }
   .pricing-footer .action-btn { text-align:center; }
 
+  /* Revenue section */
+  .revenue-editor { margin-bottom:1.2rem; }
+  .revenue-header { padding:0.8rem 1rem; }
+  .revenue-body { padding:0 1rem 1rem; }
+  .revenue-form { flex-direction:column; gap:0.6rem; }
+  .revenue-form .filter-group { width:100%; }
+  .revenue-form .filter-group input,
+  .revenue-form .filter-group select { width:100%; }
+  .revenue-summary { grid-template-columns:1fr; gap:0.8rem; }
+  .revenue-chart-bar-row { font-size:0.65rem; }
+  .revenue-chart-bar-label { min-width:30px; }
+  .revenue-table th, .revenue-table td { padding:0.6rem 0.5rem; font-size:0.7rem; }
+
   /* Filter bar */
   .filter-bar { padding:1rem; gap:0.6rem; margin-bottom:1rem; }
   .filter-group label { font-size:0.5rem; }
@@ -1238,6 +1416,82 @@ body::after {
           <button class="action-btn btn-complete" id="btn-save-prices" onclick="savePrices()">
             <span class="btn-spinner"></span>
             <span class="btn-label">Enregistrer les tarifs</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue editor -->
+    <div class="revenue-editor" id="revenue-editor">
+      <div class="revenue-header" onclick="toggleRevenueEditor()">
+        <div class="revenue-header-left">
+          <div class="planning-icon">📊</div>
+          <div class="planning-text">
+            Chiffre d'affaires
+            <small>Suivi mensuel de votre chiffre d'affaires — avec export PDF</small>
+          </div>
+        </div>
+        <button class="revenue-toggle" id="revenue-toggle">▼</button>
+      </div>
+      <div class="revenue-body" id="revenue-body" style="display:none;">
+        <!-- Add/Edit form -->
+        <div class="revenue-form">
+          <div class="filter-group">
+            <label for="rev-month">Mois</label>
+            <select id="rev-month"></select>
+          </div>
+          <div class="filter-group">
+            <label for="rev-year">Année</label>
+            <input type="number" id="rev-year" min="2020" max="2099">
+          </div>
+          <div class="filter-group">
+            <label for="rev-amount">Montant</label>
+            <input type="number" id="rev-amount" step="0.01" min="0" placeholder="Montant en €">
+          </div>
+          <button class="revenue-btn-add" onclick="addRevenueEntry()">Ajouter</button>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="revenue-summary">
+          <div class="revenue-summary-card">
+            <div class="revenue-summary-value" id="rev-total-year">—</div>
+            <div class="revenue-summary-label">Total année en cours</div>
+          </div>
+          <div class="revenue-summary-card">
+            <div class="revenue-summary-value" id="rev-current-month">—</div>
+            <div class="revenue-summary-label">Mois en cours</div>
+          </div>
+          <div class="revenue-summary-card">
+            <div class="revenue-summary-value" id="rev-average">—</div>
+            <div class="revenue-summary-label">Moyenne mensuelle</div>
+          </div>
+        </div>
+
+        <!-- Year filter for table -->
+        <div class="revenue-year-filter">
+          <label for="rev-filter-year">Année :</label>
+          <select id="rev-filter-year" onchange="renderRevenueUI()"></select>
+        </div>
+
+        <!-- Monthly table -->
+        <table class="revenue-table">
+          <thead>
+            <tr>
+              <th>Mois</th>
+              <th>Montant</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rev-table-body"></tbody>
+        </table>
+
+        <!-- Bar chart -->
+        <div class="revenue-chart" id="rev-chart"></div>
+
+        <!-- PDF download -->
+        <div class="revenue-footer">
+          <button class="revenue-btn-pdf" onclick="downloadRevenuePDF()">
+            📄 Télécharger le PDF
           </button>
         </div>
       </div>
@@ -1848,6 +2102,227 @@ function updateRefreshTime() {
 }
 
 /* ═══════════════════════════════════════
+   CHIFFRE D'AFFAIRES (REVENUE)
+   ═══════════════════════════════════════ */
+
+const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MOIS_SHORT = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+const REV_STORAGE_KEY = 'hf_revenue_data';
+
+function getRevenueData() {
+  try { return JSON.parse(localStorage.getItem(REV_STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function saveRevenueData(data) {
+  localStorage.setItem(REV_STORAGE_KEY, JSON.stringify(data));
+}
+
+function initRevenueEditor() {
+  const monthSelect = document.getElementById('rev-month');
+  MOIS_FR.forEach((m, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(i).padStart(2, '0');
+    opt.textContent = m;
+    monthSelect.appendChild(opt);
+  });
+  // Set current month
+  const now = new Date();
+  monthSelect.value = String(now.getMonth()).padStart(2, '0');
+  document.getElementById('rev-year').value = now.getFullYear();
+
+  // Populate year filters
+  populateRevenueYearFilter();
+}
+
+function populateRevenueYearFilter() {
+  const data = getRevenueData();
+  const years = new Set();
+  const currentYear = new Date().getFullYear();
+  years.add(currentYear);
+  Object.keys(data).forEach(k => {
+    const y = parseInt(k.split('-')[0]);
+    if (y) years.add(y);
+  });
+  const sorted = Array.from(years).sort((a, b) => b - a);
+  const sel = document.getElementById('rev-filter-year');
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  sorted.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    sel.appendChild(opt);
+  });
+  if (currentVal && sorted.includes(parseInt(currentVal))) {
+    sel.value = currentVal;
+  } else {
+    sel.value = currentYear;
+  }
+}
+
+function toggleRevenueEditor() {
+  const body = document.getElementById('revenue-body');
+  const toggle = document.getElementById('revenue-toggle');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    toggle.classList.add('open');
+    renderRevenueUI();
+  } else {
+    body.style.display = 'none';
+    toggle.classList.remove('open');
+  }
+}
+
+function addRevenueEntry() {
+  const month = document.getElementById('rev-month').value;
+  const year = document.getElementById('rev-year').value;
+  const amount = parseFloat(document.getElementById('rev-amount').value);
+  if (!year || isNaN(amount) || amount < 0) {
+    alert('Veuillez remplir tous les champs correctement.');
+    return;
+  }
+  const key = year + '-' + month;
+  const data = getRevenueData();
+  data[key] = amount;
+  saveRevenueData(data);
+  document.getElementById('rev-amount').value = '';
+  populateRevenueYearFilter();
+  renderRevenueUI();
+}
+
+function deleteRevenueEntry(key) {
+  const data = getRevenueData();
+  delete data[key];
+  saveRevenueData(data);
+  populateRevenueYearFilter();
+  renderRevenueUI();
+}
+
+function formatEUR(amount) {
+  return amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
+function renderRevenueUI() {
+  const data = getRevenueData();
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const filterYear = parseInt(document.getElementById('rev-filter-year').value) || currentYear;
+
+  // Summary cards — always use current year
+  const currentYearEntries = Object.entries(data).filter(([k]) => k.startsWith(currentYear + '-'));
+  const totalYear = currentYearEntries.reduce((s, [, v]) => s + v, 0);
+  const currentMonthKey = currentYear + '-' + String(currentMonth).padStart(2, '0');
+  const currentMonthVal = data[currentMonthKey];
+  const nonZeroMonths = currentYearEntries.filter(([, v]) => v > 0);
+  const average = nonZeroMonths.length > 0 ? totalYear / nonZeroMonths.length : 0;
+
+  document.getElementById('rev-total-year').textContent = totalYear > 0 ? formatEUR(totalYear) : '—';
+  document.getElementById('rev-current-month').textContent = currentMonthVal !== undefined ? formatEUR(currentMonthVal) : '—';
+  document.getElementById('rev-average').textContent = average > 0 ? formatEUR(average) : '—';
+
+  // Table — filtered by selected year, sorted newest first
+  const yearEntries = Object.entries(data)
+    .filter(([k]) => k.startsWith(filterYear + '-'))
+    .sort((a, b) => b[0].localeCompare(a[0]));
+
+  const tbody = document.getElementById('rev-table-body');
+  if (yearEntries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:1.5rem;">Aucune donnée pour ' + filterYear + '</td></tr>';
+  } else {
+    tbody.innerHTML = yearEntries.map(([k, v]) => {
+      const [y, m] = k.split('-');
+      const monthName = MOIS_FR[parseInt(m)] + ' ' + y;
+      return '<tr><td>' + monthName + '</td><td>' + formatEUR(v) + '</td><td><button class="revenue-delete-btn" onclick="deleteRevenueEntry(\'' + k + '\')">Supprimer</button></td></tr>';
+    }).join('');
+  }
+
+  // Bar chart for filtered year
+  const chartContainer = document.getElementById('rev-chart');
+  const monthValues = [];
+  for (let i = 0; i < 12; i++) {
+    const mk = filterYear + '-' + String(i).padStart(2, '0');
+    monthValues.push({ month: MOIS_SHORT[i], value: data[mk] || 0 });
+  }
+  const maxVal = Math.max(...monthValues.map(m => m.value), 1);
+
+  let chartHtml = '<div class="revenue-chart-title">Répartition mensuelle — ' + filterYear + '</div>';
+  monthValues.forEach(m => {
+    const pct = (m.value / maxVal * 100).toFixed(1);
+    chartHtml += '<div class="revenue-chart-bar-row">';
+    chartHtml += '<span class="revenue-chart-bar-label">' + m.month + '</span>';
+    chartHtml += '<div class="revenue-chart-bar-track"><div class="revenue-chart-bar-fill" style="width:' + pct + '%"></div></div>';
+    chartHtml += '<span class="revenue-chart-bar-amount">' + formatEUR(m.value) + '</span>';
+    chartHtml += '</div>';
+  });
+  chartContainer.innerHTML = chartHtml;
+}
+
+function downloadRevenuePDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('Bibliothèque PDF en cours de chargement, veuillez réessayer dans quelques secondes.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const data = getRevenueData();
+  const filterYear = parseInt(document.getElementById('rev-filter-year').value) || new Date().getFullYear();
+
+  // Header
+  doc.setFontSize(18);
+  doc.setTextColor(40, 40, 40);
+  doc.text('Harmony Flux — Chiffre d\'Affaires ' + filterYear, 14, 22);
+
+  doc.setFontSize(11);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Tony Ferreira — Magnétiseur indépendant', 14, 30);
+  doc.text('Saint-Saturnin-lès-Avignon, 84450', 14, 36);
+
+  doc.setFontSize(9);
+  doc.setTextColor(150, 150, 150);
+  doc.text('Généré le ' + new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }), 14, 43);
+
+  doc.setDrawColor(200, 168, 75);
+  doc.setLineWidth(0.5);
+  doc.line(14, 47, 196, 47);
+
+  // Table data
+  const tableRows = [];
+  let total = 0;
+  for (let i = 0; i < 12; i++) {
+    const mk = filterYear + '-' + String(i).padStart(2, '0');
+    const val = data[mk] || 0;
+    total += val;
+    tableRows.push([MOIS_FR[i], formatEUR(val)]);
+  }
+
+  doc.autoTable({
+    startY: 52,
+    head: [['Mois', 'Montant']],
+    body: tableRows,
+    foot: [['Total', formatEUR(total)]],
+    theme: 'grid',
+    headStyles: { fillColor: [200, 168, 75], textColor: [20, 20, 20], fontStyle: 'bold', fontSize: 10 },
+    footStyles: { fillColor: [240, 235, 215], textColor: [20, 20, 20], fontStyle: 'bold', fontSize: 10 },
+    bodyStyles: { fontSize: 9, textColor: [50, 50, 50] },
+    alternateRowStyles: { fillColor: [250, 248, 242] },
+    columnStyles: { 1: { halign: 'right' } },
+    margin: { left: 14, right: 14 }
+  });
+
+  // Footer
+  const pageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(8);
+  doc.setTextColor(160, 160, 160);
+  doc.text('Document généré depuis le panneau d\'administration Harmony Flux', 14, pageHeight - 12);
+
+  doc.save('chiffre-affaires-' + filterYear + '.pdf');
+}
+
+// Initialize revenue editor on load
+initRevenueEditor();
+
+/* ═══════════════════════════════════════
    AUTO REFRESH
    ═══════════════════════════════════════ */
 
@@ -2211,5 +2686,7 @@ loadBookings = async function() {
 };
 
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
