@@ -1698,7 +1698,7 @@ const translations = {
     avis_submit:'Publier mon témoignage →',
     avis_note_rgpd:'Votre prénom et ville seront visibles publiquement. Aucune donnée sensible n\'est collectée.',
     avis_merci_title:'Merci pour votre témoignage',
-    avis_merci_sub:'Il a bien été publié et apparaît désormais dans la section Témoignages.',
+    avis_merci_sub:'Il sera visible sur le site après validation. Merci pour votre confiance !',
     avis_erreur_note:'Veuillez sélectionner une note.',
     avis_erreur_prenom:'Veuillez indiquer votre prénom.',
     avis_erreur_texte:'Veuillez écrire votre témoignage.',
@@ -1773,7 +1773,7 @@ const translations = {
     avis_submit:'Publish my testimonial →',
     avis_note_rgpd:'Your first name and city will be publicly visible. No sensitive data is collected.',
     avis_merci_title:'Thank you for your testimonial',
-    avis_merci_sub:'It has been published and now appears in the Testimonials section.',
+    avis_merci_sub:'It will be visible on the site after approval. Thank you for your trust!',
     avis_erreur_note:'Please select a rating.',
     avis_erreur_prenom:'Please enter your first name.',
     avis_erreur_texte:'Please write your testimonial.',
@@ -1847,7 +1847,7 @@ const translations = {
     avis_submit:'Publicar o meu testemunho →',
     avis_note_rgpd:'O seu primeiro nome e cidade serão visíveis publicamente. Nenhum dado sensível é recolhido.',
     avis_merci_title:'Obrigado pelo seu testemunho',
-    avis_merci_sub:'Foi publicado e aparece agora na secção Testemunhos.',
+    avis_merci_sub:'Será visível no site após validação. Obrigado pela sua confiança!',
     avis_erreur_note:'Selecione uma nota.',
     avis_erreur_prenom:'Indique o seu primeiro nome.',
     avis_erreur_texte:'Escreva o seu testemunho.',
@@ -1920,56 +1920,55 @@ function t(key) {
 })();
 </script>
 
-<!-- ═══ LOGIQUE TÉMOIGNAGES ═══ -->
+<!-- ═══ LOGIQUE TÉMOIGNAGES (Google Sheets Backend) ═══ -->
 <script>
-// Données persistées dans localStorage
-const STORAGE_KEY = 'harmonyflux_temoignages_v1';
+// ══════════════════════════════════════════════════════════════
+// IMPORTANT : Remplacez cette URL par celle de votre déploiement
+// Google Apps Script (voir google-apps-script.js pour les instructions)
+// ══════════════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = 'VOTRE_URL_APPS_SCRIPT_ICI';
 
-// Témoignages initiaux (exemples)
-const defaultTemoignages = [
-  {
-    id: 1,
-    prenom: 'Sophie',
-    ville: 'Avignon',
-    note: 5,
-    soin: 'stress',
-    modalite: 'presentiel',
-    texte: 'Une séance incroyablement apaisante. En moins de 15 minutes, j\'ai ressenti une légèreté que je n\'avais plus depuis des mois. Je recommande vivement !',
-    date: '2025-02-14'
-  },
-  {
-    id: 2,
-    prenom: 'Marc',
-    ville: 'Le Pontet',
-    note: 5,
-    soin: 'douleur',
-    modalite: 'presentiel',
-    texte: 'Je souffrais de migraines chroniques. Après deux séances, la fréquence a nettement diminué. Tony a un don réel.Merciiiii',
-    date: '2025-01-28'
-  },
-  {
-    id: 3,
-    prenom: 'Isabelle',
-    ville: 'Lyon',
-    note: 5,
-    soin: 'global',
-    modalite: 'distance',
-    texte: 'Sceptique au départ, j\'ai tenté la séance à distance. Le résultat m\'a vraiment surprise, une chaleur bienfaisante et un calme profond dès la fin de l\'appel. à bientot',
-    date: '2025-03-05'
-  }
-];
+// Cache local pour éviter de recharger à chaque affichage
+const CACHE_KEY = 'harmonyflux_temoignages_cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function loadTemoignages() {
+function loadTemoignagesFromCache() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [...defaultTemoignages];
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    if (Date.now() - cached.timestamp > CACHE_TTL) return null;
+    return cached.data;
+  } catch(e) { return null; }
+}
+
+function saveTemoignagesToCache(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+  } catch(e) {}
+}
+
+async function fetchTemoignages() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL);
+    const json = await res.json();
+    if (json.success && json.temoignages) {
+      saveTemoignagesToCache(json.temoignages);
+      return json.temoignages;
+    }
+    return loadTemoignagesFromCache() || [];
   } catch(e) {
-    return [...defaultTemoignages];
+    return loadTemoignagesFromCache() || [];
   }
 }
 
-function saveTemoignages(list) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch(e) {}
+async function submitTemoignage(data) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(data)
+  });
+  return await res.json();
 }
 
 function starsHtml(note, size) {
@@ -1988,8 +1987,22 @@ function badgeLabel(soin, modalite) {
   return soinMap[soin] || soin || '';
 }
 
-function renderTemoignages() {
-  const list = loadTemoignages();
+async function renderTemoignages() {
+  const container = document.getElementById('temoignages-liste');
+  if (!container) return;
+
+  // Essayer le cache d'abord pour un affichage rapide
+  let list = loadTemoignagesFromCache();
+  if (list) {
+    renderTemoignagesList(list);
+  }
+
+  // Puis charger depuis le serveur en arrière-plan
+  const freshList = await fetchTemoignages();
+  renderTemoignagesList(freshList);
+}
+
+function renderTemoignagesList(list) {
   const container = document.getElementById('temoignages-liste');
   if (!container) return;
 
@@ -1998,7 +2011,7 @@ function renderTemoignages() {
   const moyStars = document.getElementById('moyenne-stars');
   const moyLabel = document.getElementById('moyenne-label');
   if (list.length > 0) {
-    const moy = list.reduce((a, b) => a + b.note, 0) / list.length;
+    const moy = list.reduce((a, b) => a + (typeof b.note === 'number' ? b.note : parseInt(b.note) || 0), 0) / list.length;
     moyStars.innerHTML = starsHtml(Math.round(moy)).replace('<div class="stars">', '').replace('</div>', '');
     moyStars.style.justifyContent = 'flex-end';
     moyLabel.textContent = `${moy.toFixed(1)} / 5 — ${list.length} ${t('avis_moyenne_label')}`;
@@ -2019,7 +2032,7 @@ function renderTemoignages() {
     return `
     <div class="temoignage-card reveal" style="animation-delay:${idx * 0.08}s;">
       <span class="temoignage-quote-mark">"</span>
-      <div class="temoignage-stars">${starsHtml(item.note)}</div>
+      <div class="temoignage-stars">${starsHtml(typeof item.note === 'number' ? item.note : parseInt(item.note) || 5)}</div>
       <p class="temoignage-text">${escapeHtml(item.texte)}</p>
       <div class="temoignage-footer">
         <div class="temoignage-avatar">${initiale}</div>
@@ -2073,9 +2086,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Soumission du formulaire
-document.getElementById('avis-submit').addEventListener('click', function() {
+// Soumission du formulaire — envoi vers Google Sheets
+document.getElementById('avis-submit').addEventListener('click', async function() {
   const errEl = document.getElementById('avis-error');
+  const submitBtn = document.getElementById('avis-submit');
   errEl.style.display = 'none';
 
   const prenom = document.getElementById('avis-prenom').value.trim();
@@ -2088,23 +2102,34 @@ document.getElementById('avis-submit').addEventListener('click', function() {
   if (!prenom) { errEl.textContent = t('avis_erreur_prenom'); errEl.style.display = 'block'; return; }
   if (!texte) { errEl.textContent = t('avis_erreur_texte'); errEl.style.display = 'block'; return; }
 
-  const list = loadTemoignages();
-  const newAvis = {
-    id: Date.now(),
-    prenom, ville, note: selectedNote,
-    soin, modalite, texte,
-    date: new Date().toISOString().split('T')[0]
-  };
-  list.unshift(newAvis);
-  saveTemoignages(list);
+  // Désactiver le bouton pendant l'envoi
+  submitBtn.disabled = true;
+  submitBtn.style.opacity = '0.5';
+  submitBtn.style.cursor = 'wait';
 
-  // Afficher le succès
-  document.getElementById('avis-form-wrap').style.display = 'none';
-  document.getElementById('avis-success').style.display = 'block';
-  document.getElementById('avis-success').style.animation = 'modalIn 0.4s ease both';
+  try {
+    const result = await submitTemoignage({ prenom, ville, note: selectedNote, soin, modalite, texte });
 
-  // Recharger la grille
-  renderTemoignages();
+    if (result.success) {
+      // Vider le cache pour forcer un rechargement
+      localStorage.removeItem(CACHE_KEY);
+
+      // Afficher le succès
+      document.getElementById('avis-form-wrap').style.display = 'none';
+      document.getElementById('avis-success').style.display = 'block';
+      document.getElementById('avis-success').style.animation = 'modalIn 0.4s ease both';
+    } else {
+      errEl.textContent = result.error || 'Une erreur est survenue. Veuillez réessayer.';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = 'Erreur de connexion. Veuillez réessayer.';
+    errEl.style.display = 'block';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+  }
 });
 
 // Init au chargement
