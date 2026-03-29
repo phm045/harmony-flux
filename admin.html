@@ -1035,6 +1035,54 @@ body::after {
   background:var(--red); color:#fff;
 }
 
+/* ═══ TÉMOIGNAGES EDITOR ═══ */
+.temoignages-editor {
+  background: var(--forest);
+  border: 1px solid var(--line);
+  margin-top: 1.5rem;
+  position: relative; z-index:10;
+}
+.temoignages-header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1.5rem 2rem; cursor:pointer;
+  transition: background 0.3s;
+}
+.temoignages-header:hover { background:rgba(200,168,75,0.03); }
+.temoignages-header-left { display:flex; align-items:center; gap:1.2rem; }
+.temoignages-toggle {
+  background:none; border:none; color:var(--muted);
+  font-size:0.8rem; cursor:pointer; transition:transform 0.3s, color 0.3s;
+}
+.temoignages-toggle.open { transform:rotate(180deg); color:var(--gold); }
+.temoignages-body {
+  padding:2rem;
+  border-top:1px solid var(--line);
+}
+.tem-card {
+  background:var(--moss); border:1px solid var(--line);
+  padding:1.2rem 1.5rem; margin-bottom:0.8rem;
+  display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;
+  transition: border-color 0.3s;
+}
+.tem-card:hover { border-color:rgba(200,168,75,0.3); }
+.tem-card-content { flex:1; }
+.tem-card-name {
+  font-family:'Cormorant',serif; font-size:1.05rem; color:var(--cream);
+  margin-bottom:0.3rem;
+}
+.tem-card-name span { color:var(--muted2); font-weight:300; font-size:0.85rem; }
+.tem-card-stars { color:var(--gold); font-size:0.8rem; margin-bottom:0.4rem; }
+.tem-card-text { font-size:0.8rem; color:var(--muted); line-height:1.6; }
+.tem-card-meta { font-size:0.65rem; color:var(--muted2); margin-top:0.4rem; letter-spacing:0.1em; text-transform:uppercase; }
+.tem-card-actions { display:flex; flex-direction:column; gap:0.4rem; flex-shrink:0; }
+.tem-delete-btn {
+  background:none; border:1px solid rgba(239,68,68,0.3); color:var(--red);
+  padding:0.4rem 0.8rem; font-size:0.6rem; letter-spacing:0.15em;
+  text-transform:uppercase; cursor:pointer; font-family:'Raleway',sans-serif;
+  transition:all 0.3s;
+}
+.tem-delete-btn:hover { background:rgba(239,68,68,0.1); border-color:var(--red); }
+
 /* Settings section */
 .settings-section {
   margin-top:2.5rem;
@@ -1561,6 +1609,42 @@ body::after {
 
     <!-- Pagination -->
     <div class="pagination" id="pagination" style="display:none;"></div>
+
+    <!-- Témoignages editor -->
+    <div class="temoignages-editor" id="temoignages-editor">
+      <div class="temoignages-header" onclick="toggleTemoignagesEditor()">
+        <div class="temoignages-header-left">
+          <div class="planning-icon">💬</div>
+          <div class="planning-text">
+            Témoignages
+            <small>Gérer les témoignages visibles sur le site</small>
+          </div>
+        </div>
+        <button class="temoignages-toggle" id="temoignages-toggle">▼</button>
+      </div>
+      <div class="temoignages-body" id="temoignages-body" style="display:none;">
+        <!-- Add new testimonial form -->
+        <div class="tem-add-form" id="tem-add-form">
+          <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:1rem;">Ajouter un témoignage</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+            <div class="pricing-field"><label>Prénom *</label><input type="text" id="tem-prenom" placeholder="Marie"></div>
+            <div class="pricing-field"><label>Ville</label><input type="text" id="tem-ville" placeholder="Avignon"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin-top:0.8rem;">
+            <div class="pricing-field"><label>Note (1-5) *</label><input type="number" id="tem-note" min="1" max="5" value="5"></div>
+            <div class="pricing-field"><label>Soin</label><select id="tem-soin" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.7rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;"><option value="">—</option><option value="global">Soin Global</option><option value="douleur">Douleurs</option><option value="stress">Stress</option><option value="blocage">Blocages</option><option value="enfant">Enfant</option><option value="suivi">Suivi</option></select></div>
+            <div class="pricing-field"><label>Modalité</label><select id="tem-modalite" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.7rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;"><option value="">—</option><option value="presentiel">Présentiel</option><option value="distance">Distance</option></select></div>
+          </div>
+          <div class="pricing-field" style="margin-top:0.8rem;"><label>Témoignage *</label><textarea id="tem-texte" rows="3" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.8rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;resize:vertical;" placeholder="Le texte du témoignage..."></textarea></div>
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:1rem;">
+            <button class="action-btn btn-complete" onclick="addTemoignage()"><span class="btn-spinner"></span><span class="btn-label">Ajouter</span></button>
+            <span class="pricing-status" id="tem-status"></span>
+          </div>
+        </div>
+        <!-- List of existing testimonials -->
+        <div id="tem-list" style="margin-top:2rem;"></div>
+      </div>
+    </div>
 
     <!-- Settings -->
     <div class="settings-section">
@@ -2510,6 +2594,168 @@ savePrices = async function() {
   }
   return _origSavePrices();
 };
+
+/* ═══════════════════════════════════════
+   TÉMOIGNAGES MANAGEMENT
+   ═══════════════════════════════════════ */
+
+const TEMOIGNAGES_PATH = 'temoignages.json';
+let currentTemoignages = [];
+let temoignagesSha = null;
+
+function toggleTemoignagesEditor() {
+  const body = document.getElementById('temoignages-body');
+  const toggle = document.getElementById('temoignages-toggle');
+  if (body.style.display === 'none') {
+    body.style.display = '';
+    toggle.classList.add('open');
+    loadTemoignagesAdmin();
+  } else {
+    body.style.display = 'none';
+    toggle.classList.remove('open');
+  }
+}
+
+async function loadTemoignagesAdmin() {
+  const statusEl = document.getElementById('tem-status');
+  statusEl.textContent = 'Chargement…';
+  statusEl.className = 'pricing-status';
+  try {
+    const resp = await fetch('temoignages.json?v=' + Date.now());
+    if (!resp.ok) throw new Error('Fichier introuvable');
+    currentTemoignages = await resp.json();
+    renderTemoignagesAdmin();
+    statusEl.textContent = currentTemoignages.length + ' témoignage(s) affiché(s) sur le site';
+    
+    // Fetch SHA in background
+    fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + TEMOIGNAGES_PATH)
+      .then(r => r.ok ? r.json() : null)
+      .then(file => { if (file) temoignagesSha = file.sha; })
+      .catch(() => {});
+  } catch(e) {
+    statusEl.textContent = 'Erreur : ' + e.message;
+    statusEl.className = 'pricing-status error';
+  }
+}
+
+function renderTemoignagesAdmin() {
+  const container = document.getElementById('tem-list');
+  if (currentTemoignages.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted2);font-size:0.85rem;">Aucun témoignage pour le moment.</p>';
+    return;
+  }
+  container.innerHTML = currentTemoignages.map((t, i) => {
+    const stars = '★'.repeat(t.note) + '☆'.repeat(5 - t.note);
+    const soinMap = { global:'Soin Global', douleur:'Douleurs', stress:'Stress', blocage:'Blocages', enfant:'Enfant', suivi:'Suivi' };
+    const meta = [soinMap[t.soin] || '', t.modalite === 'distance' ? 'Distance' : 'Présentiel', t.date || ''].filter(Boolean).join(' · ');
+    return `<div class="tem-card">
+      <div class="tem-card-content">
+        <div class="tem-card-name">${escapeHtml(t.prenom)}${t.ville ? ' <span>· ' + escapeHtml(t.ville) + '</span>' : ''}</div>
+        <div class="tem-card-stars">${stars}</div>
+        <div class="tem-card-text">${escapeHtml(t.texte)}</div>
+        <div class="tem-card-meta">${meta}</div>
+      </div>
+      <div class="tem-card-actions">
+        <button class="tem-delete-btn" onclick="deleteTemoignage(${i})">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function addTemoignage() {
+  const prenom = document.getElementById('tem-prenom').value.trim();
+  const ville = document.getElementById('tem-ville').value.trim();
+  const note = parseInt(document.getElementById('tem-note').value) || 5;
+  const soin = document.getElementById('tem-soin').value;
+  const modalite = document.getElementById('tem-modalite').value;
+  const texte = document.getElementById('tem-texte').value.trim();
+  const statusEl = document.getElementById('tem-status');
+
+  if (!prenom || !texte) {
+    statusEl.textContent = 'Prénom et témoignage sont obligatoires.';
+    statusEl.className = 'pricing-status error';
+    return;
+  }
+
+  const newItem = {
+    id: Date.now(),
+    prenom: prenom,
+    ville: ville,
+    note: Math.min(5, Math.max(1, note)),
+    soin: soin,
+    modalite: modalite,
+    texte: texte,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  currentTemoignages.unshift(newItem);
+  await saveTemoignagesAdmin('Ajout témoignage : ' + prenom);
+
+  // Clear form
+  document.getElementById('tem-prenom').value = '';
+  document.getElementById('tem-ville').value = '';
+  document.getElementById('tem-note').value = '5';
+  document.getElementById('tem-soin').value = '';
+  document.getElementById('tem-modalite').value = '';
+  document.getElementById('tem-texte').value = '';
+}
+
+async function deleteTemoignage(index) {
+  if (!confirm('Supprimer ce témoignage de ' + currentTemoignages[index].prenom + ' ?')) return;
+  const name = currentTemoignages[index].prenom;
+  currentTemoignages.splice(index, 1);
+  await saveTemoignagesAdmin('Suppression témoignage : ' + name);
+}
+
+async function saveTemoignagesAdmin(commitMsg) {
+  const statusEl = document.getElementById('tem-status');
+
+  if (!getGitHubToken()) {
+    const token = prompt('Pour sauvegarder, entrez votre token GitHub (Personal Access Token) avec les droits "repo" :\n\nCréez-en un sur github.com/settings/tokens');
+    if (!token) return;
+    setGitHubToken(token.trim());
+  }
+
+  statusEl.textContent = 'Sauvegarde en cours…';
+  statusEl.className = 'pricing-status';
+
+  try {
+    // Get current SHA
+    const getResp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + TEMOIGNAGES_PATH);
+    if (getResp.ok) {
+      const getFile = await getResp.json();
+      temoignagesSha = getFile.sha;
+    }
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentTemoignages, null, 2) + '\n')));
+    const resp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + TEMOIGNAGES_PATH, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'token ' + getGitHubToken()
+      },
+      body: JSON.stringify({
+        message: commitMsg || 'Mise à jour des témoignages depuis le panneau admin',
+        content: content,
+        sha: temoignagesSha
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.message || 'Erreur GitHub');
+    }
+
+    const result = await resp.json();
+    temoignagesSha = result.content.sha;
+    renderTemoignagesAdmin();
+    statusEl.textContent = 'Témoignages mis à jour — ' + currentTemoignages.length + ' témoignage(s) sur le site.';
+    statusEl.className = 'pricing-status success';
+  } catch(e) {
+    statusEl.textContent = 'Erreur : ' + e.message;
+    statusEl.className = 'pricing-status error';
+  }
+}
 
 /* ═══════════════════════════════════════
    CAL.EU IFRAME POPUP
