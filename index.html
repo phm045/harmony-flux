@@ -1920,10 +1920,12 @@ function t(key) {
 })();
 </script>
 
-<!-- ═══ LOGIQUE TÉMOIGNAGES (JSON statique + Web3Forms) ═══ -->
+<!-- ═══ LOGIQUE TÉMOIGNAGES (JSON statique + Cloudflare Worker) ═══ -->
 <script>
-// Clé Web3Forms pour l'envoi des témoignages par email
-const W3F_KEY = '2563878c-1640-4873-a39a-6bb8fd861893';
+// URL du Worker Cloudflare de modération (à remplacer après déploiement)
+const WORKER_URL = 'https://harmony-flux-moderation.example.workers.dev';
+// Site Key publique Cloudflare Turnstile (laisser vide pour désactiver le widget)
+const TURNSTILE_SITE_KEY = '';
 
 // Chargement des témoignages depuis le fichier JSON statique
 async function fetchTemoignages() {
@@ -1936,26 +1938,30 @@ async function fetchTemoignages() {
   }
 }
 
-// Envoi d'un nouveau témoignage via Web3Forms (email)
+// Envoi d'un nouveau témoignage via le Worker (file de modération)
 async function submitTemoignage(data) {
   const payload = {
-    access_key: W3F_KEY,
-    subject: '✨ Nouveau témoignage Harmony Flux — ' + data.prenom,
-    from_name: 'Harmony Flux - Témoignages',
-    botcheck: '',
-    note: data.note + ' / 5',
     prenom: data.prenom,
-    ville: data.ville || '(non renseignée)',
-    soin: data.soin || '(non renseigné)',
-    modalite: data.modalite || '(non renseignée)',
-    temoignage: data.texte
+    ville: data.ville || '',
+    note: data.note,
+    soin: data.soin || '',
+    modalite: data.modalite || '',
+    texte: data.texte,
+    website: '', // honeypot
+    turnstileToken: data.turnstileToken || ''
   };
-  const res = await fetch('https://api.web3forms.com/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  return await res.json();
+  try {
+    const res = await fetch(WORKER_URL + '/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json().catch(() => ({}));
+    // Adaptation pour conserver l'API d'origine (result.success)
+    return { success: res.ok && json.ok === true, error: json.error, message: json.message };
+  } catch(e) {
+    return { success: false, error: 'network' };
+  }
 }
 
 function starsHtml(note, size) {
