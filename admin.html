@@ -1623,6 +1623,19 @@ body::after {
         <button class="temoignages-toggle" id="temoignages-toggle">▼</button>
       </div>
       <div class="temoignages-body" id="temoignages-body" style="display:none;">
+        <!-- Email parser : coller l'email Web3Forms pour pré-remplir -->
+        <div class="tem-add-form" style="background:rgba(212,175,99,0.06);border:1px solid var(--line);border-left:3px solid var(--gold2);margin-bottom:1.5rem;">
+          <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:0.5rem;">📧 Coller l'email reçu pour pré-remplir</h4>
+          <p style="font-size:0.8rem;color:var(--muted2);margin-bottom:0.8rem;line-height:1.5;">Ouvre l'email Web3Forms reçu, sélectionne tout (Cmd/Ctrl+A), copie (Cmd/Ctrl+C), puis colle ci-dessous. Les champs du formulaire seront remplis automatiquement.</p>
+          <div class="pricing-field">
+            <textarea id="tem-email-paste" rows="6" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.8rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;resize:vertical;" placeholder="Collez ici le contenu de l'email reçu…&#10;&#10;Exemple :&#10;Note: 5 / 5&#10;Prenom: Marie&#10;Ville: Avignon&#10;Soin: global&#10;Modalite: presentiel&#10;Temoignage: Tony m'a vraiment aidée…"></textarea>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.8rem;flex-wrap:wrap;">
+            <button class="action-btn btn-complete" onclick="parseEmailToForm()"><span class="btn-label">Analyser et pré-remplir</span></button>
+            <button class="action-btn" onclick="clearEmailPaste()" style="background:var(--moss);color:var(--cream);"><span class="btn-label">Effacer</span></button>
+            <span class="pricing-status" id="tem-parse-status"></span>
+          </div>
+        </div>
         <!-- Add new testimonial form -->
         <div class="tem-add-form" id="tem-add-form">
           <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:1rem;">Ajouter un témoignage</h4>
@@ -2602,6 +2615,136 @@ savePrices = async function() {
 const TEMOIGNAGES_PATH = 'temoignages.json';
 let currentTemoignages = [];
 let temoignagesSha = null;
+
+/* ----- Parser email Web3Forms vers formulaire ----- */
+// Normalise une clé : minuscules, sans accents, sans espaces
+function _normKey(k) {
+  return k.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+// Mapping clés normalisées → ids des champs du formulaire
+const _EMAIL_FIELD_MAP = {
+  prenom: 'tem-prenom',
+  ville: 'tem-ville',
+  note: 'tem-note',
+  soin: 'tem-soin',
+  modalite: 'tem-modalite',
+  temoignage: 'tem-texte',
+  texte: 'tem-texte',
+  message: 'tem-texte',
+  avis: 'tem-texte'
+};
+
+// Valeurs acceptées pour les selects
+const _SOIN_VALUES = ['global','douleur','stress','blocage','enfant','suivi'];
+const _MODALITE_VALUES = ['presentiel','distance'];
+
+function parseEmailToForm() {
+  const raw = document.getElementById('tem-email-paste').value;
+  const statusEl = document.getElementById('tem-parse-status');
+  if (!raw || !raw.trim()) {
+    statusEl.textContent = 'Colle d\'abord le contenu de l\'email.';
+    statusEl.className = 'pricing-status error';
+    return;
+  }
+
+  // Nettoyage : retire les en-têtes type "From:", "Sent:", "To:", "Subject:" si présents
+  // (en gardant le corps), et normalise les retours à la ligne
+  const lines = raw.replace(/\r\n/g, '\n').split('\n');
+
+  const found = {};
+  let currentKey = null;
+  let currentValue = [];
+
+  // Clés d'en-tête email à ignorer (ne sont pas des champs du formulaire)
+  const IGNORE_HEADERS = new Set(['from','to','sent','date','subject','reply','replyto','cc','bcc','xmailer','contenttype','mimeversion','received','returnpath','messageid','fromname','accesskey','botcheck']);
+
+  for (const lineRaw of lines) {
+    const line = lineRaw.trim();
+    // Détecte un début de champ "Clé: valeur" ou "Clé = valeur" (accents minuscules + majuscules)
+    const m = line.match(/^([A-Za-zÀ-ſ_\- ]{2,30})\s*[:=]\s*(.*)$/);
+    if (m) {
+      const norm = _normKey(m[1]);
+      // Si c'est un champ qu'on connaît (formulaire) ou un en-tête à ignorer
+      if (_EMAIL_FIELD_MAP[norm] || IGNORE_HEADERS.has(norm)) {
+        // On termine la valeur du champ précédent
+        if (currentKey && _EMAIL_FIELD_MAP[currentKey]) {
+          found[currentKey] = currentValue.join('\n').trim();
+        }
+        // On démarre le nouveau champ (sauf si c'est un en-tête ignoré)
+        if (_EMAIL_FIELD_MAP[norm]) {
+          currentKey = norm;
+          currentValue = [m[2]];
+        } else {
+          currentKey = null;
+          currentValue = [];
+        }
+        continue;
+      }
+    }
+    // Sinon, c'est la suite du champ courant (utile pour témoignages multi-lignes)
+    if (currentKey) currentValue.push(lineRaw);
+  }
+  // Flush final
+  if (currentKey && _EMAIL_FIELD_MAP[currentKey]) {
+    found[currentKey] = currentValue.join('\n').trim();
+  }
+
+  // Application aux champs du formulaire
+  let filled = 0;
+  for (const k in found) {
+    const id = _EMAIL_FIELD_MAP[k];
+    const el = document.getElementById(id);
+    if (!el) continue;
+    let val = found[k];
+    if (!val) continue;
+
+    // Nettoyages spécifiques
+    if (k === 'note') {
+      // Extrait le premier chiffre 1–5 (ex: "5 / 5" → 5)
+      const num = parseInt((val.match(/[1-5]/) || [''])[0], 10);
+      val = isNaN(num) ? '' : String(num);
+      if (!val) continue;
+    }
+    if (k === 'soin') {
+      const v = _normKey(val);
+      val = _SOIN_VALUES.find(s => v.startsWith(s) || v === s) || '';
+      if (!val) continue;
+    }
+    if (k === 'modalite') {
+      const v = _normKey(val);
+      val = _MODALITE_VALUES.find(s => v.startsWith(s) || v === s) || '';
+      if (!val) continue;
+    }
+    // Filtre les valeurs sentinelles "(non renseignée)" / "(non renseigné)"
+    if (/^\(non\s+renseign/i.test(val)) continue;
+
+    el.value = val;
+    filled++;
+  }
+
+  if (filled === 0) {
+    statusEl.textContent = 'Aucun champ détecté. Vérifie le format "Clé: valeur".';
+    statusEl.className = 'pricing-status error';
+    return;
+  }
+
+  statusEl.textContent = filled + ' champ(s) pré-rempli(s). Vérifie puis clique sur Ajouter.';
+  statusEl.className = 'pricing-status success';
+
+  // Scroll vers le formulaire d'ajout pour invitation visuelle
+  const form = document.getElementById('tem-add-form');
+  if (form && form.scrollIntoView) form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function clearEmailPaste() {
+  document.getElementById('tem-email-paste').value = '';
+  const statusEl = document.getElementById('tem-parse-status');
+  statusEl.textContent = '';
+  statusEl.className = 'pricing-status';
+}
 
 function toggleTemoignagesEditor() {
   const body = document.getElementById('temoignages-body');
