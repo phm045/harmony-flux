@@ -75,7 +75,11 @@ async function handlePublish(request, env, origin) {
     return json({ error: 'server_misconfigured' }, 500, origin);
   }
 
-  // 3. Parse + validate input
+  // 3. Parse + validate input (limite défensive sur Content-Length)
+  const cl = parseInt(request.headers.get('content-length') || '0', 10);
+  if (Number.isFinite(cl) && cl > 4096) {
+    return json({ error: 'payload_too_large' }, 413, origin);
+  }
   let body;
   try {
     body = await request.json();
@@ -181,12 +185,22 @@ function corsHeaders(origin) {
   };
 }
 
+function securityHeaders() {
+  return {
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
+    'Cache-Control': 'no-store',
+    'Strict-Transport-Security': 'max-age=15552000; includeSubDomains'
+  };
+}
+
 function json(payload, status, origin) {
   return new Response(JSON.stringify(payload), {
     status: status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      ...corsHeaders(origin)
+      ...corsHeaders(origin),
+      ...securityHeaders()
     }
   });
 }

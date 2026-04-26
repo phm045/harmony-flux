@@ -1432,7 +1432,7 @@ body::after {
   .iframe-container { max-width:100%; height:100vh; border:none; }
   .iframe-header { padding:0.5rem 0.8rem; }
   .iframe-title { font-size:0.85rem; }
-  .iframe-btn { font-size:0.45rem; }
+  .iframe-btn { font-size:0.7rem; padding:0.4rem 0.6rem; }
 
   /* Footer */
   .admin-footer { padding:1.5rem 1rem; }
@@ -1592,16 +1592,18 @@ body::after {
         </div>
 
         <!-- Monthly table -->
-        <table class="revenue-table">
-          <thead>
-            <tr>
-              <th>Mois</th>
-              <th>Montant</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="rev-table-body"></tbody>
-        </table>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+          <table class="revenue-table">
+            <thead>
+              <tr>
+                <th scope="col">Mois</th>
+                <th scope="col">Montant</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rev-table-body"></tbody>
+          </table>
+        </div>
 
         <!-- Bar chart -->
         <div class="revenue-chart" id="rev-chart"></div>
@@ -1706,10 +1708,10 @@ body::after {
             <p class="tem-pending-help">
               Mode recommandé : un Worker (Cloudflare / Netlify / Vercel) reçoit la requête, vérifie un secret partagé et publie le témoignage avec un token GitHub stocké côté serveur. Voir <code>serverless/cloudflare-worker/README.md</code>. Sans configuration, l'approbation retombera sur l'ancien mode PAT GitHub (réservé au propriétaire du repo).
             </p>
-            <div class="pricing-field"><label>URL du Worker (sans slash final)</label>
+            <div class="pricing-field"><label for="tem-endpoint-url">URL du Worker (sans slash final)</label>
               <input type="url" id="tem-endpoint-url" placeholder="https://harmony-flux-temoignages.<sub>.workers.dev" autocomplete="off" spellcheck="false">
             </div>
-            <div class="pricing-field" style="margin-top:0.6rem;"><label>Secret admin (ADMIN_SHARED_SECRET)</label>
+            <div class="pricing-field" style="margin-top:0.6rem;"><label for="tem-endpoint-secret">Secret admin (ADMIN_SHARED_SECRET)</label>
               <input type="password" id="tem-endpoint-secret" placeholder="•••••••••••••••" autocomplete="new-password" spellcheck="false">
             </div>
             <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.8rem;flex-wrap:wrap;">
@@ -1743,15 +1745,15 @@ body::after {
         <div class="tem-add-form" id="tem-add-form">
           <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:1rem;">Ajouter un témoignage</h4>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
-            <div class="pricing-field"><label>Prénom *</label><input type="text" id="tem-prenom" placeholder="Marie"></div>
-            <div class="pricing-field"><label>Ville</label><input type="text" id="tem-ville" placeholder="Avignon"></div>
+            <div class="pricing-field"><label for="tem-prenom">Prénom *</label><input type="text" id="tem-prenom" maxlength="40" autocomplete="off" placeholder="Marie"></div>
+            <div class="pricing-field"><label for="tem-ville">Ville</label><input type="text" id="tem-ville" maxlength="40" autocomplete="off" placeholder="Avignon"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin-top:0.8rem;">
-            <div class="pricing-field"><label>Note (1-5) *</label><input type="number" id="tem-note" min="1" max="5" value="5"></div>
-            <div class="pricing-field"><label>Soin</label><select id="tem-soin" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.7rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;"><option value="">—</option><option value="global">Soin Global</option><option value="douleur">Douleurs</option><option value="stress">Stress</option><option value="blocage">Blocages</option><option value="enfant">Enfant</option><option value="suivi">Suivi</option></select></div>
-            <div class="pricing-field"><label>Modalité</label><select id="tem-modalite" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.7rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;"><option value="">—</option><option value="presentiel">Présentiel</option><option value="distance">Distance</option></select></div>
+            <div class="pricing-field"><label for="tem-note">Note (1-5) *</label><input type="number" id="tem-note" min="1" max="5" value="5"></div>
+            <div class="pricing-field"><label for="tem-soin">Soin</label><select id="tem-soin" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.7rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;"><option value="">—</option><option value="global">Soin Global</option><option value="douleur">Douleurs</option><option value="stress">Stress</option><option value="blocage">Blocages</option><option value="enfant">Enfant</option><option value="suivi">Suivi</option></select></div>
+            <div class="pricing-field"><label for="tem-modalite">Modalité</label><select id="tem-modalite" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.7rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;"><option value="">—</option><option value="presentiel">Présentiel</option><option value="distance">Distance</option></select></div>
           </div>
-          <div class="pricing-field" style="margin-top:0.8rem;"><label>Témoignage *</label><textarea id="tem-texte" rows="3" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.8rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;resize:vertical;" placeholder="Le texte du témoignage..."></textarea></div>
+          <div class="pricing-field" style="margin-top:0.8rem;"><label for="tem-texte">Témoignage *</label><textarea id="tem-texte" rows="3" maxlength="1000" style="width:100%;background:var(--moss);border:1px solid var(--line);color:var(--cream);padding:0.8rem;font-family:'Raleway',sans-serif;font-size:0.82rem;font-weight:300;resize:vertical;" placeholder="Le texte du témoignage..."></textarea></div>
           <div style="display:flex;align-items:center;gap:1rem;margin-top:1rem;">
             <button class="action-btn btn-complete" onclick="addTemoignage()"><span class="btn-spinner"></span><span class="btn-label">Ajouter</span></button>
             <span class="pricing-status" id="tem-status"></span>
@@ -1778,29 +1780,29 @@ body::after {
 </div>
 
 <!-- Iframe Popup -->
-<div class="iframe-overlay" id="iframe-overlay" onclick="if(event.target===this)closeCalPopup()">
+<div class="iframe-overlay" id="iframe-overlay" role="dialog" aria-modal="true" aria-labelledby="iframe-title" aria-hidden="true" onclick="if(event.target===this)closeCalPopup()">
   <div class="iframe-container">
     <div class="iframe-header">
       <span class="iframe-title" id="iframe-title">Cal.eu</span>
       <div class="iframe-actions">
-        <button class="iframe-btn" id="iframe-newtab" onclick="openInNewTab()">Ouvrir dans un onglet</button>
-        <button class="iframe-close" onclick="closeCalPopup()">&times;</button>
+        <button type="button" class="iframe-btn" id="iframe-newtab" onclick="openInNewTab()">Ouvrir dans un onglet</button>
+        <button type="button" class="iframe-close" aria-label="Fermer" onclick="closeCalPopup()">&times;</button>
       </div>
     </div>
     <div class="iframe-body" id="iframe-body">
-      <div class="iframe-loading" id="iframe-loading"><div class="loader"></div>Chargement de Cal.eu…</div>
+      <div class="iframe-loading" id="iframe-loading" role="status" aria-live="polite"><div class="loader"></div>Chargement de Cal.eu…</div>
     </div>
   </div>
 </div>
 
 <!-- Confirmation Modal -->
-<div class="modal-overlay" id="action-modal">
+<div class="modal-overlay" id="action-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message" aria-hidden="true">
   <div class="modal-box">
     <h3 id="modal-title">Confirmer</h3>
     <p id="modal-message"></p>
     <div class="modal-btns">
-      <button class="modal-btn modal-dismiss" onclick="closeModal()">Annuler</button>
-      <button class="modal-btn" id="modal-confirm-btn" onclick="executeAction()">Confirmer</button>
+      <button type="button" class="modal-btn modal-dismiss" onclick="closeModal()">Annuler</button>
+      <button type="button" class="modal-btn" id="modal-confirm-btn" onclick="executeAction()">Confirmer</button>
     </div>
   </div>
 </div>
@@ -2140,6 +2142,18 @@ function renderBookings() {
   const list = document.getElementById('bookings-list');
   const emptyState = document.getElementById('empty-state');
   const pagination = document.getElementById('pagination');
+  if (list && !list._actionBound) {
+    list.addEventListener('click', function(e) {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      e.stopPropagation();
+      const action = btn.getAttribute('data-action');
+      const uid = btn.getAttribute('data-uid');
+      const title = btn.getAttribute('data-title');
+      if (action && uid) confirmAction(action, uid, title || '');
+    });
+    list._actionBound = true;
+  }
 
   if (filteredBookings.length === 0) {
     list.style.display = 'none';
@@ -2185,10 +2199,10 @@ function renderBookings() {
     html += '<div class="detail-item"><label>Statut</label><span class="booking-status ' + statusClass + '">' + statusLabel + '</span></div>';
 
     if (location) {
-      const isUrl = location.startsWith('http');
+      const isUrl = /^https?:\/\//i.test(location);
       html += '<div class="detail-item"><label>Lieu / Lien</label>';
       if (isUrl) {
-        html += '<a href="' + escapeHtml(location) + '" target="_blank" rel="noopener">' + escapeHtml(location) + '</a>';
+        html += '<a href="' + escapeHtml(location) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(location) + '</a>';
       } else {
         html += '<span>' + escapeHtml(location) + '</span>';
       }
@@ -2204,10 +2218,10 @@ function renderBookings() {
     if (bStatus !== 'cancelled') {
       html += '<div class="booking-actions" style="grid-column:1/-1;">';
       if (bStatus !== 'completed') {
-        html += '<button class="action-btn btn-complete" onclick="event.stopPropagation();confirmAction(\'complete\',\'' + escapeHtml(b.uid) + '\',\'' + escapeHtml(title) + '\')" ' + (bStatus === 'cancelled' ? 'disabled' : '') + '>';
+        html += '<button type="button" class="action-btn btn-complete" data-action="complete" data-uid="' + escapeHtml(b.uid) + '" data-title="' + escapeHtml(title) + '"' + (bStatus === 'cancelled' ? ' disabled' : '') + '>';
         html += '<span class="btn-spinner"></span><span class="btn-label">Terminé</span></button>';
       }
-      html += '<button class="action-btn btn-cancel" onclick="event.stopPropagation();confirmAction(\'cancel\',\'' + escapeHtml(b.uid) + '\',\'' + escapeHtml(title) + '\')" ' + (bStatus === 'cancelled' || bStatus === 'completed' ? 'disabled' : '') + '>';
+      html += '<button type="button" class="action-btn btn-cancel" data-action="cancel" data-uid="' + escapeHtml(b.uid) + '" data-title="' + escapeHtml(title) + '"' + (bStatus === 'cancelled' || bStatus === 'completed' ? ' disabled' : '') + '>';
       html += '<span class="btn-spinner"></span><span class="btn-label">Annuler</span></button>';
       html += '</div>';
     }
@@ -2793,14 +2807,18 @@ async function addTemoignage() {
     return;
   }
 
+  // Mêmes contraintes que le Worker (sanitizeInput) pour ne pas polluer
+  // temoignages.json en mode legacy GitHub direct.
+  const ALLOWED_SOINS = ['global','douleur','stress','blocage','enfant','suivi'];
+  const ALLOWED_MODALITES = ['presentiel','distance'];
   const newItem = {
     id: Date.now(),
-    prenom: prenom,
-    ville: ville,
+    prenom: prenom.slice(0, 40),
+    ville: ville.slice(0, 40),
     note: Math.min(5, Math.max(1, note)),
-    soin: soin,
-    modalite: modalite,
-    texte: texte,
+    soin: ALLOWED_SOINS.includes(soin) ? soin : '',
+    modalite: ALLOWED_MODALITES.includes(modalite) ? modalite : '',
+    texte: texte.slice(0, 1000),
     date: new Date().toISOString().split('T')[0]
   };
 
@@ -2972,9 +2990,18 @@ function toggleEndpointConfig() {
 function saveEndpointConfig() {
   const url = (document.getElementById('tem-endpoint-url').value || '').trim();
   const secret = (document.getElementById('tem-endpoint-secret').value || '').trim();
-  if (url && !/^https:\/\//i.test(url)) {
-    setEndpointStatus('L\'URL doit commencer par https://', 'error');
-    return;
+  if (url) {
+    let parsed;
+    try { parsed = new URL(url); } catch (_) { parsed = null; }
+    const hostOk = parsed && parsed.protocol === 'https:' &&
+      (/\.workers\.dev$/i.test(parsed.hostname) ||
+       /\.netlify\.app$/i.test(parsed.hostname) ||
+       /\.vercel\.app$/i.test(parsed.hostname) ||
+       /\.deno\.dev$/i.test(parsed.hostname));
+    if (!hostOk) {
+      setEndpointStatus('URL invalide. Utilisez un domaine .workers.dev / .netlify.app / .vercel.app / .deno.dev en HTTPS.', 'error');
+      return;
+    }
   }
   setEndpointConfig(url, secret);
   refreshEndpointBadge();
@@ -3351,7 +3378,9 @@ function openCalPopup(url, title) {
   const body = document.getElementById('iframe-body');
   // Show loading, then insert iframe
   body.innerHTML = '<div class="iframe-loading" id="iframe-loading"><div class="loader"></div>Chargement de Cal.eu…</div>';
-  document.getElementById('iframe-overlay').classList.add('visible');
+  const overlay = document.getElementById('iframe-overlay');
+  overlay.classList.add('visible');
+  overlay.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
   // Create iframe after a small delay for smooth animation
@@ -3383,6 +3412,7 @@ function openCalPopup(url, title) {
 function closeCalPopup() {
   const overlay = document.getElementById('iframe-overlay');
   overlay.classList.remove('visible');
+  overlay.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
   // Clean up iframe
   const body = document.getElementById('iframe-body');
@@ -3436,10 +3466,15 @@ function confirmAction(action, uid, title) {
   }
 
   modal.classList.add('visible');
+  modal.setAttribute('aria-hidden', 'false');
+  const focusBtn = document.getElementById('modal-confirm-btn');
+  if (focusBtn) focusBtn.focus();
 }
 
 function closeModal() {
-  document.getElementById('action-modal').classList.remove('visible');
+  const modal = document.getElementById('action-modal');
+  modal.classList.remove('visible');
+  modal.setAttribute('aria-hidden', 'true');
   pendingAction = null;
 }
 
