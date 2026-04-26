@@ -3,9 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Perplexity Computer">
-<meta name="author" content="Perplexity Computer">
-<title>Harmony Flux — Magnétisme</title>
+<meta name="theme-color" content="#050810">
+<title>Harmony Flux — Magnétisme à Saint-Saturnin-lès-Avignon & à distance</title>
+<meta name="description" content="Magnétisme énergétique avec Tony : séances à domicile (Avignon, 20 km) ou à distance partout en France. Stress, douleurs, blocages, suivi global.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://phm045.github.io/harmony-flux/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Harmony Flux — Magnétisme">
+<meta property="og:description" content="Séances de magnétisme à domicile ou à distance. Stress, douleurs, blocages.">
+<meta property="og:url" content="https://phm045.github.io/harmony-flux/">
+<meta property="og:image" content="https://phm045.github.io/harmony-flux/about.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Harmony Flux — Magnétisme">
+<meta name="twitter:description" content="Séances de magnétisme à domicile ou à distance.">
+<meta name="twitter:image" content="https://phm045.github.io/harmony-flux/about.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -537,7 +551,7 @@ nav {
   font-size: 0.85rem;
   opacity: 0.9;
 }
-.star-ico.empty { color: var(--muted2); opacity: 0.4; }
+.star-ico.empty { color: var(--muted2); opacity: 0.65; }
 
 /* Carrousel / grille */
 .temoignages-grid {
@@ -946,7 +960,7 @@ footer {
   .stat-n { font-size:2.2rem; }
 
   /* About image section */
-  .about-image-section { grid-template-columns:1fr; gap:2rem; padding:4rem 5vw; }
+  .about-img-section { grid-template-columns:1fr; gap:2rem; padding:4rem 5vw; }
   .about-img-grid { grid-template-columns:1fr !important; min-height:auto !important; }
   .about-img-wrap { height:280px; }
   .about-img-content { padding:2.5rem 5vw !important; }
@@ -1032,14 +1046,14 @@ footer {
     <li><a href="#temoignages" data-i18n="nav_avis">Avis</a></li>
     <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
   </ul>
-  <div class="lang-switcher">
-    <button class="lang-btn active" onclick="setLang('fr')">FR</button>
-    <span class="lang-sep">·</span>
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-    <span class="lang-sep">·</span>
-    <button class="lang-btn" onclick="setLang('pt')">PT</button>
+  <div class="lang-switcher" role="group" aria-label="Choix de la langue">
+    <button class="lang-btn active" type="button" aria-pressed="true" onclick="setLang('fr')">FR</button>
+    <span class="lang-sep" aria-hidden="true">·</span>
+    <button class="lang-btn" type="button" aria-pressed="false" onclick="setLang('en')">EN</button>
+    <span class="lang-sep" aria-hidden="true">·</span>
+    <button class="lang-btn" type="button" aria-pressed="false" onclick="setLang('pt')">PT</button>
   </div>
-  <button class="burger" id="burger-btn" aria-label="Menu">
+  <button class="burger" id="burger-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
     <span></span><span></span><span></span>
   </button>
   <a href="tel:0788301574" class="nav-tel">07.88.30.15.74</a>
@@ -1053,12 +1067,12 @@ footer {
   <a href="#tarifs" data-i18n="nav_tarifs" onclick="closeMobile()">Tarifs</a>
   <a href="#temoignages" data-i18n="nav_avis" onclick="closeMobile()">Avis</a>
   <a href="#contact" data-i18n="nav_contact" onclick="closeMobile()">Contact</a>
-  <div class="lang-switcher-mobile">
-    <button class="lang-btn active" onclick="setLang('fr')">FR</button>
-    <span class="lang-sep">·</span>
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-    <span class="lang-sep">·</span>
-    <button class="lang-btn" onclick="setLang('pt')">PT</button>
+  <div class="lang-switcher-mobile" role="group" aria-label="Choix de la langue">
+    <button class="lang-btn active" type="button" aria-pressed="true" onclick="setLang('fr')">FR</button>
+    <span class="lang-sep" aria-hidden="true">·</span>
+    <button class="lang-btn" type="button" aria-pressed="false" onclick="setLang('en')">EN</button>
+    <span class="lang-sep" aria-hidden="true">·</span>
+    <button class="lang-btn" type="button" aria-pressed="false" onclick="setLang('pt')">PT</button>
   </div>
   <a href="tel:0788301574" class="nav-tel-mobile">07.88.30.15.74</a>
 </div>
@@ -1164,6 +1178,7 @@ footer {
   <div class="about-img-grid" style="display:grid;grid-template-columns:1fr 1fr;min-height:500px;">
     <div class="about-img-wrap" style="position:relative;overflow:hidden;">
       <img src="about.jpg" alt="Séance de magnétisme"
+        loading="lazy" decoding="async" width="1280" height="1707"
         style="width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(0.88) saturate(1.1);"
       />
       <div style="position:absolute;inset:0;background:linear-gradient(to right, transparent 60%, var(--forest));"></div>
@@ -1335,7 +1350,7 @@ footer {
         <li data-i18n="t1_f3">Retour après séance</li>
       </ul>
       <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
-      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" rel="noopener noreferrer">
         <input type="hidden" name="cmd" value="_xclick">
         <input type="hidden" name="business" value="tonydegois@hotmail.com">
         <input type="hidden" name="item_name" value="Séance à distance — Harmony Flux">
@@ -1357,7 +1372,7 @@ footer {
         <li data-i18n="t2_f3">Bilan &amp; conseils</li>
       </ul>
       <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
-      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" rel="noopener noreferrer">
         <input type="hidden" name="cmd" value="_xclick">
         <input type="hidden" name="business" value="tonydegois@hotmail.com">
         <input type="hidden" name="item_name" value="Séance à domicile — Harmony Flux">
@@ -1379,7 +1394,7 @@ footer {
         <li data-i18n="t3_f3">Valable 3 mois</li>
       </ul>
       <button type="button" data-cal-link="ferreira-tony-niw1yi/secret" data-cal-namespace="harmony" data-cal-config='{"layout":"month_view","theme":"dark"}' class="tarif-btn" data-i18n="btn_reserver">Réserver</button>
-      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" rel="noopener noreferrer">
         <input type="hidden" name="cmd" value="_xclick">
         <input type="hidden" name="business" value="tonydegois@hotmail.com">
         <input type="hidden" name="item_name" value="Forfait 5 séances — Harmony Flux">
@@ -1876,7 +1891,9 @@ let currentLang = 'fr';
 function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
+    const isActive = btn.textContent.trim().toLowerCase() === lang;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
   const t = translations[lang];
   if (!t) return;
@@ -1891,7 +1908,11 @@ function setLang(lang) {
   document.documentElement.lang = lang;
   const titles = { fr: 'Harmony Flux — Magnétisme', en: 'Harmony Flux — Magnetism', pt: 'Harmony Flux — Magnetismo' };
   document.title = titles[lang] || document.title;
-  renderTemoignages();
+  if (window._cachedTemoignages) {
+    renderTemoignagesList(window._cachedTemoignages);
+  } else {
+    renderTemoignages();
+  }
 }
 
 function t(key) {
@@ -2009,6 +2030,7 @@ async function renderTemoignages() {
   const container = document.getElementById('temoignages-liste');
   if (!container) return;
   const list = await fetchTemoignages();
+  window._cachedTemoignages = list;
   renderTemoignagesList(list);
 }
 
@@ -2047,9 +2069,9 @@ function renderTemoignagesList(list) {
         <div class="temoignage-avatar">${initiale}</div>
         <div class="temoignage-meta">
           <p class="temoignage-name">${escapeHtml(item.prenom)}${item.ville ? '<span style="color:var(--muted2);font-weight:300;"> · ' + escapeHtml(item.ville) + '</span>' : ''}</p>
-          <p class="temoignage-detail">${modBadge}${badge ? ' · ' + badge : ''}</p>
+          <p class="temoignage-detail">${escapeHtml(modBadge)}${badge ? ' · ' + escapeHtml(badge) : ''}</p>
         </div>
-        ${badge ? `<span class="temoignage-badge">${badge}</span>` : ''}
+        ${badge ? `<span class="temoignage-badge">${escapeHtml(badge)}</span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -2209,12 +2231,14 @@ const mobileMenu = document.getElementById('mobile-menu');
 function closeMobile() {
   burgerBtn.classList.remove('open');
   mobileMenu.classList.remove('open');
+  burgerBtn.setAttribute('aria-expanded', 'false');
   document.body.style.overflow = '';
 }
 
 burgerBtn.addEventListener('click', function() {
   const isOpen = mobileMenu.classList.toggle('open');
   burgerBtn.classList.toggle('open');
+  burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   document.body.style.overflow = isOpen ? 'hidden' : '';
 });
 </script>
