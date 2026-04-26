@@ -1815,10 +1815,52 @@ const ADMIN_HASH = 'ec327cbf9cefdeeb7e0881714c18a79d6c308347a32d333c9d8ead232825
 
 /* ═══════════════════════════════════════
    CAL.EU API CONFIG (must be before auth check)
-   ═══════════════════════════════════════ */
+   ═══════════════════════════════════════
+   La clé Cal.eu n'est PLUS hardcodée côté client. Deux modes :
+
+   1) Mode Worker (recommandé, prod) : si l'URL d'endpoint est configurée
+      (cf. section « Endpoint d'approbation »), tous les appels Cal passent
+      par <ENDPOINT>/cal/bookings… avec credentials:'include' (cookie de
+      session HttpOnly signé HMAC). La clé Cal reste côté serveur.
+
+   2) Mode dégradé local : si l'endpoint n'est PAS configuré, on tente de
+      lire une clé Cal stockée par l'utilisateur dans localStorage
+      (hf_cal_api_key). Aucune clé en clair dans le code source. Sans clé,
+      les requêtes Cal seront simplement désactivées avec un message clair.
+*/
 
 const CAL_API_BASE = 'https://api.cal.eu/v2/bookings';
-const CAL_API_KEY = 'cal_live_564dcac6d9d8ea87411d88966e26f35f';
+const CAL_API_KEY_LEGACY_KEY = 'hf_cal_api_key';
+function getLegacyCalKey() {
+  try { return localStorage.getItem(CAL_API_KEY_LEGACY_KEY) || ''; }
+  catch (_) { return ''; }
+}
+
+/* Construit l'URL et les options pour un appel Cal, en utilisant le proxy
+   Worker si disponible, sinon en tombant sur l'API directe + clé locale. */
+function buildCalRequest(subPath, init) {
+  const cfg = (typeof getEndpointConfig === 'function') ? getEndpointConfig() : { url: '' };
+  const opts = Object.assign({}, init || {});
+  opts.headers = Object.assign({}, opts.headers || {});
+  if (cfg && cfg.url) {
+    const url = cfg.url + '/cal/bookings' + (subPath || '');
+    opts.credentials = 'include';
+    if (!opts.headers['Content-Type'] && opts.body) {
+      opts.headers['Content-Type'] = 'application/json';
+    }
+    return { url: url, opts: opts, mode: 'proxy' };
+  }
+  const key = getLegacyCalKey();
+  if (!key) {
+    return { url: '', opts: opts, mode: 'unconfigured' };
+  }
+  opts.headers['Authorization'] = 'Bearer ' + key;
+  opts.headers['cal-api-version'] = '2024-08-13';
+  if (!opts.headers['Content-Type'] && opts.body) {
+    opts.headers['Content-Type'] = 'application/json';
+  }
+  return { url: CAL_API_BASE + (subPath || ''), opts: opts, mode: 'direct' };
+}
 
 let allBookings = [];
 let filteredBookings = [];
@@ -1837,6 +1879,40 @@ function isAuthenticated() {
   return sessionStorage.getItem('hf_admin_auth') === 'true';
 }
 
+/* Tente une vérification de session serveur via le Worker (cookie HttpOnly).
+   Renvoie true si le serveur a répondu OK, false sinon. */
+async function verifyServerSession() {
+  try {
+    const cfg = (typeof getEndpointConfig === 'function') ? getEndpointConfig() : { url: '' };
+    if (!cfg.url) return false;
+    const resp = await fetch(cfg.url + '/admin/session', { method: 'GET', credentials: 'include' });
+    return !!(resp && resp.ok);
+  } catch (_) { return false; }
+}
+
+/* Login serveur. Renvoie true si le Worker a accepté et posé le cookie. */
+async function loginServer(email, password) {
+  try {
+    const cfg = (typeof getEndpointConfig === 'function') ? getEndpointConfig() : { url: '' };
+    if (!cfg.url) return false;
+    const resp = await fetch(cfg.url + '/admin/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    return !!(resp && resp.ok);
+  } catch (_) { return false; }
+}
+
+async function logoutServer() {
+  try {
+    const cfg = (typeof getEndpointConfig === 'function') ? getEndpointConfig() : { url: '' };
+    if (!cfg.url) return;
+    await fetch(cfg.url + '/admin/logout', { method: 'POST', credentials: 'include' });
+  } catch (_) {}
+}
+
 function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-app').style.display = 'block';
@@ -1851,10 +1927,16 @@ function showLogin() {
   if (refreshInterval) clearInterval(refreshInterval);
 }
 
-// Check session on load
-if (isAuthenticated()) {
-  showApp();
-} 
+// Check session on load — d'abord cookie serveur, puis flag local
+(async function bootstrapAuth() {
+  const serverOk = await verifyServerSession();
+  if (serverOk) {
+    sessionStorage.setItem('hf_admin_auth', 'true');
+    showApp();
+    return;
+  }
+  if (isAuthenticated()) showApp();
+})();
 
 // Login handler
 document.getElementById('login-submit').addEventListener('click', handleLogin);
@@ -1876,8 +1958,19 @@ async function handleLogin() {
     return;
   }
 
-  const hash = await sha256(password);
+  // 1) Tentative auth serveur (Worker, cookie HttpOnly signé HMAC).
+  const serverOk = await loginServer(email, password);
+  if (serverOk) {
+    sessionStorage.setItem('hf_admin_auth', 'true');
+    errorEl.style.display = 'none';
+    showApp();
+    return;
+  }
 
+  // 2) Fallback local (utile si Worker non déployé). Le hash reste en clair
+  //    dans le HTML public — mode dégradé : marquage uniquement, ne donne
+  //    accès à rien côté serveur.
+  const hash = await sha256(password);
   if (email === ADMIN_EMAIL && hash === ADMIN_HASH) {
     sessionStorage.setItem('hf_admin_auth', 'true');
     errorEl.style.display = 'none';
@@ -1888,8 +1981,11 @@ async function handleLogin() {
   }
 }
 
-// Logout
-document.getElementById('logout-btn').addEventListener('click', showLogin);
+// Logout — invalide aussi le cookie serveur si présent
+document.getElementById('logout-btn').addEventListener('click', async function() {
+  await logoutServer();
+  showLogin();
+});
 
 
 /* ═══════════════════════════════════════
@@ -1897,20 +1993,17 @@ document.getElementById('logout-btn').addEventListener('click', showLogin);
    ═══════════════════════════════════════ */
 
 async function fetchBookings() {
-  const headers = {
-    'Authorization': 'Bearer ' + CAL_API_KEY,
-    'cal-api-version': '2024-08-13',
-    'Content-Type': 'application/json'
-  };
-
   // Fetch all statuses
   const statuses = ['upcoming', 'past', 'cancelled', 'recurring'];
   const results = [];
 
   for (const status of statuses) {
     try {
-      let url = CAL_API_BASE + '?status=' + status + '&take=250';
-      const resp = await fetch(url, { headers });
+      const req = buildCalRequest('?status=' + status + '&take=250', { method: 'GET' });
+      if (req.mode === 'unconfigured') {
+        throw new Error('Cal API non configurée (ni Worker, ni clé locale)');
+      }
+      const resp = await fetch(req.url, req.opts);
       if (!resp.ok) throw new Error('API error: ' + resp.status);
       const data = await resp.json();
       if (data.status === 'success' && data.data) {
@@ -3453,28 +3546,22 @@ async function executeAction() {
 
   try {
     if (action === 'cancel') {
-      const resp = await fetch(CAL_API_BASE.replace('/bookings','') + '/bookings/' + encodeURIComponent(uid) + '/cancel', {
+      const req = buildCalRequest('/' + encodeURIComponent(uid) + '/cancel', {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + CAL_API_KEY,
-          'cal-api-version': '2024-08-13',
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ cancellationReason: 'Annulé par l\'administrateur' })
       });
+      if (req.mode === 'unconfigured') throw new Error('Cal API non configurée');
+      const resp = await fetch(req.url, req.opts);
       const data = await resp.json();
       if (data.status !== 'success') throw new Error(data.error?.message || 'Erreur lors de l\'annulation');
     } else if (action === 'complete') {
       // Use mark-absent endpoint to flag as "completed" (marks the host as not absent = done)
-      const resp = await fetch(CAL_API_BASE.replace('/bookings','') + '/bookings/' + encodeURIComponent(uid) + '/mark-absent', {
+      const req = buildCalRequest('/' + encodeURIComponent(uid) + '/mark-absent', {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + CAL_API_KEY,
-          'cal-api-version': '2024-08-13',
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ host: false })
       });
+      if (req.mode === 'unconfigured') throw new Error('Cal API non configurée');
+      const resp = await fetch(req.url, req.opts);
       const data = await resp.json();
       if (data.status !== 'success') throw new Error(data.error?.message || 'Erreur lors du marquage');
       // Flag locally as completed

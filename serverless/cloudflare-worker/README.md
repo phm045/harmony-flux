@@ -1,21 +1,24 @@
-# Worker d'approbation — Harmony Flux
+# Worker backend — Harmony Flux
 
-Petit Cloudflare Worker qui permet à Tony d'approuver un témoignage depuis
-`admin.html` **sans accès GitHub** et **sans Personal Access Token (PAT)**
-dans le navigateur.
+Cloudflare Worker qui rassemble trois rôles backend pour le site statique
+`phm045.github.io/harmony-flux` :
 
-Le PAT GitHub reste **uniquement côté serveur**. Le navigateur n'envoie
-qu'un secret partagé d'admin.
+1. **Approbation des témoignages** — admin (Tony) approuve un avis sans
+   accès GitHub ni PAT navigateur. Le PAT GitHub reste côté serveur.
+2. **Proxy Cal.eu** — la clé `CAL_API_KEY` ne quitte plus le serveur. Le
+   navigateur appelle `/cal/bookings…` via le Worker, qui injecte
+   `Authorization: Bearer <CAL_API_KEY>` côté serveur.
+3. **Auth admin serveur** — `/admin/login` vérifie email + hash du mot de
+   passe et pose un cookie `hf_admin` HttpOnly, Secure, SameSite=None,
+   signé HMAC-SHA256. La protection ne dépend plus uniquement d'un flag
+   `sessionStorage` côté navigateur.
 
 ## Architecture
 
 ```
-admin.html  ─POST x-admin-secret─▶  Cloudflare Worker  ─PAT GitHub─▶  GitHub Contents API
-                                          │
-                                          └─ valide le secret
-                                          └─ valide / sanitize le payload
-                                          └─ GET temoignages.json + sha
-                                          └─ unshift + PUT
+admin.html ──/admin/login──▶ Worker ─(vérifie hash + signe cookie)─▶ Set-Cookie
+admin.html ──/cal/*       ──▶ Worker ─(Bearer CAL_API_KEY)─────────▶ api.cal.eu/v2
+admin.html ──/publish-temoignage─▶ Worker ─(PAT GitHub server-side)─▶ GitHub API
 ```
 
 ## Pré-requis
@@ -23,8 +26,8 @@ admin.html  ─POST x-admin-secret─▶  Cloudflare Worker  ─PAT GitHub─▶
 - Compte Cloudflare gratuit
 - Node ≥ 18
 - `npm i -g wrangler`
-- Un **fine-grained PAT GitHub** restreint au seul repo `phm045/harmony-flux`,
-  scope `Contents: Read and write` (ne pas réutiliser un PAT classique).
+- Un **fine-grained PAT GitHub** restreint à `phm045/harmony-flux`,
+  scope `Contents: Read and write`.
 
 ## Déploiement
 
@@ -32,21 +35,18 @@ admin.html  ─POST x-admin-secret─▶  Cloudflare Worker  ─PAT GitHub─▶
 cd serverless/cloudflare-worker
 wrangler login
 
-# Secrets (chiffrés au repos chez Cloudflare)
-wrangler secret put GITHUB_TOKEN          # colle le PAT fine-grained
+# Secrets — chiffrés au repos chez Cloudflare
+wrangler secret put GITHUB_TOKEN          # PAT fine-grained, Contents:RW
 wrangler secret put ADMIN_SHARED_SECRET   # ex: openssl rand -base64 32
+wrangler secret put CAL_API_KEY           # clé Cal.eu (Bearer)
+wrangler secret put ADMIN_PASSWORD_HASH   # echo -n 'motdepasse' | sha256sum
+wrangler secret put SESSION_HMAC_SECRET   # ex: openssl rand -base64 64
 
-# Variables non secrètes — déjà dans wrangler.toml,
-# à ajuster si vous changez de repo.
-# (account_id Cloudflare déjà renseigné dans wrangler.toml.)
-
+# Variables non secrètes : déjà dans wrangler.toml
 wrangler deploy
 ```
 
-À la fin, vous obtenez une URL du type
-`https://harmony-flux-temoignages.<votre-sous-domaine>.workers.dev`.
-
-Vérifiez :
+URL résultante : `https://harmony-flux-temoignages.<sub>.workers.dev`.
 
 ```bash
 curl -sS https://harmony-flux-temoignages.<sub>.workers.dev/health
@@ -55,47 +55,82 @@ curl -sS https://harmony-flux-temoignages.<sub>.workers.dev/health
 
 ## Configuration côté admin
 
-Dans `admin.html` (panneau Témoignages), une nouvelle zone **« Configuration
-de l'endpoint d'approbation »** apparaît :
+Dans `admin.html`, section **« Endpoint d'approbation »** :
 
-1. **URL du Worker** : collez l'URL ci-dessus, sans slash final.
-2. **Secret admin** : collez la même valeur que `ADMIN_SHARED_SECRET`.
+1. **URL du Worker** : URL ci-dessus, sans slash final.
+2. **Secret admin** : utilisé uniquement pour le mode legacy
+   (`x-admin-secret`). En mode cookie, ce champ n'est pas requis.
 
-Les deux valeurs sont stockées dans `localStorage` côté admin (jamais commitées
-ni envoyées ailleurs que vers le Worker que vous contrôlez). Tony peut les
-configurer une fois, puis approuver les témoignages d'un clic.
+Quand l'URL est configurée :
+- Le login `admin.html` appelle `/admin/login` ; en cas de succès, un
+  cookie HttpOnly est posé et tous les appels Cal passent par le Worker.
+- Le navigateur n'a plus jamais accès à `CAL_API_KEY`.
+
+## Endpoints
+
+| Méthode | Chemin                      | Description                              |
+| ------- | --------------------------- | ---------------------------------------- |
+| GET     | `/health`                   | Probe                                    |
+| POST    | `/admin/login`              | `{email,password}` → cookie `hf_admin`   |
+| POST    | `/admin/logout`             | Invalide le cookie                       |
+| GET     | `/admin/session`            | `{ok:true}` si cookie valide             |
+| GET/POST| `/cal/bookings/…`           | Proxy authentifié (cookie requis)        |
+| POST    | `/publish-temoignage`       | Cookie OU `x-admin-secret` (legacy)      |
 
 ## Sécurité
 
-- `GITHUB_TOKEN` : **jamais** côté frontend. Stocké chiffré chez Cloudflare.
-- `ADMIN_SHARED_SECRET` : long, aléatoire, comparé en temps constant.
-- CORS limité à `ALLOWED_ORIGIN` (par défaut `https://phm045.github.io`).
-- Validation stricte des champs (longueurs, valeurs autorisées pour `soin` /
+- Tous les secrets (`CAL_API_KEY`, `GITHUB_TOKEN`, `SESSION_HMAC_SECRET`,
+  `ADMIN_PASSWORD_HASH`, `ADMIN_SHARED_SECRET`) restent **uniquement**
+  côté Worker. Aucun secret réel n'est commité ni transmis au navigateur.
+- Cookie `hf_admin` : HttpOnly, Secure, SameSite=None, signé HMAC-SHA256,
+  TTL 8 h (configurable via `SESSION_TTL_SECONDS`).
+- Comparaisons en temps constant (`timingSafeEqual`) pour les secrets,
+  hash et signatures.
+- CORS limité à `ALLOWED_ORIGIN` avec `Allow-Credentials: true`.
+- Headers : `X-Content-Type-Options`, `Referrer-Policy: no-referrer`,
+  `Cache-Control: no-store`, `Strict-Transport-Security`.
+- Limite payload 8 KiB sur `/publish-temoignage` et `POST /cal/*`.
+- Rate limit best-effort (par-isolate) :
+  - login : 5 tentatives / 5 min / IP
+  - cal   : 120 req / 60 s / IP
+  - publish : 30 / 60 s / IP
+- Whitelist stricte des chemins proxy (`/bookings/…` uniquement) —
+  pas d'introspection libre de l'API Cal.
+- Validation stricte des champs témoignage (longueurs, valeurs `soin` /
   `modalite`, note 1–5).
-- Erreurs renvoyées génériques (`unauthorized`, `invalid_input`,
-  `github_write_failed`) — pas de fuite des messages GitHub.
-- Le Worker n'expose **aucune** route de lecture du token ni d'introspection.
+
+> **Note rate-limit** : la table est mémoire-isolate. Suffisant pour
+> ralentir un brute-force opportuniste. Pour une garantie cross-isolate,
+> migrer vers un Durable Object.
 
 ## Rotation de secret
 
 ```bash
-wrangler secret put ADMIN_SHARED_SECRET
-# puis mettre à jour le secret dans le panneau admin
+wrangler secret put CAL_API_KEY
+wrangler secret put ADMIN_PASSWORD_HASH
+wrangler secret put SESSION_HMAC_SECRET   # invalide toutes les sessions
 ```
 
 ## Mode dégradé
 
-Si l'URL d'endpoint n'est pas configurée dans `admin.html`, le panneau
-revient automatiquement au flux historique GitHub PAT — utile uniquement
-pour le **propriétaire GitHub**, jamais pour Tony.
+Si l'URL d'endpoint n'est PAS configurée dans `admin.html` :
+- L'auth se rabat sur le check local SHA-256 dans `sessionStorage`
+  (mode propriétaire / dev).
+- Les appels Cal utilisent une clé optionnelle stockée par
+  l'utilisateur dans `localStorage["hf_cal_api_key"]` ; sans cette clé,
+  les requêtes Cal échouent proprement avec un message clair.
 
-## Alternatives équivalentes
+Aucune clé Cal n'est plus présente en clair dans le code source.
 
-Le même contrat (`POST /publish-temoignage` avec `x-admin-secret`) peut être
-implémenté en quelques lignes sur :
+## Tests minimaux
 
-- Netlify Functions (`netlify/functions/publish-temoignage.js`)
-- Vercel Functions (`api/publish-temoignage.js`)
-- Deno Deploy
+```bash
+# Vérification de syntaxe
+node --check worker.js
 
-L'important est : **token GitHub côté serveur uniquement**.
+# Tests unitaires Worker (validation, signature cookie, sanitize)
+node --test test/worker.test.mjs
+```
+
+Le pipeline GitHub Actions `.github/workflows/ci.yml` exécute ces checks
+sur chaque push/PR + un scan grep des secrets connus.

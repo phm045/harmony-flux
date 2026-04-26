@@ -3,14 +3,32 @@ main = "worker.js"
 compatibility_date = "2025-09-01"
 account_id = "0861f9976bfa9b47c5f96cc61357f08d"
 
-# Variables non secrètes — éditables ici. Les secrets (GITHUB_TOKEN,
-# ADMIN_SHARED_SECRET) doivent être définis via :
-#   wrangler secret put GITHUB_TOKEN
-#   wrangler secret put ADMIN_SHARED_SECRET
-# (ou via le dashboard Cloudflare → Workers → Settings → Variables, en
-# cochant "Encrypt").
+# ─── Variables non secrètes (clair, commitées) ───────────────────────────
+# Modifiables ici, déployées avec `wrangler deploy`.
 [vars]
-REPO_OWNER = "phm045"
-REPO_NAME = "harmony-flux"
-REPO_BRANCH = "main"
+REPO_OWNER     = "phm045"
+REPO_NAME      = "harmony-flux"
+REPO_BRANCH    = "main"
 ALLOWED_ORIGIN = "https://phm045.github.io"
+ADMIN_EMAIL    = "tonydegois84@gmail.com"
+SESSION_TTL_SECONDS = "28800"
+
+# ─── Environnement "production" — requis par Cloudflare Workers Builds ───
+# Le pipeline Workers Builds déploie via `wrangler deploy --env=production`.
+# Sans cette section, wrangler émet un warning qui peut être traité comme
+# erreur par le builder. Les [vars] top-level ne sont PAS héritées par les
+# environnements nommés : on les duplique explicitement ci-dessous.
+[env.production.vars]
+REPO_OWNER     = "phm045"
+REPO_NAME      = "harmony-flux"
+REPO_BRANCH    = "main"
+ALLOWED_ORIGIN = "https://phm045.github.io"
+ADMIN_EMAIL    = "tonydegois84@gmail.com"
+SESSION_TTL_SECONDS = "28800"
+
+# ─── Secrets — JAMAIS commités, à poser via `wrangler secret put …` ──────
+#   wrangler secret put GITHUB_TOKEN          # PAT fine-grained, Contents:RW
+#   wrangler secret put ADMIN_SHARED_SECRET   # ex: openssl rand -base64 32
+#   wrangler secret put CAL_API_KEY           # clé Cal.eu (Bearer)
+#   wrangler secret put ADMIN_PASSWORD_HASH   # echo -n 'motdepasse' | sha256sum
+#   wrangler secret put SESSION_HMAC_SECRET   # ex: openssl rand -base64 64

@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Lint & validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax check Worker (node --check)
+        run: node --check serverless/cloudflare-worker/worker.js
+
+      - name: Worker unit tests
+        run: node --test serverless/cloudflare-worker/test/worker.test.mjs
+
+      - name: Validate JSON files
+        run: |
+          set -euo pipefail
+          for f in temoignages.json prices.json; do
+            if [ -f "$f" ]; then
+              echo "→ $f"
+              node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))"
+            fi
+          done
+
+      - name: Detect hardcoded secrets
+        run: |
+          set -e
+          ! grep -RIn --include='*.html' --include='*.js' \
+            -E "cal_live_[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}" .
