@@ -1,0 +1,15 @@
+name = "harmony-flux-temoignages"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+
+# Variables non secrètes — éditables ici. Les secrets (GITHUB_TOKEN,
+# ADMIN_SHARED_SECRET) doivent être définis via :
+#   wrangler secret put GITHUB_TOKEN
+#   wrangler secret put ADMIN_SHARED_SECRET
+# (ou via le dashboard Cloudflare → Workers → Settings → Variables, en
+# cochant "Encrypt").
+[vars]
+REPO_OWNER = "phm045"
+REPO_NAME = "harmony-flux"
+REPO_BRANCH = "main"
+ALLOWED_ORIGIN = "https://phm045.github.io"

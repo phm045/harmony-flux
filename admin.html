@@ -1693,6 +1693,33 @@ body::after {
         <button class="temoignages-toggle" id="temoignages-toggle">▼</button>
       </div>
       <div class="temoignages-body" id="temoignages-body" style="display:none;">
+        <!-- Endpoint d'approbation (Worker / Function) — permet d'approuver
+             SANS accès GitHub et SANS Personal Access Token côté navigateur.
+             Si non configuré : fallback sur le mode PAT historique. -->
+        <div class="tem-endpoint-section" id="tem-endpoint-section">
+          <div class="tem-pending-title" style="cursor:pointer;" onclick="toggleEndpointConfig()">
+            <span>Endpoint d'approbation</span>
+            <span class="tem-pending-count" id="tem-endpoint-state" style="background:transparent;color:var(--muted2);border:1px solid var(--line);">non configuré</span>
+            <button type="button" class="temoignages-toggle" id="tem-endpoint-toggle" style="margin-left:auto;">▼</button>
+          </div>
+          <div id="tem-endpoint-body" style="display:none;margin-top:0.8rem;">
+            <p class="tem-pending-help">
+              Mode recommandé : un Worker (Cloudflare / Netlify / Vercel) reçoit la requête, vérifie un secret partagé et publie le témoignage avec un token GitHub stocké côté serveur. Voir <code>serverless/cloudflare-worker/README.md</code>. Sans configuration, l'approbation retombera sur l'ancien mode PAT GitHub (réservé au propriétaire du repo).
+            </p>
+            <div class="pricing-field"><label>URL du Worker (sans slash final)</label>
+              <input type="url" id="tem-endpoint-url" placeholder="https://harmony-flux-temoignages.<sub>.workers.dev" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="pricing-field" style="margin-top:0.6rem;"><label>Secret admin (ADMIN_SHARED_SECRET)</label>
+              <input type="password" id="tem-endpoint-secret" placeholder="•••••••••••••••" autocomplete="new-password" spellcheck="false">
+            </div>
+            <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.8rem;flex-wrap:wrap;">
+              <button class="action-btn btn-complete" onclick="saveEndpointConfig()"><span class="btn-label">Enregistrer</span></button>
+              <button class="tem-edit-btn" onclick="testEndpointConfig()">Tester la connexion</button>
+              <button class="tem-reject-btn" onclick="clearEndpointConfig()">Effacer</button>
+              <span class="pricing-status" id="tem-endpoint-status"></span>
+            </div>
+          </div>
+        </div>
         <!-- Pending moderation queue (local-only, stored in your browser) -->
         <div class="tem-pending-section" id="tem-pending-section">
           <div class="tem-pending-title">
@@ -2878,6 +2905,142 @@ function setPendingStatus(text, kind) {
   el.className = 'pricing-status' + (kind ? ' ' + kind : '');
 }
 
+/* ── Configuration de l'endpoint d'approbation (Worker / Function) ──
+   Le navigateur ne stocke QUE l'URL du Worker + un secret partagé admin.
+   Le token GitHub reste côté serveur. Cf. serverless/cloudflare-worker/. */
+const ENDPOINT_URL_KEY = 'hf_admin_endpoint_url';
+const ENDPOINT_SECRET_KEY = 'hf_admin_endpoint_secret';
+
+function getEndpointConfig() {
+  try {
+    return {
+      url: (localStorage.getItem(ENDPOINT_URL_KEY) || '').trim().replace(/\/+$/, ''),
+      secret: localStorage.getItem(ENDPOINT_SECRET_KEY) || ''
+    };
+  } catch (_) { return { url: '', secret: '' }; }
+}
+
+function setEndpointConfig(url, secret) {
+  try {
+    if (url) localStorage.setItem(ENDPOINT_URL_KEY, url.trim().replace(/\/+$/, ''));
+    else localStorage.removeItem(ENDPOINT_URL_KEY);
+    if (secret) localStorage.setItem(ENDPOINT_SECRET_KEY, secret);
+    else localStorage.removeItem(ENDPOINT_SECRET_KEY);
+  } catch (_) {}
+}
+
+function setEndpointStatus(text, kind) {
+  const el = document.getElementById('tem-endpoint-status');
+  if (!el) return;
+  el.textContent = text || '';
+  el.className = 'pricing-status' + (kind ? ' ' + kind : '');
+}
+
+function refreshEndpointBadge() {
+  const badge = document.getElementById('tem-endpoint-state');
+  if (!badge) return;
+  const cfg = getEndpointConfig();
+  if (cfg.url && cfg.secret) {
+    badge.textContent = 'configuré';
+    badge.style.background = 'rgba(120,180,120,0.18)';
+    badge.style.color = '#9ad29a';
+    badge.style.border = '1px solid rgba(120,180,120,0.4)';
+  } else {
+    badge.textContent = 'non configuré';
+    badge.style.background = 'transparent';
+    badge.style.color = 'var(--muted2)';
+    badge.style.border = '1px solid var(--line)';
+  }
+}
+
+function toggleEndpointConfig() {
+  const body = document.getElementById('tem-endpoint-body');
+  const toggle = document.getElementById('tem-endpoint-toggle');
+  if (!body) return;
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  if (toggle) toggle.classList.toggle('open', isHidden);
+  if (isHidden) {
+    const cfg = getEndpointConfig();
+    const urlEl = document.getElementById('tem-endpoint-url');
+    const secEl = document.getElementById('tem-endpoint-secret');
+    if (urlEl) urlEl.value = cfg.url || '';
+    if (secEl) secEl.value = cfg.secret || '';
+  }
+}
+
+function saveEndpointConfig() {
+  const url = (document.getElementById('tem-endpoint-url').value || '').trim();
+  const secret = (document.getElementById('tem-endpoint-secret').value || '').trim();
+  if (url && !/^https:\/\//i.test(url)) {
+    setEndpointStatus('L\'URL doit commencer par https://', 'error');
+    return;
+  }
+  setEndpointConfig(url, secret);
+  refreshEndpointBadge();
+  if (url && secret) {
+    setEndpointStatus('Enregistré. Testez la connexion pour confirmer.', 'success');
+  } else {
+    setEndpointStatus('Effacé. L\'approbation utilisera le mode PAT GitHub historique.', '');
+  }
+}
+
+function clearEndpointConfig() {
+  if (!confirm('Effacer l\'URL et le secret enregistrés dans ce navigateur ?')) return;
+  setEndpointConfig('', '');
+  const urlEl = document.getElementById('tem-endpoint-url');
+  const secEl = document.getElementById('tem-endpoint-secret');
+  if (urlEl) urlEl.value = '';
+  if (secEl) secEl.value = '';
+  refreshEndpointBadge();
+  setEndpointStatus('Configuration effacée.', '');
+}
+
+async function testEndpointConfig() {
+  const cfg = getEndpointConfig();
+  if (!cfg.url) { setEndpointStatus('URL manquante.', 'error'); return; }
+  setEndpointStatus('Test en cours…');
+  try {
+    const resp = await fetch(cfg.url + '/health', { method: 'GET' });
+    if (resp.ok) {
+      const j = await resp.json().catch(() => ({}));
+      if (j && j.ok) { setEndpointStatus('Endpoint joignable.', 'success'); return; }
+    }
+    setEndpointStatus('Endpoint injoignable (HTTP ' + resp.status + ').', 'error');
+  } catch (_) {
+    setEndpointStatus('Endpoint injoignable (réseau ou CORS).', 'error');
+  }
+}
+
+/* Publie un témoignage via le Worker. Renvoie true si OK, false sinon. */
+async function publishViaEndpoint(item) {
+  const cfg = getEndpointConfig();
+  if (!cfg.url || !cfg.secret) return { ok: false, reason: 'not_configured' };
+  try {
+    const resp = await fetch(cfg.url + '/publish-temoignage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-secret': cfg.secret
+      },
+      body: JSON.stringify({
+        prenom: item.prenom,
+        ville: item.ville,
+        note: item.note,
+        soin: item.soin,
+        modalite: item.modalite,
+        texte: item.texte
+      })
+    });
+    if (resp.status === 401) return { ok: false, reason: 'unauthorized' };
+    if (!resp.ok) return { ok: false, reason: 'http_' + resp.status };
+    const data = await resp.json().catch(() => ({}));
+    return { ok: !!data.ok, reason: data.error || '' };
+  } catch (_) {
+    return { ok: false, reason: 'network' };
+  }
+}
+
 // Parse le corps d'un email Web3Forms. Robuste : accepte FR/EN, espaces variables,
 // préfixes type "**Prénom**", et "Témoignage :" multi-lignes en fin de message.
 function parseWeb3FormsEmail(raw) {
@@ -3090,14 +3253,51 @@ async function approvePending(localId, btnEl) {
     return;
   }
 
-  if (!getGitHubToken()) {
-    const token = prompt('Pour publier ce témoignage, entrez votre token GitHub (Personal Access Token) avec les droits "repo" :\n\nCréez-en un sur github.com/settings/tokens');
-    if (!token) return;
-    setGitHubToken(token.trim());
-  }
+  const candidate = {
+    prenom: String(p.prenom).slice(0, 40),
+    ville: String(p.ville || '').slice(0, 40),
+    note: Math.min(5, Math.max(1, parseInt(p.note, 10) || 5)),
+    soin: ['global','douleur','stress','blocage','enfant','suivi'].includes(p.soin) ? p.soin : '',
+    modalite: ['presentiel','distance'].includes(p.modalite) ? p.modalite : '',
+    texte: String(p.texte).slice(0, 1000)
+  };
 
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Publication…'; }
   setPendingStatus('Publication en cours…');
+
+  // 1. Mode recommandé : Worker / Function (aucun PAT côté navigateur)
+  const cfg = getEndpointConfig();
+  if (cfg.url && cfg.secret) {
+    const res = await publishViaEndpoint(candidate);
+    if (res.ok) {
+      const fresh = loadPending();
+      const i2 = fresh.findIndex(x => x.localId === localId);
+      if (i2 !== -1) fresh.splice(i2, 1);
+      savePending(fresh);
+      renderPendingList();
+      setPendingStatus('Témoignage publié et retiré de la file.', 'success');
+      // Rafraîchit la liste publique affichée plus bas
+      try { await loadTemoignagesAdmin(); } catch(_) {}
+      return;
+    }
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Approuver & publier'; }
+    const reasonMsg = res.reason === 'unauthorized'
+      ? 'Secret admin refusé par le Worker.'
+      : (res.reason === 'network' ? 'Worker injoignable (réseau / CORS).' : 'Échec côté Worker (' + res.reason + ').');
+    setPendingStatus(reasonMsg + ' Vérifiez la configuration de l\'endpoint.', 'error');
+    return;
+  }
+
+  // 2. Fallback : mode PAT GitHub historique. Réservé au propriétaire du repo.
+  if (!getGitHubToken()) {
+    const token = prompt('Aucun endpoint d\'approbation configuré.\n\nFallback réservé au propriétaire GitHub : entrez un Personal Access Token avec les droits "repo".\n\nPour Tony : configurez plutôt le Worker (section « Endpoint d\'approbation » au-dessus).');
+    if (!token) {
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Approuver & publier'; }
+      setPendingStatus('Publication annulée — configurez l\'endpoint ou fournissez un PAT.', 'error');
+      return;
+    }
+    setGitHubToken(token.trim());
+  }
 
   // Recharge la liste publique pour éviter d'écraser une modif récente
   try {
@@ -3106,21 +3306,11 @@ async function approvePending(localId, btnEl) {
   } catch(_) {}
 
   const nextId = currentTemoignages.reduce((m, t) => Math.max(m, parseInt(t.id, 10) || 0), 0) + 1;
-  const newItem = {
-    id: nextId,
-    prenom: String(p.prenom).slice(0, 40),
-    ville: String(p.ville || '').slice(0, 40),
-    note: Math.min(5, Math.max(1, parseInt(p.note, 10) || 5)),
-    soin: ['global','douleur','stress','blocage','enfant','suivi'].includes(p.soin) ? p.soin : '',
-    modalite: ['presentiel','distance'].includes(p.modalite) ? p.modalite : '',
-    texte: String(p.texte).slice(0, 1000),
-    date: new Date().toISOString().split('T')[0]
-  };
+  const newItem = Object.assign({ id: nextId }, candidate, { date: new Date().toISOString().split('T')[0] });
   currentTemoignages.unshift(newItem);
 
   try {
     await saveTemoignagesAdmin('Ajout témoignage approuvé : ' + newItem.prenom);
-    // Si saveTemoignagesAdmin a abouti, le statut est "success" ; on retire de la file.
     const statusEl = document.getElementById('tem-status');
     if (statusEl && statusEl.classList.contains('success')) {
       const fresh = loadPending();
@@ -3130,7 +3320,6 @@ async function approvePending(localId, btnEl) {
       renderPendingList();
       setPendingStatus('Témoignage publié et retiré de la file.', 'success');
     } else {
-      // En cas d'échec (status=error), restaurer la liste publique
       currentTemoignages.shift();
       if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Approuver & publier'; }
       setPendingStatus('Échec de la publication. Vérifiez le token et réessayez.', 'error');
@@ -3147,6 +3336,7 @@ const _origLoadTemoignagesAdmin = loadTemoignagesAdmin;
 loadTemoignagesAdmin = async function() {
   await _origLoadTemoignagesAdmin();
   renderPendingList();
+  refreshEndpointBadge();
 };
 
 /* ═══════════════════════════════════════
