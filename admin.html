@@ -1083,6 +1083,76 @@ body::after {
 }
 .tem-delete-btn:hover { background:rgba(239,68,68,0.1); border-color:var(--red); }
 
+/* Pending testimonials (local moderation queue) */
+.tem-pending-section {
+  margin-top:1.5rem; padding:1.2rem 1.4rem;
+  background:rgba(200,168,75,0.04); border:1px solid rgba(200,168,75,0.18);
+}
+.tem-pending-title {
+  font-family:'Cormorant',serif; font-size:1.05rem; color:var(--gold2);
+  margin-bottom:0.3rem; display:flex; align-items:center; gap:0.6rem;
+}
+.tem-pending-count {
+  display:inline-block; min-width:1.4rem; padding:0.05rem 0.5rem;
+  background:var(--gold); color:var(--ink);
+  border-radius:999px; font-size:0.65rem; font-family:'Raleway',sans-serif;
+  font-weight:600; letter-spacing:0.05em; text-align:center;
+}
+.tem-pending-help {
+  font-size:0.72rem; color:var(--muted2); line-height:1.55;
+  margin-bottom:1rem;
+}
+.tem-pending-help code {
+  background:var(--moss); padding:0.05rem 0.35rem;
+  font-size:0.7rem; color:var(--gold3); border:1px solid var(--line);
+}
+.tem-paste-area {
+  width:100%; background:var(--moss); border:1px solid var(--line);
+  color:var(--cream); padding:0.7rem; font-family:'Raleway',sans-serif;
+  font-size:0.78rem; font-weight:300; resize:vertical; margin-bottom:0.6rem;
+}
+.tem-pending-card {
+  background:var(--moss); border:1px solid rgba(200,168,75,0.25);
+  border-left:3px solid var(--gold); padding:1rem 1.2rem;
+  margin-bottom:0.7rem;
+}
+.tem-pending-card-head {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:1rem; margin-bottom:0.5rem; flex-wrap:wrap;
+}
+.tem-pending-card-name {
+  font-family:'Cormorant',serif; font-size:1rem; color:var(--cream);
+}
+.tem-pending-card-name span { color:var(--muted2); font-weight:300; font-size:0.82rem; }
+.tem-pending-card-stars { color:var(--gold); font-size:0.78rem; margin-bottom:0.3rem; }
+.tem-pending-card-text {
+  font-size:0.78rem; color:var(--muted); line-height:1.6;
+  margin-bottom:0.5rem; white-space:pre-wrap;
+}
+.tem-pending-card-meta {
+  font-size:0.62rem; color:var(--muted2);
+  letter-spacing:0.1em; text-transform:uppercase;
+}
+.tem-pending-card-actions {
+  display:flex; gap:0.5rem; margin-top:0.7rem; flex-wrap:wrap;
+}
+.tem-approve-btn, .tem-edit-btn, .tem-reject-btn {
+  background:none; border:1px solid var(--line);
+  padding:0.4rem 0.9rem; font-size:0.6rem; letter-spacing:0.15em;
+  text-transform:uppercase; cursor:pointer; font-family:'Raleway',sans-serif;
+  transition:all 0.3s;
+}
+.tem-approve-btn { border-color:rgba(120,180,120,0.4); color:#9ad29a; }
+.tem-approve-btn:hover:not(:disabled) { background:rgba(120,180,120,0.1); border-color:#9ad29a; }
+.tem-approve-btn:disabled { opacity:0.5; cursor:wait; }
+.tem-edit-btn { color:var(--muted); }
+.tem-edit-btn:hover { background:rgba(200,168,75,0.08); border-color:var(--gold3); color:var(--cream); }
+.tem-reject-btn { border-color:rgba(239,68,68,0.3); color:var(--red); }
+.tem-reject-btn:hover { background:rgba(239,68,68,0.08); border-color:var(--red); }
+.tem-pending-empty {
+  font-size:0.78rem; color:var(--muted2); padding:0.6rem 0;
+}
+
 /* Settings section */
 .settings-section {
   margin-top:2.5rem;
@@ -1623,6 +1693,25 @@ body::after {
         <button class="temoignages-toggle" id="temoignages-toggle">▼</button>
       </div>
       <div class="temoignages-body" id="temoignages-body" style="display:none;">
+        <!-- Pending moderation queue (local-only, stored in your browser) -->
+        <div class="tem-pending-section" id="tem-pending-section">
+          <div class="tem-pending-title">
+            À approuver
+            <span class="tem-pending-count" id="tem-pending-count">0</span>
+          </div>
+          <p class="tem-pending-help">
+            Les témoignages reçus par email (Web3Forms) arrivent sur <code>harmonyflux84@gmail.com</code>.
+            Collez le contenu de l'email ci-dessous, ou ajoutez-le manuellement via le formulaire plus bas.
+            La file est stockée dans votre navigateur — approuvez pour publier sur le site.
+          </p>
+          <textarea id="tem-paste" class="tem-paste-area" rows="4" placeholder="Collez ici le contenu d'un email Web3Forms (Prénom : ..., Note : ..., Témoignage : ...) puis cliquez sur Importer."></textarea>
+          <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;">
+            <button class="action-btn btn-complete" onclick="importPendingFromPaste()"><span class="btn-label">Importer dans la file</span></button>
+            <button class="tem-edit-btn" onclick="clearAllPending()">Vider la file</button>
+            <span class="pricing-status" id="tem-pending-status"></span>
+          </div>
+          <div id="tem-pending-list"></div>
+        </div>
         <!-- Add new testimonial form -->
         <div class="tem-add-form" id="tem-add-form">
           <h4 style="font-family:'Cormorant',serif;font-size:1.1rem;color:var(--gold2);margin-bottom:1rem;">Ajouter un témoignage</h4>
@@ -2756,6 +2845,309 @@ async function saveTemoignagesAdmin(commitMsg) {
     statusEl.className = 'pricing-status error';
   }
 }
+
+/* ═══════════════════════════════════════
+   FILE D'APPROBATION TÉMOIGNAGES (locale)
+   ═══════════════════════════════════════
+   Le site est statique : il n'existe pas de backend pour stocker
+   automatiquement les témoignages reçus. Web3Forms les transmet par email
+   à l'admin. Cette file conserve, dans le navigateur de l'admin, les
+   témoignages collés/saisis depuis ces emails, en attente d'approbation.
+   "Approuver" pousse l'entrée dans temoignages.json via l'API GitHub
+   (réutilise le token déjà stocké pour les tarifs/témoignages). */
+
+const PENDING_KEY = 'hf_pending_temoignages';
+
+function loadPending() {
+  try {
+    const raw = localStorage.getItem(PENDING_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch(_) { return []; }
+}
+
+function savePending(list) {
+  try { localStorage.setItem(PENDING_KEY, JSON.stringify(list)); } catch(_) {}
+}
+
+function setPendingStatus(text, kind) {
+  const el = document.getElementById('tem-pending-status');
+  if (!el) return;
+  el.textContent = text || '';
+  el.className = 'pricing-status' + (kind ? ' ' + kind : '');
+}
+
+// Parse le corps d'un email Web3Forms. Robuste : accepte FR/EN, espaces variables,
+// préfixes type "**Prénom**", et "Témoignage :" multi-lignes en fin de message.
+function parseWeb3FormsEmail(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  const text = raw.replace(/\r\n/g, '\n').trim();
+  if (!text) return null;
+
+  const fields = {
+    prenom: ['prenom', 'prénom', 'first name', 'name'],
+    ville: ['ville', 'city'],
+    note: ['note', 'rating'],
+    soin: ['soin'],
+    modalite: ['modalite', 'modalité'],
+    texte: ['temoignage', 'témoignage', 'message', 'testimonial']
+  };
+
+  function findLine(keys) {
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const m = line.match(/^\s*\**\s*([A-Za-zéèêàâïô\s]+?)\s*\**\s*[:：]\s*(.*)$/);
+      if (!m) continue;
+      const label = m[1].trim().toLowerCase();
+      if (keys.some(k => label === k)) {
+        return { idx: i, value: m[2].trim() };
+      }
+    }
+    return null;
+  }
+
+  const result = {};
+  for (const [k, keys] of Object.entries(fields)) {
+    const f = findLine(keys);
+    if (f) result[k] = { value: f.value, idx: f.idx };
+  }
+
+  // "Témoignage :" peut couvrir plusieurs lignes — récupérer jusqu'à la prochaine
+  // ligne ressemblant à un autre champ, ou un séparateur de signature, ou EOF.
+  if (result.texte) {
+    const lines = text.split('\n');
+    const start = result.texte.idx;
+    const collected = [result.texte.value];
+    for (let i = start + 1; i < lines.length; i++) {
+      const l = lines[i];
+      if (/^\s*\**\s*[A-Za-zéèêàâïô\s]{2,20}\s*\**\s*[:：]\s/.test(l)) break;
+      // Stoppe sur les séparateurs de signature courants
+      if (/^\s*(—{1,}|-{2,}|_{3,}|={3,})\s*$/.test(l)) break;
+      // Stoppe sur les pieds de page Web3Forms / mail typiques
+      if (/^\s*(cet email|this email|sent (via|by)|envoyé (via|par)|web3forms)/i.test(l)) break;
+      collected.push(l);
+    }
+    result.texte.value = collected.join('\n').trim();
+  }
+
+  // Normalisation note : "5 / 5" ou "5"
+  let note = 5;
+  if (result.note) {
+    const m = result.note.value.match(/(\d)/);
+    if (m) note = Math.min(5, Math.max(1, parseInt(m[1], 10)));
+  }
+
+  // Normalisation soin/modalité : on garde la valeur brute, le formulaire la
+  // re-validera contre les options autorisées.
+  function norm(v) { return (v || '').toLowerCase().replace(/\(.*?\)/g, '').trim(); }
+  const soinRaw = result.soin ? norm(result.soin.value) : '';
+  const modaliteRaw = result.modalite ? norm(result.modalite.value) : '';
+  const allowedSoins = ['global','douleur','stress','blocage','enfant','suivi'];
+  const allowedModalites = ['presentiel','distance'];
+  const soin = allowedSoins.includes(soinRaw) ? soinRaw : '';
+  let modalite = '';
+  if (allowedModalites.includes(modaliteRaw)) modalite = modaliteRaw;
+  else if (modaliteRaw.includes('présent') || modaliteRaw.includes('present')) modalite = 'presentiel';
+  else if (modaliteRaw.includes('dist')) modalite = 'distance';
+
+  const prenom = result.prenom ? result.prenom.value : '';
+  const ville = result.ville && !/non\s+renseign/i.test(result.ville.value) ? result.ville.value : '';
+  const texte = result.texte ? result.texte.value : '';
+
+  if (!prenom && !texte) return null;
+
+  return {
+    prenom: prenom.slice(0, 40),
+    ville: ville.slice(0, 40),
+    note: note,
+    soin: soin,
+    modalite: modalite,
+    texte: texte.slice(0, 1000),
+    receivedAt: new Date().toISOString()
+  };
+}
+
+function importPendingFromPaste() {
+  const ta = document.getElementById('tem-paste');
+  const raw = (ta.value || '').trim();
+  if (!raw) {
+    setPendingStatus('Collez le contenu de l\'email reçu avant d\'importer.', 'error');
+    return;
+  }
+  const parsed = parseWeb3FormsEmail(raw);
+  if (!parsed || (!parsed.prenom && !parsed.texte)) {
+    setPendingStatus('Impossible d\'extraire un témoignage. Vérifiez le format ou utilisez le formulaire manuel ci-dessous.', 'error');
+    return;
+  }
+  if (!parsed.prenom) {
+    setPendingStatus('Prénom manquant dans l\'email — saisie manuelle requise.', 'error');
+    return;
+  }
+  if (!parsed.texte) {
+    setPendingStatus('Texte du témoignage manquant — saisie manuelle requise.', 'error');
+    return;
+  }
+  const list = loadPending();
+  // Déduplication simple : prénom + 60 premiers caractères du texte
+  const key = (parsed.prenom + '|' + (parsed.texte || '').slice(0, 60)).toLowerCase();
+  if (list.some(p => ((p.prenom || '') + '|' + (p.texte || '').slice(0, 60)).toLowerCase() === key)) {
+    setPendingStatus('Ce témoignage est déjà dans la file.', 'error');
+    return;
+  }
+  parsed.localId = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  list.unshift(parsed);
+  savePending(list);
+  ta.value = '';
+  renderPendingList();
+  setPendingStatus('Témoignage ajouté à la file. Cliquez sur « Approuver » pour le publier.', 'success');
+}
+
+function clearAllPending() {
+  const list = loadPending();
+  if (list.length === 0) {
+    setPendingStatus('La file est déjà vide.');
+    return;
+  }
+  if (!confirm('Vider la file d\'attente ? ' + list.length + ' entrée(s) seront supprimées.')) return;
+  savePending([]);
+  renderPendingList();
+  setPendingStatus('File vidée.');
+}
+
+function renderPendingList() {
+  const list = loadPending();
+  const container = document.getElementById('tem-pending-list');
+  const countEl = document.getElementById('tem-pending-count');
+  if (countEl) countEl.textContent = list.length;
+  if (!container) return;
+  if (list.length === 0) {
+    container.innerHTML = '<p class="tem-pending-empty">Aucun témoignage en attente. Collez un email Web3Forms ci-dessus pour démarrer.</p>';
+    return;
+  }
+  const soinMap = { global:'Soin Global', douleur:'Douleurs', stress:'Stress', blocage:'Blocages', enfant:'Enfant', suivi:'Suivi' };
+  container.innerHTML = list.map(p => {
+    const note = Math.min(5, Math.max(1, parseInt(p.note, 10) || 5));
+    const stars = '★'.repeat(note) + '☆'.repeat(5 - note);
+    const meta = [
+      soinMap[p.soin] || '',
+      p.modalite === 'distance' ? 'Distance' : (p.modalite === 'presentiel' ? 'Présentiel' : ''),
+      p.receivedAt ? 'Reçu le ' + p.receivedAt.split('T')[0] : ''
+    ].filter(Boolean).join(' · ');
+    return '<div class="tem-pending-card" data-pid="' + escapeHtml(p.localId) + '">' +
+      '<div class="tem-pending-card-head">' +
+        '<div>' +
+          '<div class="tem-pending-card-name">' + escapeHtml(p.prenom || '(sans prénom)') +
+            (p.ville ? ' <span>· ' + escapeHtml(p.ville) + '</span>' : '') + '</div>' +
+          '<div class="tem-pending-card-stars">' + stars + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="tem-pending-card-text">' + escapeHtml(p.texte || '') + '</div>' +
+      (meta ? '<div class="tem-pending-card-meta">' + escapeHtml(meta) + '</div>' : '') +
+      '<div class="tem-pending-card-actions">' +
+        '<button class="tem-approve-btn" onclick="approvePending(\'' + escapeHtml(p.localId) + '\', this)">Approuver &amp; publier</button>' +
+        '<button class="tem-edit-btn" onclick="editPendingIntoForm(\'' + escapeHtml(p.localId) + '\')">Modifier</button>' +
+        '<button class="tem-reject-btn" onclick="rejectPending(\'' + escapeHtml(p.localId) + '\')">Rejeter</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function rejectPending(localId) {
+  const list = loadPending();
+  const idx = list.findIndex(p => p.localId === localId);
+  if (idx === -1) return;
+  if (!confirm('Rejeter ce témoignage de ' + (list[idx].prenom || '(sans prénom)') + ' ? Il sera retiré de la file.')) return;
+  list.splice(idx, 1);
+  savePending(list);
+  renderPendingList();
+  setPendingStatus('Témoignage retiré de la file.');
+}
+
+function editPendingIntoForm(localId) {
+  const list = loadPending();
+  const p = list.find(x => x.localId === localId);
+  if (!p) return;
+  document.getElementById('tem-prenom').value = p.prenom || '';
+  document.getElementById('tem-ville').value = p.ville || '';
+  document.getElementById('tem-note').value = String(Math.min(5, Math.max(1, parseInt(p.note, 10) || 5)));
+  document.getElementById('tem-soin').value = p.soin || '';
+  document.getElementById('tem-modalite').value = p.modalite || '';
+  document.getElementById('tem-texte').value = p.texte || '';
+  setPendingStatus('Formulaire pré-rempli. Modifiez-le, puis cliquez sur « Ajouter » — pensez à rejeter cette entrée ensuite.');
+  document.getElementById('tem-prenom').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+async function approvePending(localId, btnEl) {
+  const list = loadPending();
+  const idx = list.findIndex(p => p.localId === localId);
+  if (idx === -1) return;
+  const p = list[idx];
+
+  if (!p.prenom || !p.texte) {
+    setPendingStatus('Prénom et texte requis avant approbation. Utilisez « Modifier ».', 'error');
+    return;
+  }
+
+  if (!getGitHubToken()) {
+    const token = prompt('Pour publier ce témoignage, entrez votre token GitHub (Personal Access Token) avec les droits "repo" :\n\nCréez-en un sur github.com/settings/tokens');
+    if (!token) return;
+    setGitHubToken(token.trim());
+  }
+
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Publication…'; }
+  setPendingStatus('Publication en cours…');
+
+  // Recharge la liste publique pour éviter d'écraser une modif récente
+  try {
+    const resp = await fetch('temoignages.json?v=' + Date.now());
+    if (resp.ok) currentTemoignages = await resp.json();
+  } catch(_) {}
+
+  const nextId = currentTemoignages.reduce((m, t) => Math.max(m, parseInt(t.id, 10) || 0), 0) + 1;
+  const newItem = {
+    id: nextId,
+    prenom: String(p.prenom).slice(0, 40),
+    ville: String(p.ville || '').slice(0, 40),
+    note: Math.min(5, Math.max(1, parseInt(p.note, 10) || 5)),
+    soin: ['global','douleur','stress','blocage','enfant','suivi'].includes(p.soin) ? p.soin : '',
+    modalite: ['presentiel','distance'].includes(p.modalite) ? p.modalite : '',
+    texte: String(p.texte).slice(0, 1000),
+    date: new Date().toISOString().split('T')[0]
+  };
+  currentTemoignages.unshift(newItem);
+
+  try {
+    await saveTemoignagesAdmin('Ajout témoignage approuvé : ' + newItem.prenom);
+    // Si saveTemoignagesAdmin a abouti, le statut est "success" ; on retire de la file.
+    const statusEl = document.getElementById('tem-status');
+    if (statusEl && statusEl.classList.contains('success')) {
+      const fresh = loadPending();
+      const i2 = fresh.findIndex(x => x.localId === localId);
+      if (i2 !== -1) fresh.splice(i2, 1);
+      savePending(fresh);
+      renderPendingList();
+      setPendingStatus('Témoignage publié et retiré de la file.', 'success');
+    } else {
+      // En cas d'échec (status=error), restaurer la liste publique
+      currentTemoignages.shift();
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Approuver & publier'; }
+      setPendingStatus('Échec de la publication. Vérifiez le token et réessayez.', 'error');
+    }
+  } catch(e) {
+    currentTemoignages.shift();
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Approuver & publier'; }
+    setPendingStatus('Erreur : ' + e.message, 'error');
+  }
+}
+
+// Branche le rendu sur l'ouverture du panneau témoignages.
+const _origLoadTemoignagesAdmin = loadTemoignagesAdmin;
+loadTemoignagesAdmin = async function() {
+  await _origLoadTemoignagesAdmin();
+  renderPendingList();
+};
 
 /* ═══════════════════════════════════════
    CAL.EU IFRAME POPUP
